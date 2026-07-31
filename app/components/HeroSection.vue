@@ -27,8 +27,12 @@ const base = useRuntimeConfig().app.baseURL
 
 <template>
   <section id="top" class="hero">
-    <!-- Сетка на тёмной половине — светлая -->
-    <div class="hero__rules hero__rules--on-dark" aria-hidden="true">
+    <!--
+      Сетка лежит ПОД фотографией: линии идут через весь экран, но там, где стоит снимок,
+      он их закрывает. Поэтому слой один и обрезать его не нужно — раньше была вторая,
+      светлая копия поверх снимка, и она же обрывала сетку над фотографией на телефоне.
+    -->
+    <div class="hero__rules" aria-hidden="true">
       <GridLines :horizontals="horizontals" :delay="600" />
     </div>
 
@@ -55,11 +59,6 @@ const base = useRuntimeConfig().app.baseURL
       </picture>
     </div>
 
-    <!-- Та же сетка на светлой половине — тёмная -->
-    <div class="hero__rules hero__rules--on-light" aria-hidden="true">
-      <GridLines :horizontals="horizontals" :delay="600" />
-    </div>
-
     <div class="page hero__inner">
       <p class="mono hero__eyebrow rise" style="--i: 0">[01] Дубай · Dubai London Hospital</p>
 
@@ -79,7 +78,10 @@ const base = useRuntimeConfig().app.baseURL
         </p>
 
         <div class="hero__actions rise" style="--i: 4">
-          <MarkAction href="#booking">Записаться на консультацию</MarkAction>
+          <MarkAction href="#booking">
+            <span class="hero__cta-long">Записаться на консультацию</span>
+            <span class="hero__cta-short">Консультация</span>
+          </MarkAction>
           <MarkAction variant="ghost" :href="whatsapp">WhatsApp</MarkAction>
         </div>
       </div>
@@ -110,26 +112,16 @@ const base = useRuntimeConfig().app.baseURL
   );
 }
 
-/* --- Сетка: по слою на половину --- */
+/* --- Сетка: один слой под фотографией --- */
 
 .hero__rules {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-}
-
-.hero__rules--on-dark {
   z-index: 0;
-  --rule: color-mix(in srgb, var(--paper) 26%, transparent);
-  --rule-faint: color-mix(in srgb, var(--paper) 15%, transparent);
-  clip-path: inset(0 calc(100% - var(--photo-start)) 0 0);
-}
-
-.hero__rules--on-light {
-  z-index: 2;
-  --rule: color-mix(in srgb, var(--ink) 24%, transparent);
-  --rule-faint: color-mix(in srgb, var(--ink) 13%, transparent);
-  clip-path: inset(0 0 0 var(--photo-start));
+  pointer-events: none;
+  /* Линии светлые: видны они только на чернильной части, остальное закрывает снимок */
+  --rule: color-mix(in srgb, var(--paper) 30%, transparent);
+  --rule-faint: color-mix(in srgb, var(--paper) 17%, transparent);
 }
 
 /* --- Фотография: ровно правая половина, край чёткий --- */
@@ -227,6 +219,10 @@ const base = useRuntimeConfig().app.baseURL
   margin-block-start: var(--s-4);
 }
 
+.hero__cta-short {
+  display: none;
+}
+
 /* Кнопки стоят на тёмном — заливка и линии становятся светлыми */
 .hero__actions :deep(.action) {
   --action-fill: var(--paper);
@@ -281,15 +277,17 @@ const base = useRuntimeConfig().app.baseURL
     --photo-start: 0%;
     /* Полоса под подпись, потом фотография, потом текст */
     --hero-caption: 2.25rem;
-    --hero-photo-h: 48svh;
+    --hero-photo-h: 53svh;
     background: var(--ink);
   }
 
-  /* Подпись переезжает НАД фотографию, под шапку */
+  /* Подпись переезжает НАД фотографию, под шапку.
+     Отступ по краям — тот же, что у всей страницы: абсолютное позиционирование
+     считается от padding-box, поэтому inset-inline: 0 прижал бы её к самому краю. */
   .hero__eyebrow {
     position: absolute;
     inset-block-start: calc(var(--header-h) - 0.25rem);
-    inset-inline: 0;
+    inset-inline: var(--page-pad);
     margin: 0;
   }
 
@@ -301,19 +299,9 @@ const base = useRuntimeConfig().app.baseURL
   }
 
   .hero__photo img {
-    /* На телефоне подставляется горизонтальный кадр — голова и плечи */
-    object-position: 50% 26%;
-  }
-
-  .hero__rules--on-dark {
-    clip-path: inset(calc(var(--header-h) + var(--hero-caption) + var(--hero-photo-h)) 0 0 0);
-  }
-
-  .hero__rules--on-light {
-    clip-path: inset(
-      calc(var(--header-h) + var(--hero-caption)) 0
-        calc(100% - var(--header-h) - var(--hero-caption) - var(--hero-photo-h)) 0
-    );
+    /* Горизонтальный кадр — голова и плечи. Смещение вниз: сверху над головой
+       места меньше, зато видно больше корпуса. */
+    object-position: 50% 46%;
   }
 
   .hero__inner {
@@ -345,12 +333,26 @@ const base = useRuntimeConfig().app.baseURL
     font-size: 0.9375rem;
   }
 
+  /* Кнопки в строку: WhatsApp встаёт справа от записи, а не под ней */
   .hero__actions {
     inline-size: 100%;
-    flex-direction: column;
-    align-items: stretch;
+    flex-wrap: nowrap;
     gap: var(--s-3);
     margin-block-start: var(--s-3);
+  }
+
+  .hero__actions :deep(.action) {
+    flex: 1 1 0;
+    min-inline-size: 0;
+    padding-inline: var(--s-3);
+  }
+
+  .hero__cta-long {
+    display: none;
+  }
+
+  .hero__cta-short {
+    display: inline;
   }
 
   .hero__scroll {

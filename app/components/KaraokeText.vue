@@ -39,6 +39,8 @@ const wordIndex = computed(() => {
 })
 
 let frame = 0
+let observer: IntersectionObserver | null = null
+let live = false
 
 function measure() {
   const node = root.value
@@ -56,16 +58,36 @@ function onScroll() {
   frame = requestAnimationFrame(measure)
 }
 
+function listen(on: boolean) {
+  if (on === live) return
+  live = on
+  if (on) {
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    onScroll()
+  } else {
+    window.removeEventListener('scroll', onScroll)
+    window.removeEventListener('resize', onScroll)
+    cancelAnimationFrame(frame)
+  }
+}
+
 onMounted(() => {
   measure()
-  window.addEventListener('scroll', onScroll, { passive: true })
-  window.addEventListener('resize', onScroll)
+  /*
+    Слушаем прокрутку только пока блок рядом с экраном. Замер положения на каждом кадре
+    заставляет браузер пересчитывать раскладку, и на телефоне это давало микроподёргивания
+    даже там, где текста ещё не видно.
+  */
+  observer = new IntersectionObserver((entries) => listen(entries[0]?.isIntersecting ?? false), {
+    rootMargin: '200px 0px',
+  })
+  if (root.value) observer.observe(root.value)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', onScroll)
-  window.removeEventListener('resize', onScroll)
-  cancelAnimationFrame(frame)
+  observer?.disconnect()
+  listen(false)
 })
 </script>
 

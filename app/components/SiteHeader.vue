@@ -56,7 +56,7 @@ onBeforeUnmount(() => {
     <div class="page header__inner">
       <!-- Левая группа: лежит на чернильной половине, поэтому светлая -->
       <div class="header__left">
-        <a class="header__logo" href="#top" aria-label="Доктор Камалов — наверх">
+        <a class="header__logo brackets" href="#top" aria-label="Доктор Камалов — наверх">
           <span class="header__logo-mark">dr.</span>
           <span class="header__logo-name">Kamalov</span>
         </a>
@@ -98,7 +98,7 @@ onBeforeUnmount(() => {
           <div class="header__actions">
             <MarkAction class="header__cta" href="#booking">
               <span class="header__cta-long">Записаться на консультацию</span>
-              <span class="header__cta-short">Записаться</span>
+              <span class="header__cta-short">Консультация</span>
             </MarkAction>
 
             <MarkAction variant="ghost" :href="whatsapp">WhatsApp</MarkAction>
@@ -210,7 +210,8 @@ onBeforeUnmount(() => {
   font-size: 1.5rem;
   line-height: 1;
   letter-spacing: 0.04em;
-  transition: opacity var(--dur-fast) var(--ease-out);
+  /* Те же угловые скобки, что у кнопки WhatsApp — приём один на весь сайт */
+  --brackets-inset: -0.55rem -0.7rem;
 }
 
 .header__logo-mark,
@@ -218,9 +219,6 @@ onBeforeUnmount(() => {
   font-size: 1em;
 }
 
-.header__logo:hover {
-  opacity: 0.7;
-}
 
 /* --- Разделы и услуги: занимают одну и ту же ячейку --- */
 
@@ -432,6 +430,13 @@ onBeforeUnmount(() => {
   .header__left,
   .header__right {
     color: var(--paper);
+  }
+
+  /* Размытие подложки на телефоне — дорогая операция на каждый кадр прокрутки.
+     Ставим непрозрачный фон: выглядит так же, а дёрганья не даёт. */
+  .header__bg {
+    background: var(--paper);
+    backdrop-filter: none;
   }
 
   .header--scrolled .header__left,
