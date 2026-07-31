@@ -121,10 +121,11 @@ const style = computed(() => ({ '--delay': `${props.delay}ms` }))
   inline-size: 15px;
   block-size: 15px;
   translate: -50% -50%;
-  /* Штрих 2 px против 1 px у лучей: узел должен читаться как узел */
+  /* Прозрачность та же, что у лучей. Отличается только толщина: 3 px против 1 px —
+     узел читается как узел за счёт веса штриха, а не за счёт цвета */
   background:
-    linear-gradient(var(--rule-node), var(--rule-node)) center / 100% 2px no-repeat,
-    linear-gradient(var(--rule-node), var(--rule-node)) center / 2px 100% no-repeat;
+    linear-gradient(var(--rule-node), var(--rule-node)) center / 100% 3px no-repeat,
+    linear-gradient(var(--rule-node), var(--rule-node)) center / 3px 100% no-repeat;
   animation: node-in var(--dur-base) var(--ease-out) var(--delay) both;
 }
 

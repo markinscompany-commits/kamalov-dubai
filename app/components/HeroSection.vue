@@ -136,15 +136,14 @@ const base = useRuntimeConfig().app.baseURL
 
 /* ⚠️ clip-path — свойство физическое, логического аналога нет. Для арабской версии
    обе обрезки разворачиваются вручную (см. design-system.md, раздел 9). */
+/* Крестик берёт прозрачность у лучей — свой цвет ему больше не задаётся */
 .hero__rules--light {
   --rule: color-mix(in srgb, var(--paper) 34%, transparent);
-  --rule-node: color-mix(in srgb, var(--paper) 72%, transparent);
   clip-path: inset(0 calc(100% - var(--photo-start)) 0 0);
 }
 
 .hero__rules--dark {
   --rule: color-mix(in srgb, var(--ink) 26%, transparent);
-  --rule-node: color-mix(in srgb, var(--ink) 55%, transparent);
   clip-path: inset(0 0 0 var(--photo-start));
 }
 
@@ -283,6 +282,26 @@ const base = useRuntimeConfig().app.baseURL
    Только от 901 px: на телефоне высота окна меняется при скрытии адресной строки,
    и правило по высоте пересобирало бы первый экран прямо во время прокрутки. */
 
+/* --- Десктоп: регалии и кнопки отбиты от специализации ---
+
+   Правка Марка: между «пластический хирург, ринопласт» и абзацем регалий нужен
+   заметно больший отступ, а остальное должно остаться на месте.
+
+   Блок выровнен по центру экрана, поэтому от простого margin он весь уехал бы вверх
+   на половину добавки. Ровно та же величина добавляется в верхний отступ блока —
+   тогда заголовок и специализация стоят там же, где стояли, а вниз уезжают только
+   регалии и кнопки. */
+
+@media (min-width: 901px) {
+  .hero__inner {
+    padding-block-start: calc(var(--header-h) + var(--s-6));
+  }
+
+  .hero__creds {
+    margin-block-start: var(--s-6);
+  }
+}
+
 @media (min-width: 901px) and (max-height: 820px) {
   .hero__title {
     font-size: clamp(2.25rem, 4.2vw, 3.5rem);
@@ -315,10 +334,16 @@ const base = useRuntimeConfig().app.baseURL
       calc(var(--hero-h) - var(--header-h) - var(--hero-caption) - var(--hero-text-reserve))
     );
 
-    /* Пересечение — сразу под фотографией, у правого края страницы.
-       Точку отметил Марк на скриншоте телефона. */
-    --cross-x: calc(100% - var(--page-pad) - 0.25rem);
-    --cross-y: calc(var(--header-h) + var(--hero-caption) + var(--hero-photo-h) + 0.9rem);
+    /*
+      Пересечение — сразу под фотографией, у правого края страницы.
+      Точку отметил Марк на скриншоте телефона.
+
+      Вертикаль уведена ПРАВЕЕ края содержимого, а не поставлена на него: иначе луч
+      идёт прямо по чёрточкам бургера сверху и по кнопке WhatsApp снизу. Сейчас он
+      проходит правее и того, и другого — примерно 9 px зазора с каждым.
+    */
+    --cross-x: calc(100% - var(--page-pad) + 0.55rem);
+    --cross-y: calc(var(--header-h) + var(--hero-caption) + var(--hero-photo-h) + 1.05rem);
 
     display: flex;
     flex-direction: column;
