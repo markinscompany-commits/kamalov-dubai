@@ -1,4 +1,4 @@
-# Готовит кадры портрета из исходника с большими полями.
+﻿# Готовит кадры портрета из исходника с большими полями.
 #
 # ГЛАВНОЕ ПРАВИЛО: есть охранная зона — область, которая не должна обрезаться
 # ни на одном разрешении. Марк обвёл её на исходнике: голова с запасом сверху
@@ -39,6 +39,38 @@ $safeW = 4140 - $safeX
 $safeH = 3072 - $safeY
 Write-Output ("охранная зона: {0},{1}  {2}x{3}  пропорция {4:N4}" -f $safeX, $safeY, $safeW, $safeH, ($safeW / $safeH))
 
+# --- Обработка запекается в файл, а не вешается фильтром в CSS ---
+#
+# Раньше в вёрстке стоял filter: saturate(0.92) contrast(1.02). Два минуса:
+#   · телефон пересчитывает фильтр при отрисовке — лишняя работа на прокрутке;
+#   · фильтр сдвигает цвет, и фон вокруг кадра приходилось подбирать под сдвинутый.
+# Теперь то же самое считается один раз здесь.
+#
+# Насыщенность 0.92 по стандартным весам яркости, затем контраст 1.02
+# (out = in * 1.02 - 0.01). Порядок тот же, что был в CSS.
+
+$sat = 0.92
+$k = 1.02
+$off = -0.01
+
+$m00 = (0.213 + 0.787 * $sat) * $k
+$m10 = (0.715 - 0.715 * $sat) * $k
+$m20 = (0.072 - 0.072 * $sat) * $k
+$m01 = (0.213 - 0.213 * $sat) * $k
+$m11 = (0.715 + 0.285 * $sat) * $k
+$m21 = (0.072 - 0.072 * $sat) * $k
+$m02 = (0.213 - 0.213 * $sat) * $k
+$m12 = (0.715 - 0.715 * $sat) * $k
+$m22 = (0.072 + 0.928 * $sat) * $k
+
+$matrix = New-Object System.Drawing.Imaging.ColorMatrix
+$matrix.Matrix00 = $m00; $matrix.Matrix01 = $m01; $matrix.Matrix02 = $m02
+$matrix.Matrix10 = $m10; $matrix.Matrix11 = $m11; $matrix.Matrix12 = $m12
+$matrix.Matrix20 = $m20; $matrix.Matrix21 = $m21; $matrix.Matrix22 = $m22
+$matrix.Matrix33 = 1
+$matrix.Matrix40 = $off; $matrix.Matrix41 = $off; $matrix.Matrix42 = $off
+$matrix.Matrix44 = 1
+
 function Save-Crop($outW, $name) {
   $outH = [int]([math]::Round($script:safeH * ($outW / $script:safeW)))
   $bmp = New-Object System.Drawing.Bitmap($outW, $outH)
@@ -46,13 +78,27 @@ function Save-Crop($outW, $name) {
   $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
   $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
   $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+
+  $attr = New-Object System.Drawing.Imaging.ImageAttributes
+  $attr.SetColorMatrix($script:matrix)
+
   $dst = New-Object System.Drawing.Rectangle(0, 0, $outW, $outH)
-  $src = New-Object System.Drawing.Rectangle($script:safeX, $script:safeY, $script:safeW, $script:safeH)
-  $g.DrawImage($script:img, $dst, $src, [System.Drawing.GraphicsUnit]::Pixel)
+  $g.DrawImage(
+    $script:img, $dst,
+    $script:safeX, $script:safeY, $script:safeW, $script:safeH,
+    [System.Drawing.GraphicsUnit]::Pixel, $attr
+  )
   $path = Join-Path $script:outDir $name
   $bmp.Save($path, $script:codec, $script:prm)
-  $g.Dispose(); $bmp.Dispose()
-  Write-Output "$name : ${outW}x${outH}, $([math]::Round((Get-Item $path).Length/1KB,0)) КБ"
+  $attr.Dispose(); $g.Dispose()
+
+  # Цвет фона готового кадра — им красится область вокруг снимка на странице.
+  # Печатаем сразу: значение идёт в токен --photo-bg.
+  $probe = $bmp.GetPixel([int]($outW * 0.06), [int]($outH * 0.06))
+  $kb = [math]::Round((Get-Item $path).Length / 1KB, 0)
+  $hex = '{0:X2}{1:X2}{2:X2}' -f $probe.R, $probe.G, $probe.B
+  Write-Output "$name : ${outW}x${outH}, $kb KB, photo-bg #$hex"
+  $bmp.Dispose()
 }
 
 Save-Crop -outW 1600 -name 'doctor-portrait.jpg'

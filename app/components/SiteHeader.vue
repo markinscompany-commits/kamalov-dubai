@@ -139,7 +139,14 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <NavOverlay id="nav-overlay" :open="menuOpen" @close="menuOpen = false" />
+    <!-- scrolled передаём внутрь: верхняя строка меню обязана встать ровно там же,
+         где стоит шапка в текущем состоянии, иначе при открытии всё подпрыгивает -->
+    <NavOverlay
+      id="nav-overlay"
+      :open="menuOpen"
+      :compact="scrolled"
+      @close="menuOpen = false"
+    />
   </header>
 </template>
 
@@ -336,36 +343,14 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
+/* Подчёркивания у языков нет (правка Марка): выбранный отличается только тем,
+   что не приглушён */
 .header__lang-btn {
-  position: relative;
   font: inherit;
   letter-spacing: inherit;
   text-transform: inherit;
   color: inherit;
-  padding-block-end: 3px;
   transition: opacity var(--dur-fast) var(--ease-out);
-}
-
-/* Выбранный язык подчёркнут тем же пунктиром, что вся разметка. Подчёркивание
-   прочерчивается, а не появляется скачком — переключение должно быть плавным */
-.header__lang-btn::after {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  inset-block-end: 0;
-  block-size: 1px;
-  background-image: repeating-linear-gradient(
-    to right,
-    currentColor 0 var(--dash-on),
-    transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))
-  );
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path var(--dur-base) var(--ease-out);
-}
-
-.header__lang-btn--on::after,
-.header__lang-btn:hover::after {
-  clip-path: inset(0);
 }
 
 .header__lang-btn--on {

@@ -42,20 +42,46 @@ let frame = 0
 let observer: IntersectionObserver | null = null
 let live = false
 
-function measure() {
+/*
+  Положение блока в документе и его высота замеряются РЕДКО — при появлении и при
+  изменении размеров окна, — а не на каждом кадре прокрутки.
+
+  Зачем. getBoundingClientRect() заставляет браузер пересчитать раскладку прямо
+  сейчас, посреди кадра. На телефоне это стоило заметно и давало те самые
+  микроподёргивания. Теперь во время прокрутки читается только scrollY, а он
+  бесплатный: положение относительно экрана считается вычитанием.
+*/
+let docTop = 0
+let blockH = 0
+let vh = 0
+
+function remeasure() {
   const node = root.value
   if (!node) return
   const rect = node.getBoundingClientRect()
-  const vh = window.innerHeight
+  docTop = rect.top + window.scrollY
+  blockH = rect.height
+  vh = window.innerHeight
+  apply()
+}
+
+function apply() {
+  if (!blockH) return
+  const top = docTop - window.scrollY
   const start = vh * 0.85 // начинаем, когда верх текста поднялся до 85% экрана
   const end = vh * 0.4 // заканчиваем, когда низ прошёл 40%
-  const p = (start - rect.top) / (start - end + rect.height)
+  const p = (start - top) / (start - end + blockH)
   progress.value = Math.min(1, Math.max(0, p))
 }
 
 function onScroll() {
   cancelAnimationFrame(frame)
-  frame = requestAnimationFrame(measure)
+  frame = requestAnimationFrame(apply)
+}
+
+function onResize() {
+  cancelAnimationFrame(frame)
+  frame = requestAnimationFrame(remeasure)
 }
 
 function listen(on: boolean) {
@@ -63,17 +89,17 @@ function listen(on: boolean) {
   live = on
   if (on) {
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
-    onScroll()
+    window.addEventListener('resize', onResize)
+    remeasure()
   } else {
     window.removeEventListener('scroll', onScroll)
-    window.removeEventListener('resize', onScroll)
+    window.removeEventListener('resize', onResize)
     cancelAnimationFrame(frame)
   }
 }
 
 onMounted(() => {
-  measure()
+  remeasure()
   /*
     Слушаем прокрутку только пока блок рядом с экраном. Замер положения на каждом кадре
     заставляет браузер пересчитывать раскладку, и на телефоне это давало микроподёргивания

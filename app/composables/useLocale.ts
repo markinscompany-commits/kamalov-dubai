@@ -10,13 +10,13 @@ const STORAGE_KEY = 'kamalov-locale'
  * Когда дойдём до сдачи (блок 4), переключатель переедет на отдельные адреса
  * /ru и /en — это нужно поисковикам и рекламе, одним состоянием там не обойтись.
  *
- * Переключение НЕ мгновенное: страница сначала гаснет, потом меняются тексты,
- * потом проявляется обратно. Иначе буквы скачут на глазах, а длина строк на
- * английском другая — выглядит как сбой.
+ * Переключение НЕ мгновенное: сначала опускается заставка, за ней подменяются все
+ * тексты сразу, потом заставка уходит. Иначе буквы скачут на глазах, а длина строк
+ * на английском другая — выглядит как сбой.
  */
 export function useLocale() {
   const locale = useState<Locale>('locale', () => 'ru')
-  /** true, пока идёт затухание перед подменой текстов */
+  /** true, пока идёт подмена текстов */
   const swapping = useState<boolean>('locale-swapping', () => false)
 
   const m = computed(() => messages[locale.value])
@@ -24,8 +24,11 @@ export function useLocale() {
   async function setLocale(next: Locale) {
     if (next === locale.value || swapping.value) return
 
+    const { hold, hide } = usePreloader()
+
     swapping.value = true
-    await new Promise((r) => setTimeout(r, 200))
+    // Полотно должно успеть закрыть страницу целиком, прежде чем меняются буквы
+    await hold(520)
 
     locale.value = next
     if (import.meta.client) {
@@ -38,11 +41,12 @@ export function useLocale() {
     }
 
     await nextTick()
-    // Ждём кадр: иначе браузер успевает нарисовать новый текст ещё прозрачным
-    // и проявление начинается не с начала
-    requestAnimationFrame(() => {
-      swapping.value = false
-    })
+    // Держим ещё немного: иначе заставка мигает и смена читается как сбой,
+    // а не как решение
+    await new Promise((r) => setTimeout(r, 420))
+
+    hide()
+    swapping.value = false
   }
 
   /** Вызывается один раз при загрузке: вспоминаем выбор человека */

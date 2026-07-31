@@ -33,16 +33,10 @@ const base = useRuntimeConfig().app.baseURL
 <template>
   <section id="top" class="hero">
     <!--
-      Два слоя одной и той же разметки, обрезанные по границе половин: светлый виден
-      на чернильной половине, тёмный — на светлой. Так линия читается через весь экран
-      независимо от того, что под ней. Оба слоя лежат ПОД фотографией.
+      Разметки на первом экране НЕТ (решение Марка, круг 10). Она осталась приёмом
+      внутренних блоков: на первом экране линии спорили с портретом и с шапкой,
+      а композиция и без них держится на границе половин.
     -->
-    <div class="hero__rules hero__rules--light">
-      <CrossRules :delay="700" />
-    </div>
-    <div class="hero__rules hero__rules--dark">
-      <CrossRules :delay="700" />
-    </div>
 
     <!--
       Один кадр на все разрешения — он режется ровно по охранной зоне, а вписывается
@@ -118,33 +112,6 @@ const base = useRuntimeConfig().app.baseURL
     var(--ink) 0 var(--photo-start),
     var(--photo-bg) var(--photo-start) 100%
   );
-
-  /* Пересечение разметки: в пустом поле между текстом и краем фотографии,
-     по высоте — между шапкой и подписью «[01] …» */
-  --cross-x: 44.3%;
-  --cross-y: 15.3%;
-}
-
-/* --- Разметка: два слоя, обрезанные по границе половин --- */
-
-.hero__rules {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* ⚠️ clip-path — свойство физическое, логического аналога нет. Для арабской версии
-   обе обрезки разворачиваются вручную (см. design-system.md, раздел 9). */
-/* Крестик берёт прозрачность у лучей — свой цвет ему больше не задаётся */
-.hero__rules--light {
-  --rule: color-mix(in srgb, var(--paper) 34%, transparent);
-  clip-path: inset(0 calc(100% - var(--photo-start)) 0 0);
-}
-
-.hero__rules--dark {
-  --rule: color-mix(in srgb, var(--ink) 26%, transparent);
-  clip-path: inset(0 0 0 var(--photo-start));
 }
 
 /* --- Фотография --- */
@@ -168,7 +135,9 @@ const base = useRuntimeConfig().app.baseURL
      где фон совпадает с фоном снимка и стыка не видно. */
   object-fit: contain;
   object-position: 50% 100%;
-  filter: saturate(0.92) contrast(1.02);
+  /* Фильтра здесь нет намеренно: обработка запечена в сам файл скриптом
+     tools/crop-portrait.ps1. Телефону не приходится пересчитывать её при отрисовке,
+     а цвет фона вокруг кадра совпадает с кадром без подгонки. */
 }
 
 /* --- Содержимое --- */
@@ -294,11 +263,11 @@ const base = useRuntimeConfig().app.baseURL
 
 @media (min-width: 901px) {
   .hero__inner {
-    padding-block-start: calc(var(--header-h) + var(--s-6));
+    padding-block-start: calc(var(--header-h) + var(--s-10));
   }
 
   .hero__creds {
-    margin-block-start: var(--s-6);
+    margin-block-start: var(--s-10);
   }
 }
 
@@ -328,22 +297,13 @@ const base = useRuntimeConfig().app.baseURL
     --hero-h: var(--app-height, 100svh);
     /* Полоса под подпись между шапкой и фотографией */
     --hero-caption: 2.4rem;
-    --hero-text-reserve: 17rem;
-    --hero-photo-h: min(
-      calc(100vw / var(--photo-ar)),
-      calc(var(--hero-h) - var(--header-h) - var(--hero-caption) - var(--hero-text-reserve))
+    --hero-text-reserve: 18rem;
+    /* Потолок полосы: сколько остаётся от высоты экрана после шапки, подписи и
+       запаса под текст. Запас измерен по самому тесному случаю (360×640, регалии
+       в три строки) — благодаря ему кнопки не могут оказаться за нижним краем */
+    --hero-photo-cap: calc(
+      var(--hero-h) - var(--header-h) - var(--hero-caption) - var(--hero-text-reserve)
     );
-
-    /*
-      Пересечение — сразу под фотографией, у правого края страницы.
-      Точку отметил Марк на скриншоте телефона.
-
-      Вертикаль уведена ПРАВЕЕ края содержимого, а не поставлена на него: иначе луч
-      идёт прямо по чёрточкам бургера сверху и по кнопке WhatsApp снизу. Сейчас он
-      проходит правее и того, и другого — примерно 9 px зазора с каждым.
-    */
-    --cross-x: calc(100% - var(--page-pad) + 0.55rem);
-    --cross-y: calc(var(--header-h) + var(--hero-caption) + var(--hero-photo-h) + 1.05rem);
 
     display: flex;
     flex-direction: column;
@@ -371,23 +331,19 @@ const base = useRuntimeConfig().app.baseURL
     margin: 0;
   }
 
-  /* Светлая разметка на телефоне видна везде: половин здесь нет, фон сплошь чернильный */
-  .hero__rules--light {
-    clip-path: none;
-  }
-
-  .hero__rules--dark {
-    display: none;
-  }
-
-  /* Полоса с фотографией. Сжиматься может (на совсем низких экранах), расти — нет */
+  /*
+    Полоса с фотографией во всю ширину. Высота выводится из пропорции самого кадра,
+    поэтому по бокам ничего не остаётся. На низких экранах высота упирается в потолок,
+    кадр уменьшается и центрируется — но не обрезается: вокруг него тот же цвет,
+    что и его собственный фон, так что полей не видно.
+  */
   .hero__photo {
     position: static;
     z-index: 1;
+    flex: 0 0 auto;
     inline-size: 100%;
-    flex: 0 1 var(--hero-photo-h);
-    max-block-size: var(--hero-photo-h);
-    /* Здесь фон нужен: вокруг чернильная секция, а поля кадра должны совпадать с ним */
+    aspect-ratio: var(--photo-ar);
+    max-block-size: var(--hero-photo-cap);
     background: var(--photo-bg);
   }
 
@@ -419,8 +375,10 @@ const base = useRuntimeConfig().app.baseURL
     font-size: clamp(1.125rem, 5.2vw, 1.5rem);
   }
 
+  /* Та же отбивка, что на десктопе: регалии и кнопки отделены от специализации */
   .hero__creds {
     font-size: 0.9375rem;
+    margin-block-start: var(--s-5);
   }
 
   /* Кнопки в строку: WhatsApp встаёт справа от записи, а не под ней */

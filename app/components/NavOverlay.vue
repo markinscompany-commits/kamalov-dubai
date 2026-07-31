@@ -15,9 +15,11 @@ import { locales, type Locale } from '~/i18n/messages'
 
 interface Props {
   open: boolean
+  /** Шапка сейчас в сжатом состоянии — верхняя строка меню должна повторить её высоту */
+  compact?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { compact: false })
 const emit = defineEmits<{ close: [] }>()
 
 const { m, locale, setLocale } = useLocale()
@@ -39,20 +41,15 @@ function pick(code: Locale) {
 /**
  * Блокировка прокрутки под меню.
  *
- * Полосу прокрутки нужно компенсировать отступом: без этого на десктопе страница
- * при открытии меню прыгает вправо на её ширину, и это читается как рывок.
+ * Отступ под полосу прокрутки здесь НЕ добавляется — за это отвечает
+ * `scrollbar-gutter: stable` в base.css. Разница принципиальная: отступ на <body>
+ * закреплённые элементы не двигает, поэтому шапка при открытии меню всё равно
+ * уезжала вправо на ширину полосы. Зарезервированное место полосы решает это разом:
+ * ширина окна не меняется вообще, и ничего не прыгает.
  */
 function lockScroll(on: boolean) {
   if (typeof document === 'undefined') return
-  const body = document.body
-  if (on) {
-    const gap = window.innerWidth - document.documentElement.clientWidth
-    body.style.overflow = 'hidden'
-    if (gap > 0) body.style.paddingInlineEnd = `${gap}px`
-  } else {
-    body.style.overflow = ''
-    body.style.paddingInlineEnd = ''
-  }
+  document.body.style.overflow = on ? 'hidden' : ''
 }
 
 watch(
@@ -79,7 +76,14 @@ onBeforeUnmount(() => {
   -->
   <Teleport to="body">
     <Transition name="nav">
-      <div v-if="open" class="nav" role="dialog" aria-modal="true" :aria-label="m.nav.sections">
+      <div
+        v-if="open"
+        class="nav"
+        :class="{ 'nav--compact': compact }"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="m.nav.sections"
+      >
         <!-- Повтор шапки: логотип, языки, крестик на месте бургера -->
         <div class="nav__top page">
           <a class="nav__logo brackets" href="#top" :aria-label="m.nav.toTop" @click="emit('close')">
@@ -152,7 +156,10 @@ onBeforeUnmount(() => {
   position: fixed;
   inset: 0;
   z-index: 120;
-  background: var(--paper-deep);
+  /* Слегка прозрачное полотно с размытием: страница под меню угадывается, но не
+     мешает читать (правка Марка) */
+  background: color-mix(in srgb, var(--paper-deep) 82%, transparent);
+  backdrop-filter: blur(22px) saturate(1.15);
   display: flex;
   flex-direction: column;
   /* Если пунктов станет больше и они перестанут помещаться, меню прокрутится,
@@ -173,6 +180,19 @@ onBeforeUnmount(() => {
   gap: var(--s-6);
   block-size: var(--header-h);
   color: var(--ink);
+}
+
+/* Шапка была сжата после прокрутки — верхняя строка меню повторяет её высоту
+   один в один, иначе логотип и крестик прыгают в момент открытия */
+.nav--compact .nav__top {
+  block-size: var(--header-h-scrolled);
+}
+
+@media (max-width: 900px) {
+  /* На телефоне высота шапки не меняется вообще */
+  .nav--compact .nav__top {
+    block-size: var(--header-h);
+  }
 }
 
 /* Логотип один в один как в шапке, включая сдвиг на ширину уголка:
@@ -204,40 +224,18 @@ onBeforeUnmount(() => {
   color: var(--ink-faint);
 }
 
+/* Подчёркивания у языков нет (правка Марка): выбранный отличается только цветом */
 .nav__lang-btn {
-  position: relative;
   font: inherit;
   letter-spacing: inherit;
   text-transform: inherit;
   color: var(--ink-faint);
-  padding-block-end: 3px;
   transition: color var(--dur-fast) var(--ease-out);
-}
-
-/* Выбранный язык подчёркнут тем же пунктиром, что вся разметка */
-.nav__lang-btn::after {
-  content: '';
-  position: absolute;
-  inset-inline: 0;
-  inset-block-end: 0;
-  block-size: 1px;
-  background-image: repeating-linear-gradient(
-    to right,
-    currentColor 0 var(--dash-on),
-    transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))
-  );
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path var(--dur-base) var(--ease-out);
 }
 
 .nav__lang-btn--on,
 .nav__lang-btn:hover {
   color: var(--ink);
-}
-
-.nav__lang-btn--on::after,
-.nav__lang-btn:hover::after {
-  clip-path: inset(0);
 }
 
 /* --- Крестик: стоит ровно там, где был бургер --- */

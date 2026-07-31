@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const { swapping, restoreLocale } = useLocale()
+const { restoreLocale } = useLocale()
+const { boot } = usePreloader()
 
 /**
  * Фиксируем реальную высоту окна в переменной --app-height.
@@ -30,7 +31,9 @@ onMounted(() => {
   updateAppHeight()
   setTimeout(updateAppHeight, 200)
   window.addEventListener('orientationchange', onRotate)
+  // Язык вспоминаем ДО того, как уйдёт заставка: подмена текстов происходит за ней
   restoreLocale()
+  boot()
 })
 
 onBeforeUnmount(() => {
@@ -40,30 +43,19 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <!--
-    Обёртка гасит страницу на время смены языка. Меняем только прозрачность:
-    transform и filter на родителе сделали бы его точкой отсчёта для закреплённой
-    шапки, и она поехала бы вместе со страницей.
-  -->
-  <div class="app locale-swap" :class="{ 'locale-swap--out': swapping }">
+  <div class="app">
     <SiteHeader />
     <NuxtPage />
     <GrainOverlay />
+    <AppPreloader />
   </div>
 </template>
 
 <style>
-.locale-swap {
-  transition: opacity 200ms var(--ease-out);
-}
-
-.locale-swap--out {
-  opacity: 0.14;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .locale-swap--out {
-    opacity: 1;
-  }
+/* Точка отсчёта для слоя зерна: на телефоне он перестаёт быть закреплённым и
+   растягивается на всю высоту страницы. position: relative закреплённой шапке
+   не мешает — её сбивает только transform */
+.app {
+  position: relative;
 }
 </style>
