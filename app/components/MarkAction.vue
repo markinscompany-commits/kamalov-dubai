@@ -1,16 +1,14 @@
 <!--
   Кнопка. Два вида:
-  · primary — сплошная заливка чернилами, основное действие «Записаться»
-  · ghost   — прозрачная, второстепенное действие
-
-  Эффект у обеих один: в покое видны четыре угловые скобки, при наведении они
-  вытягиваются и замыкаются в рамку. Рамка ПУНКТИРНАЯ — тем же шагом, что и вся
-  разметка сайта, иначе кнопка выпадает из общего языка.
-
-  У primary скобки идут снаружи с отступом: поверх тёмной заливки они бы не читались.
+  · primary — сплошная заливка, основное действие «Записаться»
+  · ghost   — прозрачная: в покое четыре угловые скобки, при наведении они вытягиваются
+              и замыкаются в сплошную рамку
 
   Длина скобок вынесена в зарегистрированное свойство --bracket — только так её
   можно анимировать.
+
+  Цвета берутся из --action-* : на светлой половине они одни, на тёмной другие,
+  и переопределяются снаружи, а не отдельным вариантом компонента.
 -->
 <script setup lang="ts">
 interface Props {
@@ -32,13 +30,18 @@ withDefaults(defineProps<Props>(), {
     class="action"
     :class="`action--${variant}`"
   >
-    <span class="action__frame" aria-hidden="true" />
+    <span v-if="variant === 'ghost'" class="action__frame" aria-hidden="true" />
     <span class="action__label"><slot /></span>
   </component>
 </template>
 
 <style scoped>
 .action {
+  --action-fill: var(--ink);
+  --action-fill-hover: var(--plum-deep);
+  --action-on-fill: var(--paper);
+  --action-line: var(--ink);
+
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -62,66 +65,47 @@ withDefaults(defineProps<Props>(), {
   z-index: 1;
 }
 
-/* --- Уголки → пунктирная рамка --- */
+/* --- Основное действие --- */
+
+.action--primary {
+  background: var(--action-fill);
+  color: var(--action-on-fill);
+}
+
+.action--primary:hover {
+  background: var(--action-fill-hover);
+}
+
+/* --- Второстепенное: уголки → сплошная рамка --- */
+
+.action--ghost {
+  color: var(--action-line);
+}
 
 .action__frame {
   position: absolute;
+  inset: 0;
   --bracket: 14px;
-  --bracket-color: color-mix(in srgb, var(--ink) 45%, transparent);
-  --dash-x: repeating-linear-gradient(
-    to right,
-    var(--bracket-color) 0 var(--dash-on),
-    transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))
-  );
-  --dash-y: repeating-linear-gradient(
-    to bottom,
-    var(--bracket-color) 0 var(--dash-on),
-    transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))
-  );
+  --bracket-color: color-mix(in srgb, var(--action-line) 45%, transparent);
+  --c: var(--bracket-color);
   background:
-    var(--dash-x) left top / var(--bracket) 1px no-repeat,
-    var(--dash-y) left top / 1px var(--bracket) no-repeat,
-    var(--dash-x) right top / var(--bracket) 1px no-repeat,
-    var(--dash-y) right top / 1px var(--bracket) no-repeat,
-    var(--dash-x) left bottom / var(--bracket) 1px no-repeat,
-    var(--dash-y) left bottom / 1px var(--bracket) no-repeat,
-    var(--dash-x) right bottom / var(--bracket) 1px no-repeat,
-    var(--dash-y) right bottom / 1px var(--bracket) no-repeat;
+    linear-gradient(var(--c), var(--c)) left top / var(--bracket) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) left top / 1px var(--bracket) no-repeat,
+    linear-gradient(var(--c), var(--c)) right top / var(--bracket) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) right top / 1px var(--bracket) no-repeat,
+    linear-gradient(var(--c), var(--c)) left bottom / var(--bracket) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) left bottom / 1px var(--bracket) no-repeat,
+    linear-gradient(var(--c), var(--c)) right bottom / var(--bracket) 1px no-repeat,
+    linear-gradient(var(--c), var(--c)) right bottom / 1px var(--bracket) no-repeat;
   transition:
     --bracket var(--dur-base) var(--ease-out),
     --bracket-color var(--dur-base) var(--ease-out);
 }
 
-.action:hover .action__frame,
-.action:focus-visible .action__frame {
+.action--ghost:hover .action__frame,
+.action--ghost:focus-visible .action__frame {
   --bracket: 50%;
-  --bracket-color: var(--ink);
-}
-
-/* --- Основное действие --- */
-
-.action--primary {
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.action--primary:hover {
-  background: var(--plum-deep);
-}
-
-/* Скобки снаружи: на тёмной заливке они бы пропали */
-.action--primary .action__frame {
-  inset: -7px;
-}
-
-/* --- Второстепенное --- */
-
-.action--ghost {
-  color: var(--ink);
-}
-
-.action--ghost .action__frame {
-  inset: 0;
+  --bracket-color: var(--action-line);
 }
 
 /* На узком экране длинная подпись важнее, чем строка в одну линию */

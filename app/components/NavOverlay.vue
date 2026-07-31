@@ -2,6 +2,8 @@
   Меню разделов. Открывается бургером в шапке.
   Оформлено в языке сайта: пунктирные разделители, номера разделов моноширинным,
   названия — крупной антиквой.
+
+  Крестик закрытия — свой, внутри меню: бургер в шапке под ним не виден.
 -->
 <script setup lang="ts">
 interface Props {
@@ -15,7 +17,7 @@ const emit = defineEmits<{ close: [] }>()
 // TODO: подставить реальный номер клиники, когда клиника его передаст
 const whatsapp = 'https://wa.me/79285030807'
 
-const panel = ref<HTMLElement | null>(null)
+const closeBtn = ref<HTMLElement | null>(null)
 
 function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape') emit('close')
@@ -27,7 +29,7 @@ watch(
     if (typeof document === 'undefined') return
     // Пока меню открыто, страница под ним не прокручивается
     document.body.style.overflow = isOpen ? 'hidden' : ''
-    if (isOpen) nextTick(() => panel.value?.focus())
+    if (isOpen) nextTick(() => closeBtn.value?.focus())
   },
 )
 
@@ -41,7 +43,14 @@ onBeforeUnmount(() => {
 <template>
   <Transition name="nav">
     <div v-if="open" class="nav" role="dialog" aria-modal="true" aria-label="Разделы страницы">
-      <div ref="panel" class="nav__panel page" tabindex="-1">
+      <button ref="closeBtn" class="nav__close" type="button" aria-label="Закрыть меню" @click="emit('close')">
+        <span class="nav__close-box" aria-hidden="true">
+          <span class="nav__close-line" />
+          <span class="nav__close-line" />
+        </span>
+      </button>
+
+      <div class="nav__panel page">
         <ul class="nav__list">
           <li v-for="(link, i) in links" :key="link.href" class="nav__item">
             <DashedRule orientation="h" pos="0" :delay="120 + i * 70" faint />
@@ -62,11 +71,11 @@ onBeforeUnmount(() => {
 
         <div class="nav__foot">
           <div class="mono nav__lang">
+            <button class="nav__lang-btn" type="button">En</button>
+            <span aria-hidden="true">/</span>
             <button class="nav__lang-btn nav__lang-btn--on" type="button" aria-current="true">
               Ru
             </button>
-            <span aria-hidden="true">/</span>
-            <button class="nav__lang-btn" type="button">En</button>
           </div>
           <p class="mono nav__place">Дубай · Dubai London Hospital</p>
         </div>
@@ -85,10 +94,61 @@ onBeforeUnmount(() => {
   align-items: center;
 }
 
+/* --- Крестик --- */
+
+.nav__close {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: calc((var(--header-h) - 2.75rem) / 2);
+  inset-inline-end: calc(var(--page-pad) - 0.6rem);
+  display: grid;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  color: var(--ink);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.nav__close-box {
+  position: relative;
+  inline-size: 22px;
+  block-size: 22px;
+}
+
+.nav__close-line {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline: 0;
+  block-size: 1px;
+  background: currentColor;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.nav__close-line:first-child {
+  transform: rotate(45deg);
+}
+
+.nav__close-line:last-child {
+  transform: rotate(-45deg);
+}
+
+.nav__close:hover {
+  color: var(--plum-deep);
+}
+
+.nav__close:hover .nav__close-line:first-child {
+  transform: rotate(135deg);
+}
+
+.nav__close:hover .nav__close-line:last-child {
+  transform: rotate(45deg);
+}
+
+/* --- Список --- */
+
 .nav__panel {
   inline-size: 100%;
   padding-block: var(--header-h) var(--s-8);
-  outline: none;
 }
 
 .nav__list {

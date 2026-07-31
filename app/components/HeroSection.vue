@@ -4,30 +4,22 @@
   Обязательные элементы (бриф + договор, п. 1.3): имя врача, специализация, фото,
   краткое описание опыта, кнопка «Записаться на консультацию», кнопка WhatsApp.
 
-  Композиция: экран ровно пополам. Слева — тёплая бумага и текст, справа — фотография
-  во всю высоту на белом фоне. Граница чёткая, без растворения: половины контрастируют.
-  Разметка проходит поверх снимка.
+  Композиция: экран ровно пополам. Слева чернильная половина со светлым текстом,
+  справа фотография на светлом фоне. Граница чёткая. Разметка — две горизонтальные
+  линии на весь экран: на тёмной половине светлые, на светлой тёмные. Больше линий
+  на первом экране нет намеренно, иначе они превращаются в шум.
 
   Все формулировки — факты. Ни одной превосходной степени и ни одного обещания
   результата: см. compliance/content-rules.md.
 -->
 <script setup lang="ts">
-const services = [
-  { label: 'Ринопластика', href: '#rhinoplasty' },
-  { label: 'Септопластика', href: '#septoplasty' },
-]
+// Два основных направления. Это не ссылки, а просто подписи: разделы ниже по странице.
+const services = ['Ринопластика', 'Септопластика']
 
-/**
- * Разметка рисуется двумя одинаковыми слоями: тёмный лежит под фотографией и виден
- * на бумаге, светлый лежит поверх фотографии и виден только на ней. Линии выглядят
- * непрерывными и читаются и на светлом, и на тёмном.
- */
+// Две линии на весь экран. Каждая рисуется дважды — своим цветом на каждой половине.
 const rules = [
-  { orientation: 'v' as const, pos: '34%', delay: 500 },
-  { orientation: 'v' as const, pos: '68%', delay: 650, faint: true },
-  { orientation: 'v' as const, pos: '86%', delay: 780, faint: true },
-  { orientation: 'h' as const, pos: '26%', delay: 850, faint: true },
-  { orientation: 'h' as const, pos: '78%', delay: 980, faint: true },
+  { pos: '27%', delay: 700 },
+  { pos: '90%', delay: 900 },
 ]
 
 // TODO: подставить реальный номер клиники, когда клиника его передаст
@@ -39,10 +31,9 @@ const base = useRuntimeConfig().app.baseURL
 
 <template>
   <section id="top" class="hero">
-    <!-- Тёмная разметка: под фотографией, видна на бумаге -->
-    <div class="hero__rules hero__rules--ink" aria-hidden="true">
-      <DashedRule v-for="(r, i) in rules" :key="`ink-${i}`" v-bind="r" />
-      <span class="hero__node" />
+    <!-- Разметка на тёмной половине — светлая -->
+    <div class="hero__rules hero__rules--on-dark" aria-hidden="true">
+      <DashedRule v-for="(r, i) in rules" :key="`d-${i}`" orientation="h" v-bind="r" />
     </div>
 
     <!--
@@ -69,9 +60,9 @@ const base = useRuntimeConfig().app.baseURL
       </picture>
     </div>
 
-    <!-- Светлая разметка: поверх фотографии, обрезана по её половине -->
-    <div class="hero__rules hero__rules--light" aria-hidden="true">
-      <DashedRule v-for="(r, i) in rules" :key="`light-${i}`" v-bind="r" />
+    <!-- Та же разметка на светлой половине — тёмная -->
+    <div class="hero__rules hero__rules--on-light" aria-hidden="true">
+      <DashedRule v-for="(r, i) in rules" :key="`l-${i}`" orientation="h" v-bind="r" />
     </div>
 
     <div class="page hero__inner">
@@ -88,18 +79,11 @@ const base = useRuntimeConfig().app.baseURL
         </p>
 
         <p class="hero__creds rise" style="--i: 3">
-          Кандидат медицинских наук, 30 лет практики. Лицензия Управления здравоохранения
-          Дубая, член Европейского общества ринопластов.
+          Кандидат медицинских наук, 30 лет практики, член Европейского общества ринопластов.
         </p>
 
         <ul class="hero__services rise" style="--i: 4">
-          <li v-for="service in services" :key="service.href" class="hero__service">
-            <DashedRule orientation="h" pos="0" :delay="1050" faint />
-            <a class="hero__service-link" :href="service.href">
-              <span class="hero__service-label">{{ service.label }}</span>
-              <span class="mono hero__service-arrow" aria-hidden="true">↓</span>
-            </a>
-          </li>
+          <li v-for="service in services" :key="service">{{ service }}</li>
         </ul>
 
         <div class="hero__actions rise" style="--i: 5">
@@ -112,8 +96,7 @@ const base = useRuntimeConfig().app.baseURL
     <!--
       Подсказка лежит на фотографии и вынесена прямым потомком секции: смешивание
       видит фон только внутри своего контекста наложения, а его задаёт .hero.
-      Режим «разница» сам инвертирует подсказку под любым пикселем — на светлом фоне
-      она тёмная, на чёрной водолазке светлая.
+      Режим «разница» сам инвертирует её под любым пикселем.
     -->
     <p class="mono hero__scroll blend-invert" aria-hidden="true">Прокрутите ↓</p>
   </section>
@@ -125,18 +108,17 @@ const base = useRuntimeConfig().app.baseURL
   block-size: 100svh;
   min-block-size: 34rem;
   overflow: hidden;
-  /* Замыкаем смешивание на секции: .blend-invert внутри должен видеть фотографию
-     и фон половин, но не должен доставать до остальной страницы */
+  /* Замыкаем смешивание на секции */
   isolation: isolate;
-  /* Левая половина чуть плотнее по тону — так она отделяется от белого поля снимка */
+  /* Слева чернильная половина, справа поле под фотографию */
   background: linear-gradient(
     to right,
-    var(--paper-deep) 0 var(--photo-start),
-    var(--paper-raised) var(--photo-start) 100%
+    var(--ink) 0 var(--photo-start),
+    #efe7e2 var(--photo-start) 100%
   );
 }
 
-/* --- Разметка --- */
+/* --- Разметка: по одной паре линий на половину --- */
 
 .hero__rules {
   position: absolute;
@@ -144,42 +126,19 @@ const base = useRuntimeConfig().app.baseURL
   pointer-events: none;
 }
 
-.hero__rules--ink {
+.hero__rules--on-dark {
   z-index: 0;
+  --rule: color-mix(in srgb, var(--paper) 26%, transparent);
+  clip-path: inset(0 calc(100% - var(--photo-start)) 0 0);
 }
 
-.hero__rules--light {
+.hero__rules--on-light {
   z-index: 2;
-  /* Линии этого слоя светлые и живут только на половине со снимком */
-  --rule: color-mix(in srgb, var(--paper) 70%, transparent);
-  --rule-faint: color-mix(in srgb, var(--paper) 42%, transparent);
-  /* Тёмная кромка под светлой линией: так линия читается и на тёмном пиджаке,
-     и на белом фоне снимка */
-  filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--ink) 30%, transparent));
+  --rule: color-mix(in srgb, var(--ink) 24%, transparent);
   clip-path: inset(0 0 0 var(--photo-start));
 }
 
-/* Узел на пересечении — маркер измерения. Их должно быть мало. */
-.hero__node {
-  position: absolute;
-  inline-size: 9px;
-  block-size: 9px;
-  inset-inline-start: calc(34% - 4px);
-  inset-block-start: calc(26% - 4px);
-  opacity: 0;
-  animation: node-in var(--dur-base) var(--ease-out) 1400ms forwards;
-  background:
-    linear-gradient(var(--rule), var(--rule)) center / 100% 1px no-repeat,
-    linear-gradient(var(--rule), var(--rule)) center / 1px 100% no-repeat;
-}
-
-@keyframes node-in {
-  to {
-    opacity: 1;
-  }
-}
-
-/* --- Фотография: ровно правая половина, без растворения краёв --- */
+/* --- Фотография: ровно правая половина, край чёткий --- */
 
 .hero__photo {
   position: absolute;
@@ -187,7 +146,7 @@ const base = useRuntimeConfig().app.baseURL
   inset-block: 0;
   inset-inline-end: 0;
   inline-size: calc(100% - var(--photo-start));
-  /* Подложка в тон фона кадра: пока картинка грузится, половина не мигает белым */
+  /* Подложка в тон фона кадра: пока картинка грузится, половина не мигает */
   background: #efe7e2;
 }
 
@@ -200,10 +159,9 @@ const base = useRuntimeConfig().app.baseURL
 
 .hero__photo img {
   object-fit: cover;
-  /* Кадр уже обрезан под пропорцию половины, поэтому подрезается он совсем чуть-чуть.
+  /* Кадр уже обрезан под пропорцию половины, подрезается он совсем чуть-чуть.
      Смещение вверх — на случай широких и низких окон, чтобы голова не ушла за край. */
   object-position: 50% 28%;
-  /* Лёгкая рука: снимок уже снят в нужной температуре, только чуть приглушаем */
   filter: saturate(0.92) contrast(1.02);
 }
 
@@ -222,16 +180,18 @@ const base = useRuntimeConfig().app.baseURL
 .hero__text {
   min-inline-size: 0;
   max-inline-size: min(34rem, 44%);
-  align-self: center;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: clamp(var(--s-3), 1.5vh, var(--s-5, 1.25rem));
+  gap: clamp(var(--s-3), 1.5vh, 1.25rem);
   padding-block: var(--s-8);
+  /* Текст лежит на чернильной половине */
+  color: var(--paper);
 }
 
 .hero__eyebrow {
   margin: 0;
+  color: color-mix(in srgb, var(--paper) 58%, transparent);
 }
 
 .hero__title {
@@ -244,12 +204,13 @@ const base = useRuntimeConfig().app.baseURL
   font-size: var(--fs-h2);
   font-weight: 300;
   line-height: 1.12;
-  color: var(--ink-soft);
+  color: color-mix(in srgb, var(--paper) 78%, transparent);
 }
 
 .hero__spec em {
   font-style: italic;
-  color: var(--plum);
+  /* Обычный сливовый на чернильном фоне сливается — берём осветлённый */
+  color: var(--plum-light);
 }
 
 /* Регалии — тот же кегль, что абзац про консультацию во втором блоке */
@@ -257,51 +218,24 @@ const base = useRuntimeConfig().app.baseURL
   inline-size: 100%;
   font-size: var(--fs-body);
   line-height: 1.55;
-  color: var(--ink-soft);
+  color: color-mix(in srgb, var(--paper) 66%, transparent);
   max-inline-size: min(44ch, 100%);
 }
 
-/* --- Услуги: два крупных пункта --- */
+/* --- Два направления: просто подписи, не ссылки --- */
 
 .hero__services {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
   margin: 0;
+  margin-block-start: var(--s-2);
   padding: 0;
   list-style: none;
-  margin-block-start: var(--s-2);
-}
-
-.hero__service {
-  position: relative;
-}
-
-.hero__service-link {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s-4);
-  padding-block: clamp(var(--s-2), 1.2vh, var(--s-4));
   font-family: var(--font-display);
   font-weight: 300;
   font-size: var(--fs-service);
-  line-height: 1.15;
-  transition: color var(--dur-fast) var(--ease-out);
-}
-
-.hero__service-arrow {
-  color: var(--ink-faint);
-  transform: rotate(-90deg);
-  transition:
-    color var(--dur-fast) var(--ease-out),
-    transform var(--dur-base) var(--ease-out);
-}
-
-.hero__service-link:hover {
-  color: var(--plum-deep);
-}
-
-.hero__service-link:hover .hero__service-arrow {
-  color: var(--plum);
-  transform: rotate(0deg);
+  line-height: 1.2;
 }
 
 .hero__actions {
@@ -309,6 +243,14 @@ const base = useRuntimeConfig().app.baseURL
   flex-wrap: wrap;
   gap: var(--s-4);
   margin-block-start: var(--s-4);
+}
+
+/* Кнопки стоят на тёмном — заливка и линии становятся светлыми */
+.hero__actions :deep(.action) {
+  --action-fill: var(--paper);
+  --action-fill-hover: var(--plum-light);
+  --action-on-fill: var(--ink);
+  --action-line: var(--paper);
 }
 
 /* --- Подсказка о прокрутке --- */
@@ -349,17 +291,17 @@ const base = useRuntimeConfig().app.baseURL
     font-size: clamp(1.25rem, 2vw, 1.625rem);
   }
 
-  .hero__service-link {
+  .hero__services {
     font-size: clamp(1.25rem, 2vw, 1.75rem);
   }
 }
 
-/* --- Планшеты и телефоны: фотография сверху во всю ширину --- */
+/* --- Планшеты и телефоны: фотография полосой сверху, всё остальное на тёмном --- */
 
 @media (max-width: 900px) {
   .hero {
     --photo-start: 0%;
-    background: var(--paper-deep);
+    background: var(--ink);
   }
 
   .hero__photo {
@@ -373,8 +315,12 @@ const base = useRuntimeConfig().app.baseURL
     object-position: 50% 24%;
   }
 
-  .hero__rules--light {
-    clip-path: inset(0 0 62% 0);
+  .hero__rules--on-dark {
+    clip-path: inset(38svh 0 0 0);
+  }
+
+  .hero__rules--on-light {
+    clip-path: inset(0 0 calc(100% - 38svh) 0);
   }
 
   .hero__inner {
@@ -383,7 +329,6 @@ const base = useRuntimeConfig().app.baseURL
 
   .hero__text {
     max-inline-size: 100%;
-    align-self: start;
     gap: var(--s-2);
     padding-block: 0 var(--s-3);
   }
@@ -401,12 +346,8 @@ const base = useRuntimeConfig().app.baseURL
   }
 
   .hero__services {
+    font-size: clamp(1.25rem, 5.8vw, 1.625rem);
     margin-block-start: var(--s-1);
-  }
-
-  .hero__service-link {
-    font-size: clamp(1.125rem, 5.4vw, 1.5rem);
-    padding-block: var(--s-2);
   }
 
   .hero__actions {
@@ -418,10 +359,6 @@ const base = useRuntimeConfig().app.baseURL
   }
 
   .hero__scroll {
-    display: none;
-  }
-
-  .hero__node {
     display: none;
   }
 }
