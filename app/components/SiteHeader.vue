@@ -12,16 +12,12 @@
   Логотип латиницей, чтобы не повторять «Эльдар Камалов» рядом с заголовком первого экрана.
 -->
 <script setup lang="ts">
+// service: true — пункт, который остаётся в шапке после прокрутки
 const links = [
-  { label: 'О докторе', href: '#doctor' },
-  { label: 'Ринопластика', href: '#rhinoplasty' },
-  { label: 'Септопластика', href: '#septoplasty' },
-  { label: 'Контакты', href: '#contacts' },
-]
-
-const services = [
-  { label: 'Ринопластика', href: '#rhinoplasty' },
-  { label: 'Септопластика', href: '#septoplasty' },
+  { label: 'О докторе', href: '#doctor', service: false },
+  { label: 'Ринопластика', href: '#rhinoplasty', service: true },
+  { label: 'Септопластика', href: '#septoplasty', service: true },
+  { label: 'Контакты', href: '#contacts', service: false },
 ]
 
 // TODO: подставить реальный номер клиники, когда клиника его передаст
@@ -65,21 +61,22 @@ onBeforeUnmount(() => {
           <span class="header__logo-name">Kamalov</span>
         </a>
 
-        <!-- Разделы и услуги делят одну ячейку: после прокрутки одно сменяет другое,
-             и ширина шапки при этом не скачет -->
-        <div class="header__nav-swap">
-          <nav class="header__nav mono" aria-label="Разделы страницы">
-            <a v-for="item in links" :key="item.href" class="header__link" :href="item.href">
-              {{ item.label }}
-            </a>
-          </nav>
-
-          <nav class="header__services mono" aria-label="Услуги">
-            <a v-for="item in services" :key="item.href" class="header__link" :href="item.href">
-              {{ item.label }}
-            </a>
-          </nav>
-        </div>
+        <!--
+          Один и тот же список в обоих состояниях. После прокрутки «О докторе» и «Контакты»
+          гаснут, но МЕСТО за собой сохраняют — поэтому «Ринопластика» и «Септопластика»
+          остаются ровно там же, где стояли до прокрутки, и не съезжают влево.
+        -->
+        <nav class="header__nav mono" aria-label="Разделы страницы">
+          <a
+            v-for="item in links"
+            :key="item.href"
+            class="header__link"
+            :class="{ 'header__link--secondary': !item.service }"
+            :href="item.href"
+          >
+            {{ item.label }}
+          </a>
+        </nav>
       </div>
 
       <!-- Правая группа: лежит на светлой половине со снимком, поэтому тёмная -->
@@ -227,44 +224,38 @@ onBeforeUnmount(() => {
 
 /* --- Разделы и услуги: занимают одну и ту же ячейку --- */
 
-.header__nav-swap {
-  display: grid;
-  align-items: center;
-  justify-items: start;
-  min-inline-size: 0;
-}
-
-.header__nav-swap > * {
-  grid-area: 1 / 1;
-}
-
-.header__nav,
-.header__services {
+.header__nav {
   display: flex;
   gap: clamp(var(--s-4), 2vw, var(--s-8));
-  transition: opacity var(--dur-fast) var(--ease-out);
+  min-inline-size: 0;
+  /* Перебиваем цвет класса .mono: иначе ссылки наследуют приглушённый чернильный
+     от него, а не светлый от половины шапки — и на тёмном фоне гаснут */
+  color: inherit;
 }
 
-.header__services {
+/* После прокрутки второстепенные пункты гаснут, но место сохраняют:
+   услуги остаются ровно на своих позициях */
+.header__link--secondary {
+  transition:
+    opacity var(--dur-base) var(--ease-out),
+    visibility var(--dur-base);
+}
+
+.header--scrolled .header__link--secondary {
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-}
-
-.header--scrolled .header__nav {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.header--scrolled .header__services {
-  opacity: 1;
-  pointer-events: auto;
 }
 
 .header__link {
   position: relative;
   padding-block-end: 3px;
   color: inherit;
-  opacity: 0.72;
+  /* Без приглушения, крупнее и плотнее обычного моношрифта: на чернильном фоне
+     тонкий приглушённый текст переставал читаться */
+  opacity: 1;
+  font-size: 0.72rem;
+  font-weight: 500;
   white-space: nowrap;
   transition: opacity var(--dur-fast) var(--ease-out);
 }
@@ -308,6 +299,8 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: var(--s-2);
+  /* Та же причина, что у разделов: .mono задаёт свой цвет */
+  color: inherit;
   transition: opacity var(--dur-fast) var(--ease-out);
 }
 
@@ -405,22 +398,46 @@ onBeforeUnmount(() => {
 
 /* --- Узкие экраны --- */
 
-/* Разделы строкой помещаются только на широком экране: они живут в левой половине,
-   а она вдвое уже страницы. На остальных ширинах их заменяет бургер. */
+/*
+  Вверху страницы разделы строкой живут в левой половине, а она вдвое уже страницы —
+  все четыре помещаются только на широком экране. После прокрутки половин уже нет
+  (под шапкой сплошная бумага) и остаются всего два пункта, поэтому там строка
+  показывается и на средних ширинах, только без пустого места от погашенных пунктов.
+*/
 @media (max-width: 1439px) {
+  /* display: none, а не прозрачность — иначе невидимая строка продолжает занимать
+     место и распирает шапку на узком экране */
   .header__nav {
+    display: none;
+  }
+
+  .header--scrolled .header__nav {
+    display: flex;
+  }
+
+  .header--scrolled .header__link--secondary {
+    display: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .header--scrolled .header__nav {
     display: none;
   }
 }
 
 @media (max-width: 900px) {
-  .header__services {
-    display: none;
+  /* На телефоне первый экран не делится пополам: под шапкой чернильная полоса,
+     фотография начинается ниже. Значит вся шапка светлая — до прокрутки. */
+  .header__left,
+  .header__right {
+    color: var(--paper);
   }
 
-  /* На телефоне первого экрана нет деления пополам: сверху лежит светлая полоса
-     со снимком, и шапка целиком стоит на светлом — значит чернильная */
-  .header__left {
+  .header--scrolled .header__left,
+  .header--scrolled .header__right,
+  .header--menu .header__left,
+  .header--menu .header__right {
     color: var(--ink);
   }
 }

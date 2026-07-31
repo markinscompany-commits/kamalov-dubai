@@ -5,6 +5,10 @@
 -->
 <template>
   <section class="manifest">
+    <!-- Та же сквозная сетка, что и в первом экране: вертикали стоят на тех же долях
+         ширины, поэтому при прокрутке они продолжают линии сверху -->
+    <GridLines class="manifest__grid" :horizontals="['0%', '100%']" />
+
     <div class="page manifest__inner">
       <div class="manifest__side">
         <p class="mono">[02] Подход</p>
@@ -32,7 +36,13 @@
   background: var(--paper-deep);
 }
 
+.manifest__grid {
+  z-index: 0;
+}
+
 .manifest__inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 0.25fr) minmax(0, 1fr);
   gap: var(--s-8);

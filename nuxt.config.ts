@@ -12,7 +12,9 @@ export default defineNuxtConfig({
     families: [
       { name: 'Cormorant Garamond', provider: 'google', weights: [300, 400], styles: ['normal', 'italic'] },
       { name: 'IBM Plex Sans', provider: 'google', weights: [400, 500] },
-      { name: 'IBM Plex Mono', provider: 'google', weights: [400] },
+      // 500 нужен для строки разделов в шапке: на чернильном фоне тонкий моношрифт
+      // читается заметно хуже
+      { name: 'IBM Plex Mono', provider: 'google', weights: [400, 500] },
     ],
     defaults: {
       // кириллица обязательна — основная аудитория кампании русскоязычная

@@ -5,25 +5,21 @@
   краткое описание опыта, кнопка «Записаться на консультацию», кнопка WhatsApp.
 
   Композиция: экран ровно пополам. Слева чернильная половина со светлым текстом,
-  справа фотография на светлом фоне. Граница чёткая. Разметка — две горизонтальные
-  линии на весь экран: на тёмной половине светлые, на светлой тёмные. Больше линий
-  на первом экране нет намеренно, иначе они превращаются в шум.
+  справа фотография на светлом фоне. Граница чёткая.
+
+  Разметка — сквозная сетка сайта (GridLines): вертикали стоят на тех же долях экрана,
+  что и в остальных блоках, поэтому при прокрутке читаются как одна непрерывная сетка.
+  Рисуется дважды: светлой на тёмной половине, тёмной на светлой.
 
   Все формулировки — факты. Ни одной превосходной степени и ни одного обещания
   результата: см. compliance/content-rules.md.
 -->
 <script setup lang="ts">
-// Два основных направления. Это не ссылки, а просто подписи: разделы ниже по странице.
-const services = ['Ринопластика', 'Септопластика']
-
-// Две линии на весь экран. Каждая рисуется дважды — своим цветом на каждой половине.
-const rules = [
-  { pos: '27%', delay: 700 },
-  { pos: '90%', delay: 900 },
-]
-
 // TODO: подставить реальный номер клиники, когда клиника его передаст
 const whatsapp = 'https://wa.me/79285030807'
+
+// Горизонтали первого экрана: отбивают верх и низ блока
+const horizontals = ['27%', '90%']
 
 // На GitHub Pages сайт лежит в подпапке, поэтому путь к картинке собираем через baseURL
 const base = useRuntimeConfig().app.baseURL
@@ -31,16 +27,15 @@ const base = useRuntimeConfig().app.baseURL
 
 <template>
   <section id="top" class="hero">
-    <!-- Разметка на тёмной половине — светлая -->
+    <!-- Сетка на тёмной половине — светлая -->
     <div class="hero__rules hero__rules--on-dark" aria-hidden="true">
-      <DashedRule v-for="(r, i) in rules" :key="`d-${i}`" orientation="h" v-bind="r" />
+      <GridLines :horizontals="horizontals" :delay="600" />
     </div>
 
     <!--
       Два кадра одного снимка, а не один на все случаи: на десктопе фотография стоит
       вертикальной половиной, на телефоне — горизонтальной полосой сверху. Кадрируем
-      заранее (tools/crop-portrait.ps1), а не подгоняем в CSS — так пропорции честные
-      на любом экране, и лишние килобайты не грузятся.
+      заранее (tools/crop-portrait.ps1), а не подгоняем в CSS.
     -->
     <div class="hero__photo">
       <picture>
@@ -60,33 +55,30 @@ const base = useRuntimeConfig().app.baseURL
       </picture>
     </div>
 
-    <!-- Та же разметка на светлой половине — тёмная -->
+    <!-- Та же сетка на светлой половине — тёмная -->
     <div class="hero__rules hero__rules--on-light" aria-hidden="true">
-      <DashedRule v-for="(r, i) in rules" :key="`l-${i}`" orientation="h" v-bind="r" />
+      <GridLines :horizontals="horizontals" :delay="600" />
     </div>
 
     <div class="page hero__inner">
-      <div class="hero__text">
-        <p class="mono hero__eyebrow rise" style="--i: 0">
-          [01] Дубай · Dubai London Hospital
-        </p>
+      <p class="mono hero__eyebrow rise" style="--i: 0">[01] Дубай · Dubai London Hospital</p>
 
+      <div class="hero__text">
         <h1 class="hero__title rise" style="--i: 1">Эльдар Камалов</h1>
 
+        <!-- На десктопе «ринопласт» отдельной строкой, на телефоне — в одну строку.
+             Через display, а не через <br>: иначе на телефоне пропадает пробел. -->
         <p class="hero__spec rise" style="--i: 2">
-          пластический хирург,<br />
-          <em>ринопласт</em>
+          пластический хирург,
+          <em class="hero__spec-second">ринопласт</em>
         </p>
 
         <p class="hero__creds rise" style="--i: 3">
-          Кандидат медицинских наук, 30 лет практики, член Европейского общества ринопластов.
+          Кандидат медицинских наук, 30 лет практики,<br />
+          член Европейского общества ринопластов
         </p>
 
-        <ul class="hero__services rise" style="--i: 4">
-          <li v-for="service in services" :key="service">{{ service }}</li>
-        </ul>
-
-        <div class="hero__actions rise" style="--i: 5">
+        <div class="hero__actions rise" style="--i: 4">
           <MarkAction href="#booking">Записаться на консультацию</MarkAction>
           <MarkAction variant="ghost" :href="whatsapp">WhatsApp</MarkAction>
         </div>
@@ -118,7 +110,7 @@ const base = useRuntimeConfig().app.baseURL
   );
 }
 
-/* --- Разметка: по одной паре линий на половину --- */
+/* --- Сетка: по слою на половину --- */
 
 .hero__rules {
   position: absolute;
@@ -129,12 +121,14 @@ const base = useRuntimeConfig().app.baseURL
 .hero__rules--on-dark {
   z-index: 0;
   --rule: color-mix(in srgb, var(--paper) 26%, transparent);
+  --rule-faint: color-mix(in srgb, var(--paper) 15%, transparent);
   clip-path: inset(0 calc(100% - var(--photo-start)) 0 0);
 }
 
 .hero__rules--on-light {
   z-index: 2;
   --rule: color-mix(in srgb, var(--ink) 24%, transparent);
+  --rule-faint: color-mix(in srgb, var(--ink) 13%, transparent);
   clip-path: inset(0 0 0 var(--photo-start));
 }
 
@@ -173,8 +167,16 @@ const base = useRuntimeConfig().app.baseURL
   block-size: 100%;
   min-inline-size: 0;
   display: grid;
-  align-items: center;
+  align-content: center;
   padding-block-start: var(--header-h);
+  /* Текст лежит на чернильной половине */
+  color: var(--paper);
+}
+
+.hero__eyebrow {
+  margin: 0;
+  margin-block-end: var(--s-6);
+  color: color-mix(in srgb, var(--paper) 62%, transparent);
 }
 
 .hero__text {
@@ -183,15 +185,7 @@ const base = useRuntimeConfig().app.baseURL
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: clamp(var(--s-3), 1.5vh, 1.25rem);
-  padding-block: var(--s-8);
-  /* Текст лежит на чернильной половине */
-  color: var(--paper);
-}
-
-.hero__eyebrow {
-  margin: 0;
-  color: color-mix(in srgb, var(--paper) 58%, transparent);
+  gap: clamp(var(--s-3), 1.6vh, 1.25rem);
 }
 
 .hero__title {
@@ -204,13 +198,17 @@ const base = useRuntimeConfig().app.baseURL
   font-size: var(--fs-h2);
   font-weight: 300;
   line-height: 1.12;
-  color: color-mix(in srgb, var(--paper) 78%, transparent);
+  color: color-mix(in srgb, var(--paper) 82%, transparent);
 }
 
+/* Курсивом, но без цвета: сливовый на чернильном фоне не читается */
 .hero__spec em {
   font-style: italic;
-  /* Обычный сливовый на чернильном фоне сливается — берём осветлённый */
-  color: var(--plum-light);
+  color: var(--paper);
+}
+
+.hero__spec-second {
+  display: block;
 }
 
 /* Регалии — тот же кегль, что абзац про консультацию во втором блоке */
@@ -218,24 +216,8 @@ const base = useRuntimeConfig().app.baseURL
   inline-size: 100%;
   font-size: var(--fs-body);
   line-height: 1.55;
-  color: color-mix(in srgb, var(--paper) 66%, transparent);
-  max-inline-size: min(44ch, 100%);
-}
-
-/* --- Два направления: просто подписи, не ссылки --- */
-
-.hero__services {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-1);
-  margin: 0;
-  margin-block-start: var(--s-2);
-  padding: 0;
-  list-style: none;
-  font-family: var(--font-display);
-  font-weight: 300;
-  font-size: var(--fs-service);
-  line-height: 1.2;
+  color: color-mix(in srgb, var(--paper) 68%, transparent);
+  max-inline-size: min(46ch, 100%);
 }
 
 .hero__actions {
@@ -290,64 +272,77 @@ const base = useRuntimeConfig().app.baseURL
   .hero__spec {
     font-size: clamp(1.25rem, 2vw, 1.625rem);
   }
-
-  .hero__services {
-    font-size: clamp(1.25rem, 2vw, 1.75rem);
-  }
 }
 
-/* --- Планшеты и телефоны: фотография полосой сверху, всё остальное на тёмном --- */
+/* --- Планшеты и телефоны --- */
 
 @media (max-width: 900px) {
   .hero {
     --photo-start: 0%;
+    /* Полоса под подпись, потом фотография, потом текст */
+    --hero-caption: 2.25rem;
+    --hero-photo-h: 48svh;
     background: var(--ink);
+  }
+
+  /* Подпись переезжает НАД фотографию, под шапку */
+  .hero__eyebrow {
+    position: absolute;
+    inset-block-start: calc(var(--header-h) - 0.25rem);
+    inset-inline: 0;
+    margin: 0;
   }
 
   .hero__photo {
     inline-size: 100%;
-    block-size: 38svh;
+    inset-block-start: calc(var(--header-h) + var(--hero-caption));
     inset-block-end: auto;
+    block-size: var(--hero-photo-h);
   }
 
   .hero__photo img {
     /* На телефоне подставляется горизонтальный кадр — голова и плечи */
-    object-position: 50% 24%;
+    object-position: 50% 26%;
   }
 
   .hero__rules--on-dark {
-    clip-path: inset(38svh 0 0 0);
+    clip-path: inset(calc(var(--header-h) + var(--hero-caption) + var(--hero-photo-h)) 0 0 0);
   }
 
   .hero__rules--on-light {
-    clip-path: inset(0 0 calc(100% - 38svh) 0);
+    clip-path: inset(
+      calc(var(--header-h) + var(--hero-caption)) 0
+        calc(100% - var(--header-h) - var(--hero-caption) - var(--hero-photo-h)) 0
+    );
   }
 
   .hero__inner {
-    padding-block-start: calc(38svh + var(--s-3));
+    align-content: start;
+    padding-block-start: calc(
+      var(--header-h) + var(--hero-caption) + var(--hero-photo-h) + var(--s-6)
+    );
   }
 
   .hero__text {
     max-inline-size: 100%;
-    gap: var(--s-2);
-    padding-block: 0 var(--s-3);
+    gap: var(--s-3);
   }
 
   .hero__title {
     font-size: clamp(1.875rem, 8.2vw, 2.5rem);
   }
 
+  /* На телефоне специализация идёт одной строкой и крупнее */
+  .hero__spec-second {
+    display: inline;
+  }
+
   .hero__spec {
-    font-size: clamp(1.0625rem, 4.4vw, 1.375rem);
+    font-size: clamp(1.125rem, 5.2vw, 1.5rem);
   }
 
   .hero__creds {
     font-size: 0.9375rem;
-  }
-
-  .hero__services {
-    font-size: clamp(1.25rem, 5.8vw, 1.625rem);
-    margin-block-start: var(--s-1);
   }
 
   .hero__actions {
@@ -355,7 +350,7 @@ const base = useRuntimeConfig().app.baseURL
     flex-direction: column;
     align-items: stretch;
     gap: var(--s-3);
-    margin-block-start: var(--s-2);
+    margin-block-start: var(--s-3);
   }
 
   .hero__scroll {
