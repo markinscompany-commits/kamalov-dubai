@@ -1,0 +1,84 @@
+/* ===========================================================
+   Камалов Дубай — токены дизайн-системы
+   Значения и обоснования — design/design-system.md
+   =========================================================== */
+
+/* Регистрируем свойства, которые нужно анимировать: без @property
+   пользовательские свойства меняются скачком, а не плавно. */
+@property --bracket {
+  syntax: '<length-percentage>';
+  inherits: false;
+  initial-value: 14px;
+}
+
+@property --bracket-color {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: transparent;
+}
+
+:root {
+  /* --- Бумага --- */
+  --paper: #f4efe6;
+  --paper-raised: #fbf8f2;
+  --paper-deep: #eae2d5;
+
+  /* --- Чернила --- */
+  --ink: #1b2a4e;
+  --ink-soft: #4a5570;
+  --ink-faint: #8b93a6;
+
+  /* --- Акцент --- */
+  --plum: #6b5b8e;
+  --plum-deep: #58497a;
+
+  /* --- Тёплое пятно --- */
+  --clay: #c4a88f;
+
+  /* --- Производные --- */
+  --rule: color-mix(in srgb, var(--ink) 28%, transparent);
+  --rule-faint: color-mix(in srgb, var(--ink) 14%, transparent);
+  --overlay: color-mix(in srgb, var(--ink) 88%, transparent);
+
+  /* --- Шрифты --- */
+  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-text: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+
+  /* --- Шкала --- */
+  --fs-display: clamp(3.25rem, 7.5vw, 8rem);
+  --fs-h1: clamp(2.5rem, 5vw, 4.75rem);
+  --fs-h2: clamp(1.75rem, 3vw, 2.75rem);
+  --fs-lead: clamp(1.0625rem, 1.5vw, 1.375rem);
+  --fs-body: clamp(1rem, 1.1vw, 1.125rem);
+  --fs-small: 0.875rem;
+  --fs-mono: 0.6875rem;
+
+  /* --- Сетка и отступы --- */
+  --page-max: 1440px;
+  --page-pad: clamp(1.25rem, 5vw, 5rem);
+  --gutter: clamp(1rem, 2vw, 1.5rem);
+
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-6: 1.5rem;
+  --s-8: 2rem;
+  --s-12: 3rem;
+  --s-16: 4rem;
+  --s-24: 6rem;
+  --s-32: 8rem;
+
+  /* --- Пунктир: единый шаг на весь сайт --- */
+  --dash-on: 4px;
+  --dash-off: 6px;
+
+  /* --- Движение --- */
+  --dur-fast: 200ms;
+  --dur-base: 400ms;
+  --dur-slow: 700ms;
+  --dur-draw: 1200ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-draw: cubic-bezier(0.65, 0, 0.35, 1);
+}
