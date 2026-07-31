@@ -62,6 +62,14 @@ onBeforeUnmount(() => {
         </a>
       </nav>
 
+      <!--
+        Автоподстройку цвета под фон здесь применить нельзя: закреплённая шапка
+        (position: fixed) заводит собственный контекст наложения, и режим «разница»
+        внутри неё видит только саму шапку, а не страницу под ней. Проверено замером.
+        Это и не нужно: вверху страницы под шапкой всегда светлое поле — слева бумага,
+        справа фон снимка, — а после прокрутки у неё появляется своя подложка.
+        Инверсия живёт там, где действительно работает: на подсказке внутри первого экрана.
+      -->
       <div class="header__side">
         <!--
           Переключатель языка и кнопки лежат в одной ячейке сетки друг поверх друга.
@@ -73,8 +81,8 @@ onBeforeUnmount(() => {
             <button class="header__lang-btn header__lang-btn--on" type="button" aria-current="true">
               Ru
             </button>
-            <span class="header__lang-sep" aria-hidden="true">/</span>
-            <button class="header__lang-btn" type="button">En</button>
+            <span class="header__lang-sep" data-muted aria-hidden="true">/</span>
+            <button class="header__lang-btn" data-muted type="button">En</button>
           </div>
 
           <!-- Состояние после прокрутки: действия -->
@@ -278,6 +286,13 @@ onBeforeUnmount(() => {
   color: var(--ink-faint);
 }
 
+/* В режиме инверсии собственные цвета детей ломают смешивание — гасим их здесь,
+   иерархия внутри держится на прозрачности (data-muted) */
+.blend-invert .header__lang-btn,
+.blend-invert .header__lang-sep {
+  color: inherit;
+}
+
 /* Действия появляются только после прокрутки */
 .header__actions {
   display: flex;
@@ -325,7 +340,8 @@ onBeforeUnmount(() => {
 
 .header__burger-line {
   block-size: 1px;
-  background: var(--ink);
+  /* currentColor, а не var(--ink): в режиме инверсии черты должны белеть вместе с текстом */
+  background: currentColor;
   transition:
     transform var(--dur-base) var(--ease-out),
     inline-size var(--dur-base) var(--ease-out);

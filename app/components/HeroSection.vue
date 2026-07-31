@@ -4,20 +4,17 @@
   Обязательные элементы (бриф + договор, п. 1.3): имя врача, специализация, фото,
   краткое описание опыта, кнопка «Записаться на консультацию», кнопка WhatsApp.
 
-  Композиция: фотография занимает всю правую половину и уходит под края экрана,
-  разметка проходит поверх неё. Слева — текст. Внизу — строка фактов и подсказка
-  о прокрутке; экран рассчитан так, чтобы они были видны без прокрутки.
+  Композиция: экран ровно пополам. Слева — тёплая бумага и текст, справа — фотография
+  во всю высоту на белом фоне. Граница чёткая, без растворения: половины контрастируют.
+  Разметка проходит поверх снимка.
 
   Все формулировки — факты. Ни одной превосходной степени и ни одного обещания
   результата: см. compliance/content-rules.md.
 -->
 <script setup lang="ts">
-// Регалии живут одной строкой внизу и в подзаголовке не повторяются
-const facts = [
-  '30 лет практики',
-  'Кандидат мед. наук',
-  'Лицензия DHA · Дубай',
-  'Европейское общество ринопластов',
+const services = [
+  { label: 'Ринопластика', href: '#rhinoplasty' },
+  { label: 'Септопластика', href: '#septoplasty' },
 ]
 
 /**
@@ -27,10 +24,10 @@ const facts = [
  */
 const rules = [
   { orientation: 'v' as const, pos: '34%', delay: 500 },
-  { orientation: 'v' as const, pos: '67%', delay: 650, faint: true },
-  { orientation: 'v' as const, pos: '85%', delay: 780, faint: true },
+  { orientation: 'v' as const, pos: '68%', delay: 650, faint: true },
+  { orientation: 'v' as const, pos: '86%', delay: 780, faint: true },
   { orientation: 'h' as const, pos: '26%', delay: 850, faint: true },
-  { orientation: 'h' as const, pos: '76%', delay: 980, faint: true },
+  { orientation: 'h' as const, pos: '78%', delay: 980, faint: true },
 ]
 
 // TODO: подставить реальный номер клиники, когда клиника его передаст
@@ -48,17 +45,31 @@ const base = useRuntimeConfig().app.baseURL
       <span class="hero__node" />
     </div>
 
+    <!--
+      Два кадра одного снимка, а не один на все случаи: на десктопе фотография стоит
+      вертикальной половиной, на телефоне — горизонтальной полосой сверху. Кадрируем
+      заранее (tools/crop-portrait.ps1), а не подгоняем в CSS — так пропорции честные
+      на любом экране, и лишние килобайты не грузятся.
+    -->
     <div class="hero__photo">
-      <img
-        :src="`${base}media/doctor-portrait.png`"
-        alt="Эльдар Камалов, пластический хирург"
-        width="1120"
-        height="1120"
-        fetchpriority="high"
-      />
+      <picture>
+        <source
+          media="(max-width: 900px)"
+          :srcset="`${base}media/doctor-portrait-wide.jpg`"
+          width="1300"
+          height="976"
+        />
+        <img
+          :src="`${base}media/doctor-portrait.jpg`"
+          alt="Эльдар Камалов, пластический хирург"
+          width="1400"
+          height="1711"
+          fetchpriority="high"
+        />
+      </picture>
     </div>
 
-    <!-- Светлая разметка: поверх фотографии, обрезана по её области -->
+    <!-- Светлая разметка: поверх фотографии, обрезана по её половине -->
     <div class="hero__rules hero__rules--light" aria-hidden="true">
       <DashedRule v-for="(r, i) in rules" :key="`light-${i}`" v-bind="r" />
     </div>
@@ -72,27 +83,39 @@ const base = useRuntimeConfig().app.baseURL
         <h1 class="hero__title rise" style="--i: 1">Эльдар Камалов</h1>
 
         <p class="hero__spec rise" style="--i: 2">
-          пластический хирург, <em>ринопласт</em>
+          пластический хирург,<br />
+          <em>ринопласт</em>
         </p>
 
-        <p class="hero__lead rise" style="--i: 3">
-          Ринопластика и септопластика: первичные, повторные и реконструктивные операции.
+        <p class="hero__creds rise" style="--i: 3">
+          Кандидат медицинских наук, 30 лет практики. Лицензия Управления здравоохранения
+          Дубая, член Европейского общества ринопластов.
         </p>
 
-        <div class="hero__actions rise" style="--i: 4">
+        <ul class="hero__services rise" style="--i: 4">
+          <li v-for="service in services" :key="service.href" class="hero__service">
+            <DashedRule orientation="h" pos="0" :delay="1050" faint />
+            <a class="hero__service-link" :href="service.href">
+              <span class="hero__service-label">{{ service.label }}</span>
+              <span class="mono hero__service-arrow" aria-hidden="true">↓</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="hero__actions rise" style="--i: 5">
           <MarkAction href="#booking">Записаться на консультацию</MarkAction>
           <MarkAction variant="ghost" :href="whatsapp">WhatsApp</MarkAction>
         </div>
       </div>
-
-      <div class="hero__bottom rise" style="--i: 5">
-        <DashedRule orientation="h" pos="0" :delay="1100" />
-        <ul class="hero__facts mono">
-          <li v-for="fact in facts" :key="fact">{{ fact }}</li>
-        </ul>
-        <p class="mono hero__scroll" aria-hidden="true">Прокрутите ↓</p>
-      </div>
     </div>
+
+    <!--
+      Подсказка лежит на фотографии и вынесена прямым потомком секции: смешивание
+      видит фон только внутри своего контекста наложения, а его задаёт .hero.
+      Режим «разница» сам инвертирует подсказку под любым пикселем — на светлом фоне
+      она тёмная, на чёрной водолазке светлая.
+    -->
+    <p class="mono hero__scroll blend-invert" aria-hidden="true">Прокрутите ↓</p>
   </section>
 </template>
 
@@ -102,6 +125,15 @@ const base = useRuntimeConfig().app.baseURL
   block-size: 100svh;
   min-block-size: 34rem;
   overflow: hidden;
+  /* Замыкаем смешивание на секции: .blend-invert внутри должен видеть фотографию
+     и фон половин, но не должен доставать до остальной страницы */
+  isolation: isolate;
+  /* Левая половина чуть плотнее по тону — так она отделяется от белого поля снимка */
+  background: linear-gradient(
+    to right,
+    var(--paper-deep) 0 var(--photo-start),
+    var(--paper-raised) var(--photo-start) 100%
+  );
 }
 
 /* --- Разметка --- */
@@ -118,17 +150,13 @@ const base = useRuntimeConfig().app.baseURL
 
 .hero__rules--light {
   z-index: 2;
-  /* Линии этого слоя светлые и проявляются только там, где лежит фотография */
-  --rule: color-mix(in srgb, var(--paper) 68%, transparent);
-  --rule-faint: color-mix(in srgb, var(--paper) 40%, transparent);
+  /* Линии этого слоя светлые и живут только на половине со снимком */
+  --rule: color-mix(in srgb, var(--paper) 70%, transparent);
+  --rule-faint: color-mix(in srgb, var(--paper) 42%, transparent);
   /* Тёмная кромка под светлой линией: так линия читается и на тёмном пиджаке,
-     и на светлом фоне снимка — иначе на светлых участках она пропадает */
-  filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--ink) 26%, transparent));
-  mask-image: linear-gradient(
-    to right,
-    transparent calc(var(--photo-start) + 2%),
-    #000 calc(var(--photo-start) + 14%)
-  );
+     и на белом фоне снимка */
+  filter: drop-shadow(0 1px 0 color-mix(in srgb, var(--ink) 30%, transparent));
+  clip-path: inset(0 0 0 var(--photo-start));
 }
 
 /* Узел на пересечении — маркер измерения. Их должно быть мало. */
@@ -151,7 +179,7 @@ const base = useRuntimeConfig().app.baseURL
   }
 }
 
-/* --- Фотография --- */
+/* --- Фотография: ровно правая половина, без растворения краёв --- */
 
 .hero__photo {
   position: absolute;
@@ -159,27 +187,24 @@ const base = useRuntimeConfig().app.baseURL
   inset-block: 0;
   inset-inline-end: 0;
   inline-size: calc(100% - var(--photo-start));
-  /* Левый край растворяется в бумаге, снимок не выглядит вставленным прямоугольником */
-  mask-image: linear-gradient(to right, transparent 0, #000 26%);
+  /* Подложка в тон фона кадра: пока картинка грузится, половина не мигает белым */
+  background: #efe7e2;
+}
+
+.hero__photo picture,
+.hero__photo img {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
 }
 
 .hero__photo img {
-  inline-size: 100%;
-  block-size: 100%;
   object-fit: cover;
-  object-position: 58% 20%;
-  /* Тёплый приглушённый цвет — снимок должен жить в температуре бумаги.
-     Работает и для нынешнего чёрно-белого кадра, и для будущего цветного. */
-  filter: saturate(0.82) contrast(1.05) brightness(1.02) sepia(0.2);
-}
-
-/* Низ уводим в бумагу, чтобы строка фактов читалась поверх снимка */
-.hero__photo::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, var(--paper) 0, transparent 26%);
-  pointer-events: none;
+  /* Кадр уже обрезан под пропорцию половины, поэтому подрезается он совсем чуть-чуть.
+     Смещение вверх — на случай широких и низких окон, чтобы голова не ушла за край. */
+  object-position: 50% 28%;
+  /* Лёгкая рука: снимок уже снят в нужной температуре, только чуть приглушаем */
+  filter: saturate(0.92) contrast(1.02);
 }
 
 /* --- Содержимое --- */
@@ -190,18 +215,18 @@ const base = useRuntimeConfig().app.baseURL
   block-size: 100%;
   min-inline-size: 0;
   display: grid;
-  grid-template-rows: 1fr auto;
+  align-items: center;
   padding-block-start: var(--header-h);
 }
 
 .hero__text {
   min-inline-size: 0;
-  max-inline-size: min(38rem, 46%);
+  max-inline-size: min(34rem, 44%);
   align-self: center;
   display: flex;
   flex-direction: column;
-  align-items: start;
-  gap: clamp(var(--s-3), 1.6vh, var(--s-6));
+  align-items: stretch;
+  gap: clamp(var(--s-3), 1.5vh, var(--s-5, 1.25rem));
   padding-block: var(--s-8);
 }
 
@@ -211,14 +236,14 @@ const base = useRuntimeConfig().app.baseURL
 
 .hero__title {
   font-size: var(--fs-display);
-  line-height: 0.92;
+  line-height: 0.95;
 }
 
 .hero__spec {
   font-family: var(--font-display);
   font-size: var(--fs-h2);
   font-weight: 300;
-  line-height: 1.15;
+  line-height: 1.12;
   color: var(--ink-soft);
 }
 
@@ -227,50 +252,79 @@ const base = useRuntimeConfig().app.baseURL
   color: var(--plum);
 }
 
-.hero__lead {
+/* Регалии — тот же кегль, что абзац про консультацию во втором блоке */
+.hero__creds {
   inline-size: 100%;
-  font-size: var(--fs-lead);
-  line-height: 1.5;
+  font-size: var(--fs-body);
+  line-height: 1.55;
   color: var(--ink-soft);
-  max-inline-size: min(38ch, 100%);
+  max-inline-size: min(44ch, 100%);
+}
+
+/* --- Услуги: два крупных пункта --- */
+
+.hero__services {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  margin-block-start: var(--s-2);
+}
+
+.hero__service {
+  position: relative;
+}
+
+.hero__service-link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding-block: clamp(var(--s-2), 1.2vh, var(--s-4));
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: var(--fs-service);
+  line-height: 1.15;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.hero__service-arrow {
+  color: var(--ink-faint);
+  transform: rotate(-90deg);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
+}
+
+.hero__service-link:hover {
+  color: var(--plum-deep);
+}
+
+.hero__service-link:hover .hero__service-arrow {
+  color: var(--plum);
+  transform: rotate(0deg);
 }
 
 .hero__actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--s-4);
-  margin-block-start: var(--s-2);
+  margin-block-start: var(--s-4);
 }
 
-/* --- Нижняя полоса: факты + подсказка --- */
-
-.hero__bottom {
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s-3) var(--s-8);
-  padding-block: var(--s-6) var(--s-8);
-}
-
-.hero__facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-3) var(--s-8);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
+/* --- Подсказка о прокрутке --- */
 
 .hero__scroll {
+  position: absolute;
+  z-index: 4;
+  inset-block-end: var(--s-8);
+  inset-inline-end: var(--page-pad);
   margin: 0;
 }
 
 /* --- Появление --- */
 
 .rise {
-  animation: rise var(--dur-slow) var(--ease-out) calc(120ms * var(--i, 0)) both;
+  animation: rise var(--dur-slow) var(--ease-out) calc(110ms * var(--i, 0)) both;
 }
 
 @keyframes rise {
@@ -286,13 +340,17 @@ const base = useRuntimeConfig().app.baseURL
 
 /* --- Низкие окна: экран обязан оставаться целым --- */
 
-@media (max-height: 760px) {
+@media (max-height: 820px) {
   .hero__title {
-    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-size: clamp(2.25rem, 4.2vw, 3.5rem);
   }
 
   .hero__spec {
-    font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+    font-size: clamp(1.25rem, 2vw, 1.625rem);
+  }
+
+  .hero__service-link {
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
   }
 }
 
@@ -301,41 +359,54 @@ const base = useRuntimeConfig().app.baseURL
 @media (max-width: 900px) {
   .hero {
     --photo-start: 0%;
+    background: var(--paper-deep);
   }
 
   .hero__photo {
     inline-size: 100%;
-    block-size: 54svh;
+    block-size: 38svh;
     inset-block-end: auto;
-    /* Снизу растворяется в бумаге, сверху остаётся во всю ширину */
-    mask-image: linear-gradient(to bottom, #000 0, #000 52%, transparent 96%);
   }
 
   .hero__photo img {
-    /* Голову не срезаем: на телефоне кадр и так узкий */
-    object-position: 54% 6%;
-  }
-
-  .hero__photo::after {
-    background: linear-gradient(to top, var(--paper) 0, transparent 42%);
+    /* На телефоне подставляется горизонтальный кадр — голова и плечи */
+    object-position: 50% 24%;
   }
 
   .hero__rules--light {
-    mask-image: linear-gradient(to bottom, #000 0, #000 46%, transparent 74%);
+    clip-path: inset(0 0 62% 0);
+  }
+
+  .hero__inner {
+    padding-block-start: calc(38svh + var(--s-3));
   }
 
   .hero__text {
     max-inline-size: 100%;
-    align-self: end;
-    gap: var(--s-3);
+    align-self: start;
+    gap: var(--s-2);
+    padding-block: 0 var(--s-3);
   }
 
   .hero__title {
-    font-size: clamp(2.25rem, 10vw, 3.25rem);
+    font-size: clamp(1.875rem, 8.2vw, 2.5rem);
   }
 
   .hero__spec {
-    font-size: clamp(1.25rem, 5.5vw, 1.75rem);
+    font-size: clamp(1.0625rem, 4.4vw, 1.375rem);
+  }
+
+  .hero__creds {
+    font-size: 0.9375rem;
+  }
+
+  .hero__services {
+    margin-block-start: var(--s-1);
+  }
+
+  .hero__service-link {
+    font-size: clamp(1.125rem, 5.4vw, 1.5rem);
+    padding-block: var(--s-2);
   }
 
   .hero__actions {
@@ -343,15 +414,7 @@ const base = useRuntimeConfig().app.baseURL
     flex-direction: column;
     align-items: stretch;
     gap: var(--s-3);
-  }
-
-  .hero__bottom {
-    gap: var(--s-2) var(--s-4);
-    padding-block: var(--s-4) var(--s-6);
-  }
-
-  .hero__facts {
-    gap: var(--s-2) var(--s-4);
+    margin-block-start: var(--s-2);
   }
 
   .hero__scroll {

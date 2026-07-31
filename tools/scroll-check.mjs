@@ -79,11 +79,14 @@ await page.screenshot({
 
 // --- Умещается ли первый экран ---
 const fits = await page.evaluate(() => {
-  const bottom = document.querySelector('.hero__bottom').getBoundingClientRect()
+  const text = document.querySelector('.hero__text').getBoundingClientRect()
+  const head = document.querySelector('.header__inner').getBoundingClientRect()
   return {
     высотаОкна: window.innerHeight,
-    низФактов: Math.round(bottom.bottom),
-    уместилось: bottom.bottom <= window.innerHeight + 1,
+    верхТекста: Math.round(text.top),
+    низТекста: Math.round(text.bottom),
+    подШапкой: text.top >= head.bottom - 1,
+    уместилось: text.bottom <= window.innerHeight + 1,
   }
 })
 console.log('первый экран:', JSON.stringify(fits))
@@ -98,8 +101,12 @@ await m.waitForTimeout(1600)
 await m.screenshot({ path: `${OUT}/m-top.png` })
 
 const mFits = await m.evaluate(() => {
-  const bottom = document.querySelector('.hero__bottom').getBoundingClientRect()
-  return { высотаОкна: window.innerHeight, низФактов: Math.round(bottom.bottom), уместилось: bottom.bottom <= window.innerHeight + 1 }
+  const text = document.querySelector('.hero__text').getBoundingClientRect()
+  return {
+    высотаОкна: window.innerHeight,
+    низТекста: Math.round(text.bottom),
+    уместилось: text.bottom <= window.innerHeight + 1,
+  }
 })
 console.log('первый экран (телефон):', JSON.stringify(mFits))
 
