@@ -37,10 +37,14 @@ function Save-Crop($srcX, $srcY, $srcW, $srcH, $outW, $name) {
   Write-Output "$name : ${outW}x${outH}, $([math]::Round((Get-Item $path).Length/1KB,0)) КБ"
 }
 
-# Вертикальный: врач по центру кадра, над головой около 12% запаса
-Save-Crop -srcX 300 -srcY 280 -srcW 2700 -srcH 3300 -outW 1400 -name 'doctor-portrait.jpg'
+# Исходник 5504x3072, врач по центру. Голова начинается примерно на 22% высоты,
+# руки уходят под нижний край — поэтому снизу берём всё до края, а запас режем сверху.
 
-# Горизонтальный: голова и плечи, под полосу сверху на телефоне
-Save-Crop -srcX 300 -srcY 350 -srcW 2930 -srcH 2200 -outW 1300 -name 'doctor-portrait-wide.jpg'
+# Вертикальный (~0.82) — под правую половину десктопа
+Save-Crop -srcX 1568 -srcY 250 -srcW 2314 -srcH 2822 -outW 1400 -name 'doctor-portrait.jpg'
+
+# Почти квадратный (~1.0) — под полосу сверху на телефоне: при нынешней высоте полосы
+# она получается почти квадратной, и горизонтальный кадр обрезался бы по бокам
+Save-Crop -srcX 1339 -srcY 300 -srcW 2772 -srcH 2772 -outW 1200 -name 'doctor-portrait-wide.jpg'
 
 $img.Dispose()

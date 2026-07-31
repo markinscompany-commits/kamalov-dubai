@@ -46,14 +46,14 @@ const base = useRuntimeConfig().app.baseURL
         <source
           media="(max-width: 900px)"
           :srcset="`${base}media/doctor-portrait-wide.jpg`"
-          width="1300"
-          height="976"
+          width="1200"
+          height="1200"
         />
         <img
           :src="`${base}media/doctor-portrait.jpg`"
           alt="Эльдар Камалов, пластический хирург"
           width="1400"
-          height="1711"
+          height="1707"
           fetchpriority="high"
         />
       </picture>
@@ -145,9 +145,10 @@ const base = useRuntimeConfig().app.baseURL
 
 .hero__photo img {
   object-fit: cover;
-  /* Кадр уже обрезан под пропорцию половины, подрезается он совсем чуть-чуть.
-     Смещение вверх — на случай широких и низких окон, чтобы голова не ушла за край. */
-  object-position: 50% 28%;
+  /* Кадр обрезан заранее почти под пропорцию половины, поэтому подрезается чуть-чуть.
+     Якорь у верха: на широких и низких окнах лишнее срезается снизу, где и так уходят
+     руки, а голова остаётся целиком. */
+  object-position: 50% 20%;
   filter: saturate(0.92) contrast(1.02);
 }
 
@@ -299,9 +300,9 @@ const base = useRuntimeConfig().app.baseURL
   }
 
   .hero__photo img {
-    /* Горизонтальный кадр — голова и плечи. Смещение вниз: сверху над головой
-       места меньше, зато видно больше корпуса. */
-    object-position: 50% 46%;
+    /* Почти квадратный кадр. Тот же якорь у верха: лишнее срезается снизу,
+       голова не обрезается ни на одной высоте экрана. */
+    object-position: 50% 18%;
   }
 
   .hero__inner {
@@ -357,6 +358,27 @@ const base = useRuntimeConfig().app.baseURL
 
   .hero__scroll {
     display: none;
+  }
+}
+
+/* Невысокие телефоны (например 360×640): при полной высоте полосы кнопки уезжали
+   за нижний край экрана — ужимаем фотографию и заголовок */
+@media (max-width: 900px) and (max-height: 720px) {
+  .hero {
+    --hero-photo-h: 40svh;
+    --hero-caption: 2rem;
+  }
+
+  .hero__title {
+    font-size: clamp(1.625rem, 7vw, 2rem);
+  }
+
+  .hero__spec {
+    font-size: 1rem;
+  }
+
+  .hero__creds {
+    font-size: 0.875rem;
   }
 }
 </style>
