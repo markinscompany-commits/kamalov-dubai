@@ -34,6 +34,15 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'theme-color', content: '#f4efe6' },
       ],
+      // Временный значок вкладки — узел разметки. Меняется на фирменный,
+      // когда придёт брендбук от Эльдара Б.
+      link: [
+        {
+          rel: 'icon',
+          type: 'image/svg+xml',
+          href: `${process.env.NUXT_APP_BASE_URL || '/'}favicon.svg`,
+        },
+      ],
     },
   },
 

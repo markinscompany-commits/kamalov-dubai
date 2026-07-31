@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!--
+    Временный значок вкладки: узел разметки — тот же крестик в уголках, что размечает
+    блоки сайта. Меняется на фирменный, когда Эльдар Б. передаст брендбук.
+  -->
+  <rect width="32" height="32" fill="#1b2a4e"/>
+  <g stroke="#f4efe6" stroke-width="1.6" fill="none">
+    <path d="M16 7v18M7 16h18"/>
+  </g>
+  <g stroke="#f4efe6" stroke-width="1.4" fill="none" opacity="0.55">
+    <path d="M5 9V5h4M27 9V5h-4M5 23v4h4M27 23v4h-4"/>
+  </g>
+</svg>
