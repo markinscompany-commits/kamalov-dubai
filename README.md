@@ -2,6 +2,19 @@
 
 Nuxt 4. Node 22, npm.
 
+**Рабочая версия:** https://markinscompany-commits.github.io/kamalov-dubai/
+
+## Как обновить рабочую версию
+
+```bash
+gh auth switch --user markinscompany-commits   # обязательно, иначе push уйдёт не туда
+git add -A && git commit -m "что сделал"
+git push
+```
+
+GitHub Actions сам соберёт статику и опубликует, занимает около минуты.
+Проверить: `gh run watch`.
+
 ## Разработка
 
 ```bash
