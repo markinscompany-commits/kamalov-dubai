@@ -167,7 +167,7 @@ onBeforeUnmount(() => {
   overflow-y: auto;
   overscroll-behavior: contain;
   /* Свой слой: полотно во весь экран иначе перерисовывается вместе со страницей */
-  will-change: opacity, clip-path;
+  will-change: opacity;
 }
 
 /* --- Верхняя строка: повтор шапки --- */
@@ -375,47 +375,24 @@ onBeforeUnmount(() => {
 }
 
 /* --- Появление и уход полотна ---
-   Одно и то же движение в обе стороны: раскрылось сверху вниз — свернулось обратно
-   вверх. Закрытие чуть быстрее открытия, но не мгновенное: резкий обрыв читается
-   как сбой, а не как решение */
+
+   Полотно НЕ выезжает: оно стоит на месте и просто перестаёт быть прозрачным
+   (правка Марка). Вместе с прозрачностью нарастает и размытие фона — эффект
+   получается «страница ушла из фокуса», а не «сверху что-то приехало».
+
+   Закрытие чуть быстрее открытия: уходить интерфейс должен охотнее, чем приходит. */
 
 .nav-enter-active {
-  transition: clip-path 520ms var(--ease-out);
+  transition: opacity 420ms var(--ease-out);
 }
 
 .nav-leave-active {
-  transition:
-    clip-path 440ms var(--ease-out),
-    opacity 440ms var(--ease-out);
+  transition: opacity 320ms var(--ease-out);
 }
 
 .nav-enter-from,
 .nav-leave-to {
-  clip-path: inset(0 0 100% 0);
-}
-
-.nav-enter-to,
-.nav-leave-from {
-  clip-path: inset(0);
-}
-
-.nav-leave-to {
-  opacity: 0.55;
-}
-
-/* Пока полотно сворачивается, содержимое уходит вперёд него — иначе крупные
-   заголовки «обрезаются» краем и это видно */
-.nav-leave-active .nav__panel,
-.nav-leave-active .nav__top {
-  transition:
-    opacity 200ms var(--ease-out),
-    transform 320ms var(--ease-out);
-}
-
-.nav-leave-to .nav__panel,
-.nav-leave-to .nav__top {
   opacity: 0;
-  transform: translateY(-10px);
 }
 
 @media (prefers-reduced-motion: reduce) {

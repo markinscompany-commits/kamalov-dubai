@@ -94,24 +94,41 @@ const { visible } = usePreloader()
   }
 }
 
-/* Уход — как у меню: полотно сворачивается вверх, содержимое уходит вперёд него */
+/*
+  Появление и уход — плавные, без резких движений.
+
+  Полотно просто проявляется и растворяется. Никаких «шторок»: заставка не должна
+  привлекать внимание к себе, её задача — прикрыть момент, когда меняется содержимое.
+
+  При ПЕРВОЙ загрузке появления нет вовсе: заставка уже стоит в готовом HTML,
+  и Vue по умолчанию не проигрывает переход для того, что было на месте изначально.
+  Проявление отрабатывает только при смене языка — там оно и нужно.
+*/
+
+.pre-enter-active {
+  transition: opacity 420ms var(--ease-out);
+}
+
 .pre-leave-active {
-  transition: clip-path 620ms var(--ease-out);
+  transition: opacity 640ms var(--ease-out);
 }
 
+.pre-enter-from,
 .pre-leave-to {
-  clip-path: inset(0 0 100% 0);
+  opacity: 0;
 }
 
+/* Содержимое уходит чуть раньше полотна и чуть выше — так растворение не выглядит
+   плоским, но и рывка не даёт */
 .pre-leave-active .pre__inner {
   transition:
-    opacity 240ms var(--ease-out),
-    transform 420ms var(--ease-out);
+    opacity 380ms var(--ease-out),
+    transform 640ms var(--ease-out);
 }
 
 .pre-leave-to .pre__inner {
   opacity: 0;
-  transform: translateY(-14px);
+  transform: translateY(-10px);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -120,6 +137,7 @@ const { visible } = usePreloader()
     animation-duration: 0.01ms;
   }
 
+  .pre-enter-active,
   .pre-leave-active {
     transition-duration: 0.01ms;
   }

@@ -47,12 +47,17 @@ const style = computed(() => ({ '--delay': `${props.delay}ms` }))
   display: block;
 }
 
-/* --- Вертикальные лучи --- */
+/* --- Вертикальные лучи ---
+
+   ⚠️ Луч сдвигается на половину своей толщины: без этого его КРАЙ садится на
+   точку пересечения, а крестик садится на неё ЦЕНТРОМ — и они расходятся на
+   полпикселя. Именно это выглядело как «крестик стоит криво». */
 
 .cross__ray--up,
 .cross__ray--down {
-  inline-size: 1px;
+  inline-size: var(--rule-w);
   inset-inline-start: var(--cross-x);
+  translate: -50% 0;
 }
 
 /*
@@ -86,8 +91,9 @@ const style = computed(() => ({ '--delay': `${props.delay}ms` }))
 
 .cross__ray--start,
 .cross__ray--end {
-  block-size: 1px;
+  block-size: var(--rule-w);
   inset-block-start: var(--cross-y);
+  translate: 0 -50%;
 }
 
 .cross__ray--start {
@@ -118,14 +124,15 @@ const style = computed(() => ({ '--delay': `${props.delay}ms` }))
   position: absolute;
   inset-inline-start: var(--cross-x);
   inset-block-start: var(--cross-y);
-  inline-size: 15px;
-  block-size: 15px;
+  inline-size: 19px;
+  block-size: 19px;
   translate: -50% -50%;
-  /* Прозрачность та же, что у лучей. Отличается только толщина: 3 px против 1 px —
-     узел читается как узел за счёт веса штриха, а не за счёт цвета */
+  /* Та же толщина и тот же цвет, что у лучей. Узел читается не как отдельный
+     элемент поверх линий, а как сплошной участок на их пересечении: там, где
+     штрихи расступаются, стоит целый крест */
   background:
-    linear-gradient(var(--rule-node), var(--rule-node)) center / 100% 3px no-repeat,
-    linear-gradient(var(--rule-node), var(--rule-node)) center / 3px 100% no-repeat;
+    linear-gradient(var(--rule-node), var(--rule-node)) center / 100% var(--rule-w) no-repeat,
+    linear-gradient(var(--rule-node), var(--rule-node)) center / var(--rule-w) 100% no-repeat;
   animation: node-in var(--dur-base) var(--ease-out) var(--delay) both;
 }
 
