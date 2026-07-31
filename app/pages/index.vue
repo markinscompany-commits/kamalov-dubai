@@ -1,14 +1,13 @@
 <script setup lang="ts">
-useHead({
-  title: 'Эльдар Камалов - ринопластика и септопластика в Дубае',
-  meta: [
-    {
-      name: 'description',
-      content:
-        'Эльдар Камалов - пластический хирург, ринопласт. Кандидат медицинских наук, 30 лет практики. Приём в Dubai London Hospital, лицензия DHA. Запись на консультацию.',
-    },
-  ],
-})
+const { m, locale } = useLocale()
+
+// Заголовок вкладки, описание для поисковиков и язык страницы меняются вместе
+// с языком сайта. Функция, а не объект: иначе значения замрут на первом языке.
+useHead(() => ({
+  htmlAttrs: { lang: locale.value },
+  title: m.value.meta.title,
+  meta: [{ name: 'description', content: m.value.meta.description }],
+}))
 </script>
 
 <template>

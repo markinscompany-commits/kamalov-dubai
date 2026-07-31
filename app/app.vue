@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const { swapping, restoreLocale } = useLocale()
+
 /**
  * Фиксируем реальную высоту окна в переменной --app-height.
  *
@@ -21,13 +23,14 @@ let rotateTimer: ReturnType<typeof setTimeout>
 
 function onRotate() {
   clearTimeout(rotateTimer)
-  rotateTimer = setTimeout(updateAppHeight, 250)
+  setTimeout(updateAppHeight, 250)
 }
 
 onMounted(() => {
   updateAppHeight()
   setTimeout(updateAppHeight, 200)
   window.addEventListener('orientationchange', onRotate)
+  restoreLocale()
 })
 
 onBeforeUnmount(() => {
@@ -37,9 +40,30 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="app">
+  <!--
+    Обёртка гасит страницу на время смены языка. Меняем только прозрачность:
+    transform и filter на родителе сделали бы его точкой отсчёта для закреплённой
+    шапки, и она поехала бы вместе со страницей.
+  -->
+  <div class="app locale-swap" :class="{ 'locale-swap--out': swapping }">
     <SiteHeader />
     <NuxtPage />
     <GrainOverlay />
   </div>
 </template>
+
+<style>
+.locale-swap {
+  transition: opacity 200ms var(--ease-out);
+}
+
+.locale-swap--out {
+  opacity: 0.14;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .locale-swap--out {
+    opacity: 1;
+  }
+}
+</style>

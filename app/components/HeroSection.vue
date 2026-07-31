@@ -13,20 +13,18 @@
   закрывается фоном ровно того же цвета, что и фон снимка (--photo-bg), поэтому
   край кадра не виден. Пропорция кадра — --photo-ar, режется tools/crop-portrait.ps1.
 
-  РАЗМЕТКА. По блоку проходят ровно две линии: одна вертикаль и одна горизонталь.
-  Пересечение стоит в пустом месте, чтобы линии не шли поверх текста. Рисуются
-  двумя слоями: светлым на чернильной половине, тёмным на светлой.
+  РАЗМЕТКА. Крестик и четыре луча из него (CrossRules). Точка пересечения стоит в
+  пустом месте, её отмечает Марк на скриншоте. На десктопе разметка рисуется двумя
+  слоями: светлым на чернильной половине, тёмным на светлой.
 
   Все формулировки — факты. Ни одной превосходной степени и ни одного обещания
   результата: см. compliance/content-rules.md.
 -->
 <script setup lang="ts">
+const { m } = useLocale()
+
 // TODO: подставить реальный номер клиники, когда клиника его передаст
 const whatsapp = 'https://wa.me/79285030807'
-
-// Позиции линий задаются переменными в CSS — они разные на десктопе и на телефоне
-const verticals = ['var(--hero-line-x)']
-const horizontals = ['var(--hero-line-y)']
 
 // На GitHub Pages сайт лежит в подпапке, поэтому путь к картинке собираем через baseURL
 const base = useRuntimeConfig().app.baseURL
@@ -36,15 +34,14 @@ const base = useRuntimeConfig().app.baseURL
   <section id="top" class="hero">
     <!--
       Два слоя одной и той же разметки, обрезанные по границе половин: светлый виден
-      на чернильной половине, тёмный — на светлой. Так одна линия читается через весь
-      экран независимо от того, что под ней. Оба слоя лежат ПОД фотографией: там, где
-      стоит снимок, он их закрывает.
+      на чернильной половине, тёмный — на светлой. Так линия читается через весь экран
+      независимо от того, что под ней. Оба слоя лежат ПОД фотографией.
     -->
-    <div class="hero__rules hero__rules--light" aria-hidden="true">
-      <GridLines :verticals="verticals" :horizontals="horizontals" :delay="600" />
+    <div class="hero__rules hero__rules--light">
+      <CrossRules :delay="700" />
     </div>
-    <div class="hero__rules hero__rules--dark" aria-hidden="true">
-      <GridLines :verticals="verticals" :horizontals="horizontals" :delay="600" />
+    <div class="hero__rules hero__rules--dark">
+      <CrossRules :delay="700" />
     </div>
 
     <!--
@@ -57,7 +54,7 @@ const base = useRuntimeConfig().app.baseURL
         :src="`${base}media/doctor-portrait.jpg`"
         :srcset="`${base}media/doctor-portrait-sm.jpg 900w, ${base}media/doctor-portrait.jpg 1600w`"
         sizes="(max-width: 900px) 100vw, 50vw"
-        alt="Эльдар Камалов, пластический хирург"
+        :alt="m.hero.photoAlt"
         width="1600"
         height="1473"
         fetchpriority="high"
@@ -65,29 +62,30 @@ const base = useRuntimeConfig().app.baseURL
     </div>
 
     <div class="page hero__inner">
-      <p class="mono hero__eyebrow rise" style="--i: 0">[01] Принимает в Dubai London Hospital</p>
+      <p class="mono hero__eyebrow rise" style="--i: 0">{{ m.hero.eyebrow }}</p>
 
       <div class="hero__text">
-        <h1 class="hero__title rise" style="--i: 1">Эльдар Камалов</h1>
+        <h1 class="hero__title rise" style="--i: 1">{{ m.hero.name }}</h1>
 
-        <!-- На десктопе «ринопласт» отдельной строкой, на телефоне — в одну строку.
+        <!-- На десктопе вторая часть отдельной строкой, на телефоне — в одну строку.
              Через display, а не через <br>: иначе на телефоне пропадает пробел. -->
         <p class="hero__spec rise" style="--i: 2">
-          пластический хирург,
-          <em class="hero__spec-second">ринопласт</em>
+          {{ m.hero.specMain }}
+          <em class="hero__spec-second">{{ m.hero.specEm }}</em>
         </p>
 
         <p class="hero__creds rise" style="--i: 3">
-          Кандидат медицинских наук, 30 лет практики,<br />
-          член Европейского общества ринопластов
+          <template v-for="(line, i) in m.hero.creds" :key="i">
+            <br v-if="i" />{{ line }}
+          </template>
         </p>
 
         <div class="hero__actions rise" style="--i: 4">
           <MarkAction href="#booking">
-            <span class="hero__cta-long">Записаться на консультацию</span>
-            <span class="hero__cta-short">Консультация</span>
+            <span class="hero__cta-long">{{ m.action.bookLong }}</span>
+            <span class="hero__cta-short">{{ m.action.bookShort }}</span>
           </MarkAction>
-          <MarkAction variant="ghost" :href="whatsapp">WhatsApp</MarkAction>
+          <MarkAction variant="ghost" :href="whatsapp">{{ m.action.whatsapp }}</MarkAction>
         </div>
       </div>
     </div>
@@ -97,7 +95,7 @@ const base = useRuntimeConfig().app.baseURL
       видит фон только внутри своего контекста наложения, а его задаёт .hero.
       Режим «разница» сам инвертирует её под любым пикселем.
     -->
-    <p class="mono hero__scroll blend-invert" aria-hidden="true">Прокрутите ↓</p>
+    <p class="mono hero__scroll blend-invert" aria-hidden="true">{{ m.hero.scroll }}</p>
   </section>
 </template>
 
@@ -123,8 +121,8 @@ const base = useRuntimeConfig().app.baseURL
 
   /* Пересечение разметки: в пустом поле между текстом и краем фотографии,
      по высоте — между шапкой и подписью «[01] …» */
-  --hero-line-x: 44.3%;
-  --hero-line-y: 15.3%;
+  --cross-x: 44.3%;
+  --cross-y: 15.3%;
 }
 
 /* --- Разметка: два слоя, обрезанные по границе половин --- */
@@ -158,7 +156,7 @@ const base = useRuntimeConfig().app.baseURL
   inset-block: 0;
   inset-inline-end: 0;
   inline-size: calc(100% - var(--photo-start));
-  /* Фон не нужен: половина уже залита --photo-bg самой секцией. Так линии разметки
+  /* Фон не нужен: половина уже залита --photo-bg самой секцией. Так лучи разметки
      остаются видны там, где кадр не достаёт до верха. */
 }
 
@@ -297,21 +295,30 @@ const base = useRuntimeConfig().app.baseURL
 
 /* --- Планшеты и телефоны ---
 
-   Раскладка гибкая, а не сложенная из посчитанных заранее отступов: сначала своё
-   место получают подпись, заголовок, регалии и кнопки, а фотография забирает то,
-   что осталось. Поэтому кнопки не могут уехать за нижний край, а высота блока не
-   зависит от правил по высоте окна — значит и не прыгает при прокрутке. */
+   Порядок сверху вниз: шапка, подпись, фотография, текст с кнопками.
+
+   Высота полосы с фотографией считается формулой, а не «сколько осталось»:
+   от этого числа зависит, где стоит крестик разметки, и оно должно быть известно
+   заранее. Берётся меньшее из двух — собственная пропорция кадра и остаток высоты
+   экрана после шапки, подписи и запаса под текст. Запас 17rem измерен по самому
+   тесному случаю (360×640, регалии в три строки). */
 
 @media (max-width: 900px) {
   .hero {
     --photo-start: 0%;
-    --hero-caption: 2.25rem;
-    /* Пересечение уходит вниз влево: ниже кнопок и левее всего текста —
-       единственное место на узком экране, где линии никого не задевают.
-       1.1rem от низа: у содержимого снизу отступ 2rem, значит линия проходит
-       под кнопками даже на самом низком телефоне, где запаса высоты нет совсем. */
-    --hero-line-x: max(0.8rem, calc(var(--page-pad) - 0.75rem));
-    --hero-line-y: calc(100% - 1.1rem);
+    --hero-h: var(--app-height, 100svh);
+    /* Полоса под подпись между шапкой и фотографией */
+    --hero-caption: 2.4rem;
+    --hero-text-reserve: 17rem;
+    --hero-photo-h: min(
+      calc(100vw / var(--photo-ar)),
+      calc(var(--hero-h) - var(--header-h) - var(--hero-caption) - var(--hero-text-reserve))
+    );
+
+    /* Пересечение — сразу под фотографией, у правого края страницы.
+       Точку отметил Марк на скриншоте телефона. */
+    --cross-x: calc(100% - var(--page-pad) - 0.25rem);
+    --cross-y: calc(var(--header-h) + var(--hero-caption) + var(--hero-photo-h) + 0.9rem);
 
     display: flex;
     flex-direction: column;
@@ -325,13 +332,16 @@ const base = useRuntimeConfig().app.baseURL
     padding-block-start: calc(var(--header-h) + var(--hero-caption));
   }
 
-  /* Подпись стоит НАД фотографией, под шапкой. Отступ по краям — тот же, что у всей
-     страницы: абсолютное позиционирование считается от padding-box, поэтому
-     inset-inline: 0 прижал бы её к самому краю.
-     Отсчёт идёт от секции: у .hero__inner на телефоне снят position: relative. */
+  /*
+    Подпись стоит НАД фотографией, под шапкой, на РАВНОМ расстоянии от логотипа
+    и от края снимка (правка Марка). Рамка логотипа заканчивается примерно на 55 px
+    от верха: шапка 72, рамка 38 по центру. Отсюда и отступ.
+
+    Отсчёт идёт от секции: у .hero__inner на телефоне снят position: relative.
+  */
   .hero__eyebrow {
     position: absolute;
-    inset-block-start: calc(var(--header-h) - 0.25rem);
+    inset-block-start: calc(var(--header-h) + 0.2rem);
     inset-inline: var(--page-pad);
     margin: 0;
   }
@@ -345,15 +355,13 @@ const base = useRuntimeConfig().app.baseURL
     display: none;
   }
 
-  /* Фотография — обычный элемент потока, забирает свободное место.
-     Верхняя граница — своя же пропорция: выше кадра полоса не растёт. */
+  /* Полоса с фотографией. Сжиматься может (на совсем низких экранах), расти — нет */
   .hero__photo {
     position: static;
     z-index: 1;
     inline-size: 100%;
-    flex: 1 1 0;
-    min-block-size: 9rem;
-    max-block-size: calc(100vw / var(--photo-ar));
+    flex: 0 1 var(--hero-photo-h);
+    max-block-size: var(--hero-photo-h);
     /* Здесь фон нужен: вокруг чернильная секция, а поля кадра должны совпадать с ним */
     background: var(--photo-bg);
   }

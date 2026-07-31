@@ -23,7 +23,10 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  /* clip, а не hidden: hidden превращает <body> в собственный контейнер прокрутки,
+     а браузер тогда отключает часть оптимизаций и на телефоне прокрутка идёт
+     заметно менее ровно. clip просто обрезает лишнее по горизонтали. */
+  overflow-x: clip;
 }
 
 h1,

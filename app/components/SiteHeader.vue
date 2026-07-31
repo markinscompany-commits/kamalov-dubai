@@ -6,19 +6,15 @@
     пополам ровно по той же границе — левая группа светлая, правая тёмная. Ни один элемент
     границу не пересекает, поэтому цвет каждого известен заранее и подбирать его на ходу
     не нужно;
-  · после прокрутки — на бумажной подложке с пунктирной чертой снизу: логотип, разделы
-    услуг, «Записаться», WhatsApp и бургер.
+  · после прокрутки — на подложке цвета второго блока (--paper-deep) с пунктирной чертой
+    снизу: логотип, разделы услуг, «Записаться», WhatsApp и бургер.
 
   Логотип латиницей, чтобы не повторять «Эльдар Камалов» рядом с заголовком первого экрана.
 -->
 <script setup lang="ts">
-// service: true — пункт, который остаётся в шапке после прокрутки
-const links = [
-  { label: 'О докторе', href: '#doctor', service: false },
-  { label: 'Ринопластика', href: '#rhinoplasty', service: true },
-  { label: 'Септопластика', href: '#septoplasty', service: true },
-  { label: 'Контакты', href: '#contacts', service: false },
-]
+import { locales, type Locale } from '~/i18n/messages'
+
+const { m, locale, setLocale } = useLocale()
 
 // TODO: подставить реальный номер клиники, когда клиника его передаст
 const whatsapp = 'https://wa.me/79285030807'
@@ -28,16 +24,27 @@ const menuOpen = ref(false)
 
 let frame = 0
 
+/**
+ * Пороги разные на включение и на выключение.
+ *
+ * Зачем. На телефоне при скрытии адресной строки страница может дёрнуться на
+ * пару пикселей. С одним порогом состояние шапки успевает переключиться туда-обратно,
+ * подложка мигает, высота дёргается — и это читается как рывок при прокрутке.
+ * Зазор между 8 и 24 такое мигание исключает.
+ */
 function measure() {
-  // Порог маленький специально. На телефоне при первом же движении фотография
-  // подъезжает под шапку, и прозрачная шапка со светлым логотипом на ней пропадает.
-  // Подложка должна появляться сразу, а не через 80 px.
-  scrolled.value = window.scrollY > 16
+  const y = window.scrollY
+  if (!scrolled.value && y > 24) scrolled.value = true
+  else if (scrolled.value && y < 8) scrolled.value = false
 }
 
 function onScroll() {
   cancelAnimationFrame(frame)
   frame = requestAnimationFrame(measure)
+}
+
+function pick(code: Locale) {
+  setLocale(code)
 }
 
 onMounted(() => {
@@ -54,12 +61,12 @@ onBeforeUnmount(() => {
 <template>
   <header class="header" :class="{ 'header--scrolled': scrolled, 'header--menu': menuOpen }">
     <div class="header__bg" aria-hidden="true" />
-    <DashedRule v-if="scrolled" class="header__rule" orientation="h" pos="100%" />
+    <DashedRule class="header__rule" orientation="h" pos="100%" :delay="900" />
 
     <div class="page header__inner">
       <!-- Левая группа: лежит на чернильной половине, поэтому светлая -->
       <div class="header__left">
-        <a class="header__logo brackets" href="#top" aria-label="Доктор Камалов - наверх">
+        <a class="header__logo brackets" href="#top" :aria-label="m.nav.toTop">
           <span class="header__logo-mark">dr.</span>
           <span class="header__logo-name">Kamalov</span>
         </a>
@@ -69,15 +76,15 @@ onBeforeUnmount(() => {
           гаснут, но МЕСТО за собой сохраняют — поэтому «Ринопластика» и «Септопластика»
           остаются ровно там же, где стояли до прокрутки, и не съезжают влево.
         -->
-        <nav class="header__nav mono" aria-label="Разделы страницы">
+        <nav class="header__nav mono" :aria-label="m.nav.sections">
           <a
-            v-for="item in links"
+            v-for="item in m.nav.links"
             :key="item.href"
             class="header__link"
             :class="{ 'header__link--secondary': !item.service }"
             :href="item.href"
           >
-            {{ item.label }}
+            {{ item.short }}
           </a>
         </nav>
       </div>
@@ -90,21 +97,29 @@ onBeforeUnmount(() => {
           и невидимое состояние не занимает лишнего места на узком экране.
         -->
         <div class="header__swap">
-          <div class="header__lang mono">
-            <button class="header__lang-btn" data-muted type="button">En</button>
-            <span class="header__lang-sep" data-muted aria-hidden="true">/</span>
-            <button class="header__lang-btn header__lang-btn--on" type="button" aria-current="true">
-              Ru
-            </button>
+          <div class="header__lang mono" role="group" :aria-label="m.nav.language">
+            <template v-for="(item, i) in locales" :key="item.code">
+              <span v-if="i" class="header__lang-sep" data-muted aria-hidden="true">/</span>
+              <button
+                class="header__lang-btn"
+                :class="{ 'header__lang-btn--on': locale === item.code }"
+                :data-muted="locale !== item.code ? '' : undefined"
+                type="button"
+                :aria-current="locale === item.code ? 'true' : undefined"
+                @click="pick(item.code)"
+              >
+                {{ item.label }}
+              </button>
+            </template>
           </div>
 
           <div class="header__actions">
             <MarkAction class="header__cta" href="#booking">
-              <span class="header__cta-long">Записаться на консультацию</span>
-              <span class="header__cta-short">Консультация</span>
+              <span class="header__cta-long">{{ m.action.bookLong }}</span>
+              <span class="header__cta-short">{{ m.action.bookShort }}</span>
             </MarkAction>
 
-            <MarkAction variant="ghost" :href="whatsapp">WhatsApp</MarkAction>
+            <MarkAction variant="ghost" :href="whatsapp">{{ m.action.whatsapp }}</MarkAction>
           </div>
         </div>
 
@@ -113,7 +128,7 @@ onBeforeUnmount(() => {
           type="button"
           :aria-expanded="menuOpen"
           aria-controls="nav-overlay"
-          aria-label="Открыть меню"
+          :aria-label="m.nav.open"
           @click="menuOpen = true"
         >
           <span class="header__burger-box" aria-hidden="true">
@@ -124,7 +139,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <NavOverlay id="nav-overlay" :open="menuOpen" :links="links" @close="menuOpen = false" />
+    <NavOverlay id="nav-overlay" :open="menuOpen" @close="menuOpen = false" />
   </header>
 </template>
 
@@ -134,14 +149,18 @@ onBeforeUnmount(() => {
   inset-block-start: 0;
   inset-inline: 0;
   z-index: 100;
+  /* Свой слой композитора. Закреплённая шапка иначе перерисовывается вместе со
+     страницей, когда на телефоне сворачивается адресная строка */
+  will-change: transform;
+  transform: translateZ(0);
 }
 
-/* Подложка отдельным слоем: так её можно проявлять, не трогая содержимое */
+/* Подложка отдельным слоем: так её можно проявлять, не трогая содержимое.
+   Цвет — как у второго блока, чтобы шапка после прокрутки читалась его продолжением */
 .header__bg {
   position: absolute;
   inset: 0;
-  /* 92%, а не меньше: контраст логотипа с бургером важнее полупрозрачности */
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  background: color-mix(in srgb, var(--paper-deep) 94%, transparent);
   backdrop-filter: blur(14px) saturate(1.1);
   opacity: 0;
   transition: opacity var(--dur-base) var(--ease-out);
@@ -155,8 +174,16 @@ onBeforeUnmount(() => {
   opacity: 0;
 }
 
+/* Черта снизу живёт всегда, а не появляется вместе с прокруткой: пересоздание
+   элемента заново запускало бы прочерчивание при каждом переключении состояния */
 .header__rule {
   z-index: 1;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.header--scrolled .header__rule {
+  opacity: 1;
 }
 
 .header__inner {
@@ -226,7 +253,6 @@ onBeforeUnmount(() => {
   font-size: 1em;
 }
 
-
 /* --- Разделы и услуги: занимают одну и ту же ячейку --- */
 
 .header__nav {
@@ -280,10 +306,6 @@ onBeforeUnmount(() => {
   transition: clip-path var(--dur-base) var(--ease-out);
 }
 
-.header__link:hover {
-  opacity: 1;
-}
-
 .header__link:hover::after {
   clip-path: inset(0 0 0 0);
 }
@@ -315,15 +337,35 @@ onBeforeUnmount(() => {
 }
 
 .header__lang-btn {
+  position: relative;
   font: inherit;
   letter-spacing: inherit;
   text-transform: inherit;
   color: inherit;
+  padding-block-end: 3px;
   transition: opacity var(--dur-fast) var(--ease-out);
 }
 
-.header__lang-btn:hover {
-  opacity: 1;
+/* Выбранный язык подчёркнут тем же пунктиром, что вся разметка. Подчёркивание
+   прочерчивается, а не появляется скачком — переключение должно быть плавным */
+.header__lang-btn::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: 1px;
+  background-image: repeating-linear-gradient(
+    to right,
+    currentColor 0 var(--dash-on),
+    transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))
+  );
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--dur-base) var(--ease-out);
+}
+
+.header__lang-btn--on::after,
+.header__lang-btn:hover::after {
+  clip-path: inset(0);
 }
 
 .header__lang-btn--on {
@@ -372,6 +414,9 @@ onBeforeUnmount(() => {
   block-size: 2.75rem;
   margin-inline-end: -0.6rem;
   color: inherit;
+  transition:
+    opacity var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
 }
 
 .header__burger-box {
@@ -395,9 +440,11 @@ onBeforeUnmount(() => {
   inline-size: 100%;
 }
 
-/* Пока меню открыто, бургер прячем — в меню есть свой крестик */
+/* Пока меню открыто, бургер уходит — в меню есть свой крестик. Уходит поворотом,
+   а не мгновенно: крестик в меню появляется тем же движением навстречу */
 .header--menu .header__burger {
   opacity: 0;
+  transform: rotate(45deg) scale(0.8);
   pointer-events: none;
 }
 
@@ -442,8 +489,17 @@ onBeforeUnmount(() => {
   /* Размытие подложки на телефоне — дорогая операция на каждый кадр прокрутки.
      Ставим непрозрачный фон: выглядит так же, а дёрганья не даёт. */
   .header__bg {
-    background: var(--paper);
+    background: var(--paper-deep);
     backdrop-filter: none;
+  }
+
+  /* Высоту на телефоне не анимируем совсем. Изменение размера — не та вещь, которую
+     видеокарта делает бесплатно: каждый кадр пересчитывается раскладка шапки, и
+     именно в момент сворачивания адресной строки это заметно как рывок */
+  .header__inner,
+  .header--scrolled .header__inner {
+    block-size: var(--header-h);
+    transition: none;
   }
 
   .header--scrolled .header__left,
