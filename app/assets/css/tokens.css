@@ -45,8 +45,18 @@
   --font-text: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
 
+  /* --- Шапка --- */
+  --header-h: 4.5rem;
+  --header-h-scrolled: 4rem;
+
+  /* Правая половина первого экрана — фотография. От этого же числа считается маска,
+     по которой светлые линии разметки проявляются поверх снимка. */
+  --photo-start: 48%;
+
   /* --- Шкала --- */
-  --fs-display: clamp(3.25rem, 7.5vw, 8rem);
+  /* Дисплейный кегль ограничен сверху 7rem: первый экран обязан целиком помещаться
+     в высоту окна вместе со строкой фактов */
+  --fs-display: clamp(2.75rem, 6.4vw, 7rem);
   --fs-h1: clamp(2.5rem, 5vw, 4.75rem);
   --fs-h2: clamp(1.75rem, 3vw, 2.75rem);
   --fs-lead: clamp(1.0625rem, 1.5vw, 1.375rem);
