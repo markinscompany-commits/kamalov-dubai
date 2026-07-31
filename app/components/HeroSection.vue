@@ -5,11 +5,17 @@
   краткое описание опыта, кнопка «Записаться на консультацию», кнопка WhatsApp.
 
   Композиция: экран ровно пополам. Слева чернильная половина со светлым текстом,
-  справа фотография на светлом фоне. Граница чёткая.
+  справа фотография на светлом фоне.
 
-  Разметка — сквозная сетка сайта (GridLines): вертикали стоят на тех же долях экрана,
-  что и в остальных блоках, поэтому при прокрутке читаются как одна непрерывная сетка.
-  Рисуется дважды: светлой на тёмной половине, тёмной на светлой.
+  ФОТОГРАФИЯ. У снимка есть охранная зона — голова с запасом сверху и обе руки
+  целиком. Она не должна обрезаться ни на одном разрешении. Поэтому кадр вписывается
+  в область ЦЕЛИКОМ (object-fit: contain), а не заполняет её. Свободное место
+  закрывается фоном ровно того же цвета, что и фон снимка (--photo-bg), поэтому
+  край кадра не виден. Пропорция кадра — --photo-ar, режется tools/crop-portrait.ps1.
+
+  РАЗМЕТКА. По блоку проходят ровно две линии: одна вертикаль и одна горизонталь.
+  Пересечение стоит в пустом месте, чтобы линии не шли поверх текста. Рисуются
+  двумя слоями: светлым на чернильной половине, тёмным на светлой.
 
   Все формулировки — факты. Ни одной превосходной степени и ни одного обещания
   результата: см. compliance/content-rules.md.
@@ -18,8 +24,9 @@
 // TODO: подставить реальный номер клиники, когда клиника его передаст
 const whatsapp = 'https://wa.me/79285030807'
 
-// Горизонтали первого экрана: отбивают верх и низ блока
-const horizontals = ['27%', '90%']
+// Позиции линий задаются переменными в CSS — они разные на десктопе и на телефоне
+const verticals = ['var(--hero-line-x)']
+const horizontals = ['var(--hero-line-y)']
 
 // На GitHub Pages сайт лежит в подпапке, поэтому путь к картинке собираем через baseURL
 const base = useRuntimeConfig().app.baseURL
@@ -28,39 +35,37 @@ const base = useRuntimeConfig().app.baseURL
 <template>
   <section id="top" class="hero">
     <!--
-      Сетка лежит ПОД фотографией: линии идут через весь экран, но там, где стоит снимок,
-      он их закрывает. Поэтому слой один и обрезать его не нужно — раньше была вторая,
-      светлая копия поверх снимка, и она же обрывала сетку над фотографией на телефоне.
+      Два слоя одной и той же разметки, обрезанные по границе половин: светлый виден
+      на чернильной половине, тёмный — на светлой. Так одна линия читается через весь
+      экран независимо от того, что под ней. Оба слоя лежат ПОД фотографией: там, где
+      стоит снимок, он их закрывает.
     -->
-    <div class="hero__rules" aria-hidden="true">
-      <GridLines :horizontals="horizontals" :delay="600" />
+    <div class="hero__rules hero__rules--light" aria-hidden="true">
+      <GridLines :verticals="verticals" :horizontals="horizontals" :delay="600" />
+    </div>
+    <div class="hero__rules hero__rules--dark" aria-hidden="true">
+      <GridLines :verticals="verticals" :horizontals="horizontals" :delay="600" />
     </div>
 
     <!--
-      Два кадра одного снимка, а не один на все случаи: на десктопе фотография стоит
-      вертикальной половиной, на телефоне — горизонтальной полосой сверху. Кадрируем
-      заранее (tools/crop-portrait.ps1), а не подгоняем в CSS.
+      Один кадр на все разрешения — он режется ровно по охранной зоне, а вписывается
+      целиком, поэтому подгонять пропорции под каждый экран больше не нужно.
+      Два файла отличаются только размером в пикселях, браузер берёт нужный сам.
     -->
     <div class="hero__photo">
-      <picture>
-        <source
-          media="(max-width: 900px)"
-          :srcset="`${base}media/doctor-portrait-wide.jpg`"
-          width="1200"
-          height="1200"
-        />
-        <img
-          :src="`${base}media/doctor-portrait.jpg`"
-          alt="Эльдар Камалов, пластический хирург"
-          width="1400"
-          height="1707"
-          fetchpriority="high"
-        />
-      </picture>
+      <img
+        :src="`${base}media/doctor-portrait.jpg`"
+        :srcset="`${base}media/doctor-portrait-sm.jpg 900w, ${base}media/doctor-portrait.jpg 1600w`"
+        sizes="(max-width: 900px) 100vw, 50vw"
+        alt="Эльдар Камалов, пластический хирург"
+        width="1600"
+        height="1473"
+        fetchpriority="high"
+      />
     </div>
 
     <div class="page hero__inner">
-      <p class="mono hero__eyebrow rise" style="--i: 0">[01] Дубай · Dubai London Hospital</p>
+      <p class="mono hero__eyebrow rise" style="--i: 0">[01] Принимает в Dubai London Hospital</p>
 
       <div class="hero__text">
         <h1 class="hero__title rise" style="--i: 1">Эльдар Камалов</h1>
@@ -99,32 +104,53 @@ const base = useRuntimeConfig().app.baseURL
 <style scoped>
 .hero {
   position: relative;
+  /* Высота берётся из замеренной один раз --app-height, а не из «живой» высоты окна.
+     Иначе на телефоне при скрытии адресной строки экран пересчитывается прямо во
+     время прокрутки и дёргается. Лесенка запасных значений — для старых браузеров. */
+  block-size: 100vh;
   block-size: 100svh;
+  block-size: var(--app-height, 100svh);
   min-block-size: 34rem;
   overflow: hidden;
   /* Замыкаем смешивание на секции */
   isolation: isolate;
-  /* Слева чернильная половина, справа поле под фотографию */
+  /* Слева чернильная половина, справа поле под фотографию — тон в тон с её фоном */
   background: linear-gradient(
     to right,
     var(--ink) 0 var(--photo-start),
-    #efe7e2 var(--photo-start) 100%
+    var(--photo-bg) var(--photo-start) 100%
   );
+
+  /* Пересечение разметки: в пустом поле между текстом и краем фотографии,
+     по высоте — между шапкой и подписью «[01] …» */
+  --hero-line-x: 44.3%;
+  --hero-line-y: 15.3%;
 }
 
-/* --- Сетка: один слой под фотографией --- */
+/* --- Разметка: два слоя, обрезанные по границе половин --- */
 
 .hero__rules {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  /* Линии светлые: видны они только на чернильной части, остальное закрывает снимок */
-  --rule: color-mix(in srgb, var(--paper) 30%, transparent);
-  --rule-faint: color-mix(in srgb, var(--paper) 17%, transparent);
 }
 
-/* --- Фотография: ровно правая половина, край чёткий --- */
+/* ⚠️ clip-path — свойство физическое, логического аналога нет. Для арабской версии
+   обе обрезки разворачиваются вручную (см. design-system.md, раздел 9). */
+.hero__rules--light {
+  --rule: color-mix(in srgb, var(--paper) 34%, transparent);
+  --rule-node: color-mix(in srgb, var(--paper) 72%, transparent);
+  clip-path: inset(0 calc(100% - var(--photo-start)) 0 0);
+}
+
+.hero__rules--dark {
+  --rule: color-mix(in srgb, var(--ink) 26%, transparent);
+  --rule-node: color-mix(in srgb, var(--ink) 55%, transparent);
+  clip-path: inset(0 0 0 var(--photo-start));
+}
+
+/* --- Фотография --- */
 
 .hero__photo {
   position: absolute;
@@ -132,23 +158,19 @@ const base = useRuntimeConfig().app.baseURL
   inset-block: 0;
   inset-inline-end: 0;
   inline-size: calc(100% - var(--photo-start));
-  /* Подложка в тон фона кадра: пока картинка грузится, половина не мигает */
-  background: #efe7e2;
+  /* Фон не нужен: половина уже залита --photo-bg самой секцией. Так линии разметки
+     остаются видны там, где кадр не достаёт до верха. */
 }
 
-.hero__photo picture,
 .hero__photo img {
   display: block;
   inline-size: 100%;
   block-size: 100%;
-}
-
-.hero__photo img {
-  object-fit: cover;
-  /* Кадр обрезан заранее почти под пропорцию половины, поэтому подрезается чуть-чуть.
-     Якорь у верха: на широких и низких окнах лишнее срезается снизу, где и так уходят
-     руки, а голова остаётся целиком. */
-  object-position: 50% 20%;
+  /* Кадр вписывается ЦЕЛИКОМ: охранная зона не обрезается ни при какой пропорции
+     окна. Прижат к низу — руки всегда на месте, свободное место уходит наверх,
+     где фон совпадает с фоном снимка и стыка не видно. */
+  object-fit: contain;
+  object-position: 50% 100%;
   filter: saturate(0.92) contrast(1.02);
 }
 
@@ -259,9 +281,11 @@ const base = useRuntimeConfig().app.baseURL
   }
 }
 
-/* --- Низкие окна: экран обязан оставаться целым --- */
+/* --- Низкие окна на десктопе: экран обязан оставаться целым ---
+   Только от 901 px: на телефоне высота окна меняется при скрытии адресной строки,
+   и правило по высоте пересобирало бы первый экран прямо во время прокрутки. */
 
-@media (max-height: 820px) {
+@media (min-width: 901px) and (max-height: 820px) {
   .hero__title {
     font-size: clamp(2.25rem, 4.2vw, 3.5rem);
   }
@@ -271,20 +295,40 @@ const base = useRuntimeConfig().app.baseURL
   }
 }
 
-/* --- Планшеты и телефоны --- */
+/* --- Планшеты и телефоны ---
+
+   Раскладка гибкая, а не сложенная из посчитанных заранее отступов: сначала своё
+   место получают подпись, заголовок, регалии и кнопки, а фотография забирает то,
+   что осталось. Поэтому кнопки не могут уехать за нижний край, а высота блока не
+   зависит от правил по высоте окна — значит и не прыгает при прокрутке. */
 
 @media (max-width: 900px) {
   .hero {
     --photo-start: 0%;
-    /* Полоса под подпись, потом фотография, потом текст */
     --hero-caption: 2.25rem;
-    --hero-photo-h: 53svh;
+    /* Пересечение уходит вниз влево: ниже кнопок и левее всего текста —
+       единственное место на узком экране, где линии никого не задевают.
+       1.1rem от низа: у содержимого снизу отступ 2rem, значит линия проходит
+       под кнопками даже на самом низком телефоне, где запаса высоты нет совсем. */
+    --hero-line-x: max(0.8rem, calc(var(--page-pad) - 0.75rem));
+    --hero-line-y: calc(100% - 1.1rem);
+
+    display: flex;
+    flex-direction: column;
     background: var(--ink);
+    /* Не жёсткая высота, а минимальная: если текст вдруг не влезет, блок вырастет,
+       а не обрежет содержимое */
+    block-size: auto;
+    min-block-size: 100vh;
+    min-block-size: 100svh;
+    min-block-size: var(--app-height, 100svh);
+    padding-block-start: calc(var(--header-h) + var(--hero-caption));
   }
 
-  /* Подпись переезжает НАД фотографию, под шапку.
-     Отступ по краям — тот же, что у всей страницы: абсолютное позиционирование
-     считается от padding-box, поэтому inset-inline: 0 прижал бы её к самому краю. */
+  /* Подпись стоит НАД фотографией, под шапкой. Отступ по краям — тот же, что у всей
+     страницы: абсолютное позиционирование считается от padding-box, поэтому
+     inset-inline: 0 прижал бы её к самому краю.
+     Отсчёт идёт от секции: у .hero__inner на телефоне снят position: relative. */
   .hero__eyebrow {
     position: absolute;
     inset-block-start: calc(var(--header-h) - 0.25rem);
@@ -292,24 +336,36 @@ const base = useRuntimeConfig().app.baseURL
     margin: 0;
   }
 
+  /* Светлая разметка на телефоне видна везде: половин здесь нет, фон сплошь чернильный */
+  .hero__rules--light {
+    clip-path: none;
+  }
+
+  .hero__rules--dark {
+    display: none;
+  }
+
+  /* Фотография — обычный элемент потока, забирает свободное место.
+     Верхняя граница — своя же пропорция: выше кадра полоса не растёт. */
   .hero__photo {
+    position: static;
+    z-index: 1;
     inline-size: 100%;
-    inset-block-start: calc(var(--header-h) + var(--hero-caption));
-    inset-block-end: auto;
-    block-size: var(--hero-photo-h);
+    flex: 1 1 0;
+    min-block-size: 9rem;
+    max-block-size: calc(100vw / var(--photo-ar));
+    /* Здесь фон нужен: вокруг чернильная секция, а поля кадра должны совпадать с ним */
+    background: var(--photo-bg);
   }
 
-  .hero__photo img {
-    /* Почти квадратный кадр. Тот же якорь у верха: лишнее срезается снизу,
-       голова не обрезается ни на одной высоте экрана. */
-    object-position: 50% 18%;
-  }
-
+  /* position: static — чтобы подпись считала свой отступ от секции, а не отсюда.
+     z-index у элемента гибкой раскладки работает и без позиционирования. */
   .hero__inner {
+    position: static;
+    block-size: auto;
+    flex: 0 0 auto;
     align-content: start;
-    padding-block-start: calc(
-      var(--header-h) + var(--hero-caption) + var(--hero-photo-h) + var(--s-6)
-    );
+    padding-block: var(--s-6) var(--s-8);
   }
 
   .hero__text {
@@ -358,27 +414,6 @@ const base = useRuntimeConfig().app.baseURL
 
   .hero__scroll {
     display: none;
-  }
-}
-
-/* Невысокие телефоны (например 360×640): при полной высоте полосы кнопки уезжали
-   за нижний край экрана — ужимаем фотографию и заголовок */
-@media (max-width: 900px) and (max-height: 720px) {
-  .hero {
-    --hero-photo-h: 40svh;
-    --hero-caption: 2rem;
-  }
-
-  .hero__title {
-    font-size: clamp(1.625rem, 7vw, 2rem);
-  }
-
-  .hero__spec {
-    font-size: 1rem;
-  }
-
-  .hero__creds {
-    font-size: 0.875rem;
   }
 }
 </style>

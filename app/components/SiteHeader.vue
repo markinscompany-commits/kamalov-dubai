@@ -29,7 +29,10 @@ const menuOpen = ref(false)
 let frame = 0
 
 function measure() {
-  scrolled.value = window.scrollY > 80
+  // Порог маленький специально. На телефоне при первом же движении фотография
+  // подъезжает под шапку, и прозрачная шапка со светлым логотипом на ней пропадает.
+  // Подложка должна появляться сразу, а не через 80 px.
+  scrolled.value = window.scrollY > 16
 }
 
 function onScroll() {
@@ -56,7 +59,7 @@ onBeforeUnmount(() => {
     <div class="page header__inner">
       <!-- Левая группа: лежит на чернильной половине, поэтому светлая -->
       <div class="header__left">
-        <a class="header__logo brackets" href="#top" aria-label="Доктор Камалов — наверх">
+        <a class="header__logo brackets" href="#top" aria-label="Доктор Камалов - наверх">
           <span class="header__logo-mark">dr.</span>
           <span class="header__logo-name">Kamalov</span>
         </a>
@@ -212,6 +215,10 @@ onBeforeUnmount(() => {
   letter-spacing: 0.04em;
   /* Те же угловые скобки, что у кнопки WhatsApp — приём один на весь сайт */
   --brackets-inset: -0.55rem -0.7rem;
+  /* Уголки торчат за текст на 0.7rem. Сдвигаем логотип ровно на эту величину,
+     чтобы по краю страницы выравнивался УГОЛОК, а не буква: иначе логотип
+     визуально выпадает левее подписи «[01] …» и всего остального содержимого. */
+  margin-inline-start: 0.7rem;
 }
 
 .header__logo-mark,

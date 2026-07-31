@@ -1,9 +1,20 @@
-# Готовит два кадра портрета из исходника с большими полями.
+# Готовит кадры портрета из исходника с большими полями.
 #
-# Исходник снят с умышленным запасом сверху и справа, чтобы кадрировать можно было
-# под разные пропорции. Здесь этот запас срезается:
-#   · doctor-portrait.jpg      — вертикальный кадр под правую половину десктопа
-#   · doctor-portrait-wide.jpg — горизонтальный кадр под полосу сверху на телефоне
+# ГЛАВНОЕ ПРАВИЛО: есть охранная зона — область, которая не должна обрезаться
+# ни на одном разрешении. Марк обвёл её на исходнике: голова с запасом сверху
+# и обе руки целиком до нижнего края кадра.
+#
+# В исходнике 5504x3072 это x 1270..4140, y 430..3072 — пропорция ~1.087
+# (чуть шире квадрата). Оба файла режутся ровно по ней и отличаются только размером
+# в пикселях: крупный под десктоп, мелкий под телефон.
+#
+#   · doctor-portrait.jpg     — 1600 px по ширине, десктоп
+#   · doctor-portrait-sm.jpg  —  900 px по ширине, телефон
+#
+# На сайте кадр вписывается ЦЕЛИКОМ (object-fit: contain), а не заполняет область.
+# Поэтому обрезка физически невозможна: свободное место закрывается фоном того же
+# цвета, что и фон снимка (#F1E2DA — замерен по исходнику, он ровный по всему кадру,
+# разброс ±2 единицы). Стыка не видно.
 #
 # Запуск:  powershell -File tools/crop-portrait.ps1
 
@@ -21,15 +32,22 @@ $codec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Obj
 $prm = New-Object System.Drawing.Imaging.EncoderParameters(1)
 $prm.Param[0] = New-Object System.Drawing.Imaging.EncoderParameter([System.Drawing.Imaging.Encoder]::Quality, 86)
 
-function Save-Crop($srcX, $srcY, $srcW, $srcH, $outW, $name) {
-  $outH = [int]([math]::Round($srcH * ($outW / $srcW)))
+# --- Охранная зона ---
+$safeX = 1270
+$safeY = 430
+$safeW = 4140 - $safeX
+$safeH = 3072 - $safeY
+Write-Output ("охранная зона: {0},{1}  {2}x{3}  пропорция {4:N4}" -f $safeX, $safeY, $safeW, $safeH, ($safeW / $safeH))
+
+function Save-Crop($outW, $name) {
+  $outH = [int]([math]::Round($script:safeH * ($outW / $script:safeW)))
   $bmp = New-Object System.Drawing.Bitmap($outW, $outH)
   $g = [System.Drawing.Graphics]::FromImage($bmp)
   $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
   $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
   $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
   $dst = New-Object System.Drawing.Rectangle(0, 0, $outW, $outH)
-  $src = New-Object System.Drawing.Rectangle($srcX, $srcY, $srcW, $srcH)
+  $src = New-Object System.Drawing.Rectangle($script:safeX, $script:safeY, $script:safeW, $script:safeH)
   $g.DrawImage($script:img, $dst, $src, [System.Drawing.GraphicsUnit]::Pixel)
   $path = Join-Path $script:outDir $name
   $bmp.Save($path, $script:codec, $script:prm)
@@ -37,14 +55,7 @@ function Save-Crop($srcX, $srcY, $srcW, $srcH, $outW, $name) {
   Write-Output "$name : ${outW}x${outH}, $([math]::Round((Get-Item $path).Length/1KB,0)) КБ"
 }
 
-# Исходник 5504x3072, врач по центру. Голова начинается примерно на 22% высоты,
-# руки уходят под нижний край — поэтому снизу берём всё до края, а запас режем сверху.
-
-# Вертикальный (~0.82) — под правую половину десктопа
-Save-Crop -srcX 1568 -srcY 250 -srcW 2314 -srcH 2822 -outW 1400 -name 'doctor-portrait.jpg'
-
-# Почти квадратный (~1.0) — под полосу сверху на телефоне: при нынешней высоте полосы
-# она получается почти квадратной, и горизонтальный кадр обрезался бы по бокам
-Save-Crop -srcX 1339 -srcY 300 -srcW 2772 -srcH 2772 -outW 1200 -name 'doctor-portrait-wide.jpg'
+Save-Crop -outW 1600 -name 'doctor-portrait.jpg'
+Save-Crop -outW 900 -name 'doctor-portrait-sm.jpg'
 
 $img.Dispose()

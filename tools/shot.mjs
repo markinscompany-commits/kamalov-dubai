@@ -61,15 +61,39 @@ for (const vp of VIEWPORTS) {
     }
   }, vp.width)
 
-  // умещается ли первый экран и не срезана ли голова
+  // умещается ли первый экран, влезли ли кнопки и цел ли кадр портрета
   const fit = await page.evaluate(() => {
-    const text = document.querySelector('.hero__text')?.getBoundingClientRect()
-    const photo = document.querySelector('.hero__photo')?.getBoundingClientRect()
+    const r = (sel) => document.querySelector(sel)?.getBoundingClientRect() ?? null
+    const hero = r('.hero')
+    const text = r('.hero__text')
+    const actions = r('.hero__actions')
+    const box = r('.hero__photo')
+    const img = document.querySelector('.hero__photo img')
+
+    // Куда реально лёг кадр внутри своей области при object-fit: contain
+    let drawn = null
+    if (img && box && img.naturalWidth) {
+      const k = Math.min(box.width / img.naturalWidth, box.height / img.naturalHeight)
+      const w = img.naturalWidth * k
+      const h = img.naturalHeight * k
+      drawn = {
+        w: Math.round(w),
+        h: Math.round(h),
+        // остаток области, не закрытый кадром: он заливается цветом фона снимка
+        padX: Math.round(box.width - w),
+        padY: Math.round(box.height - h),
+        // на сколько кадр вылез бы за область — при contain обязан быть 0
+        cut: Math.round(Math.max(0, w - box.width) + Math.max(0, h - box.height)),
+      }
+    }
+
     return {
-      textBottom: text ? Math.round(text.bottom) : null,
       vh: window.innerHeight,
-      photoTop: photo ? Math.round(photo.top) : null,
-      photoBottom: photo ? Math.round(photo.bottom) : null,
+      heroH: hero ? Math.round(hero.height) : null,
+      textBottom: text ? Math.round(text.bottom) : null,
+      actionsBottom: actions ? Math.round(actions.bottom) : null,
+      heroBottom: hero ? Math.round(hero.bottom) : null,
+      drawn,
     }
   })
 
@@ -80,9 +104,16 @@ for (const vp of VIEWPORTS) {
     console.log(`  ${b.tag}.${b.cls} — left ${b.left}, right ${b.right}, width ${b.width}`)
   }
   console.log(
-    `первый экран: низ текста ${fit.textBottom} из ${fit.vh} — ` +
-      `${fit.textBottom <= fit.vh + 1 ? 'уместился' : '⚠️ НЕ УМЕСТИЛСЯ'}`,
+    `первый экран: высота ${fit.heroH} при окне ${fit.vh}; ` +
+      `низ кнопок ${fit.actionsBottom} / низ блока ${fit.heroBottom} — ` +
+      `${fit.actionsBottom <= fit.heroBottom + 1 && fit.actionsBottom <= fit.vh + 1 ? 'кнопки целы' : '⚠️ КНОПКИ ОБРЕЗАНЫ'}`,
   )
+  if (fit.drawn) {
+    console.log(
+      `портрет: кадр ${fit.drawn.w}×${fit.drawn.h}, поля ${fit.drawn.padX}×${fit.drawn.padY} — ` +
+        `${fit.drawn.cut === 0 ? 'обрезки нет' : '⚠️ ОБРЕЗАН на ' + fit.drawn.cut}`,
+    )
+  }
 
   await page.close()
 }

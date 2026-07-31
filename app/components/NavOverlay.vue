@@ -77,7 +77,7 @@ onBeforeUnmount(() => {
               Ru
             </button>
           </div>
-          <p class="mono nav__place">Дубай · Dubai London Hospital</p>
+          <p class="mono nav__place">Dubai London Hospital</p>
         </div>
       </div>
     </div>
