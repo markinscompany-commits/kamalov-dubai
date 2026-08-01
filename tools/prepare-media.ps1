@@ -9,11 +9,17 @@
 #
 # Пути: -Src от папки site, -Out кладётся в public/media.
 
+# Можно вырезать часть кадра: доли от исходника, 0..1.
+#   -CropX 0.3 -CropY 0 -CropW 0.45 -CropH 0.55
 param(
   [Parameter(Mandatory = $true)][string]$Src,
   [Parameter(Mandatory = $true)][string]$Out,
   [int]$Width = 1200,
-  [int]$Quality = 82
+  [int]$Quality = 82,
+  [double]$CropX = 0,
+  [double]$CropY = 0,
+  [double]$CropW = 1,
+  [double]$CropH = 1
 )
 
 $ErrorActionPreference = 'Stop'
@@ -26,13 +32,24 @@ $outPath = Join-Path $root (Join-Path 'public\media' $Out)
 $img = [System.Drawing.Image]::FromFile($srcPath)
 Write-Output "исходник: $($img.Width)x$($img.Height)"
 
-$h = [int][Math]::Round($img.Height * ($Width / $img.Width))
+# Область исходника, которую берём
+$sx = [int][Math]::Round($img.Width * $CropX)
+$sy = [int][Math]::Round($img.Height * $CropY)
+$sw = [int][Math]::Round($img.Width * $CropW)
+$sh = [int][Math]::Round($img.Height * $CropH)
+Write-Output "кадр: $sx,$sy $sw x $sh"
+
+$h = [int][Math]::Round($sh * ($Width / $sw))
 $bmp = New-Object System.Drawing.Bitmap($Width, $h)
 $g = [System.Drawing.Graphics]::FromImage($bmp)
 $g.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
 $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
 $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
-$g.DrawImage($img, 0, 0, $Width, $h)
+$g.DrawImage(
+  $img,
+  (New-Object System.Drawing.Rectangle(0, 0, $Width, $h)),
+  (New-Object System.Drawing.Rectangle($sx, $sy, $sw, $sh)),
+  [System.Drawing.GraphicsUnit]::Pixel)
 $g.Dispose()
 
 $codec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object { $_.MimeType -eq 'image/jpeg' }

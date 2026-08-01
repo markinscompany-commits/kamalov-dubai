@@ -21,6 +21,10 @@ interface Fact {
 interface Props {
   id: string
   label: string
+  /** Какая разметка на профиле: форма (ринопластика) или дыхание (септопластика) */
+  mark?: 'dorsum' | 'airway'
+  /** Подпись под рисунком */
+  markCaption?: string
   title: string
   lead: string
   facts: Fact[]
@@ -28,13 +32,17 @@ interface Props {
   tone?: 'paper' | 'deep'
 }
 
-withDefaults(defineProps<Props>(), { tone: 'paper' })
+withDefaults(defineProps<Props>(), { tone: 'paper', mark: 'dorsum', markCaption: undefined })
 
 const { m } = useLocale()
 </script>
 
 <template>
-  <PageSection :id="id" :label="label" :tone="tone" cross-y="5.5rem">
+  <PageSection :id="id" :label="label" :tone="tone" cross-y="5.5rem" :cross-fraction="0.207">
+    <template #side>
+      <ProfileMark class="service__mark" :variant="mark" :caption="markCaption" />
+    </template>
+
     <KaraokeText tag="h2" :key="title" :text="title" />
 
     <p class="service__lead">{{ lead }}</p>
@@ -53,6 +61,11 @@ const { m } = useLocale()
 </template>
 
 <style scoped>
+/* Рисунок стоит в боковой колонке, под подписью раздела */
+.service__mark {
+  margin-block-start: var(--s-2);
+}
+
 .service__lead {
   font-size: var(--fs-lead);
   line-height: 1.5;
@@ -80,6 +93,13 @@ const { m } = useLocale()
 
 .service__action {
   margin-block-start: var(--s-2);
+}
+
+@media (max-width: 900px) {
+  /* На телефоне рисунок уезжает под текст и занимает не всю ширину */
+  .service__mark {
+    max-inline-size: 11rem;
+  }
 }
 
 @media (max-width: 700px) {

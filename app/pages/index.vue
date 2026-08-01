@@ -26,6 +26,8 @@ useHead(() => ({
       :lead="m.rhinoplasty.lead"
       :facts="m.rhinoplasty.facts"
       :risks="m.rhinoplasty.risks"
+      mark="dorsum"
+      :mark-caption="m.rhinoplasty.markCaption"
     />
     <ServiceSection
       id="septoplasty"
@@ -34,6 +36,8 @@ useHead(() => ({
       :lead="m.septoplasty.lead"
       :facts="m.septoplasty.facts"
       :risks="m.septoplasty.risks"
+      mark="airway"
+      :mark-caption="m.septoplasty.markCaption"
     />
   </main>
 </template>
