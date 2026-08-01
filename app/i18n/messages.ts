@@ -51,6 +51,9 @@ const ru = {
     bookShort: 'Консультация',
     whatsapp: 'WhatsApp',
   },
+  service: {
+    risksLabel: 'Риски',
+  },
   hero: {
     eyebrow: '[01] Принимает в Dubai London Hospital',
     name: 'Эльдар Камалов',
@@ -64,6 +67,67 @@ const ru = {
     label: '[02] Подход',
     lead: 'Хирургия носа - это расчёт. Форма, дыхание, анатомия и срок восстановления связаны между собой. Решения принимаются до операции, а не во время неё.',
     note: 'На консультации хирург разбирает анатомию, объясняет, какие задачи операция решает, а какие - нет, и проговаривает риски. Результат зависит от индивидуальных особенностей и не может быть одинаковым у разных людей.',
+  },
+  /*
+    Блок «О докторе». Материал взят с dr-kamalov.com и переписан под правила.
+    Что НЕ перенесено и почему (compliance/content-rules.md):
+    · «лауреат премии за ЛУЧШИЙ результат» - превосходная степень, ST-21 п. 6.11.
+      Осталось название премии и год: награда как факт разрешена;
+    · «среди пациентов - спортсмены, телеведущие, актёры, блогеры» - апелляция к
+      известности (famous в списке запрещённых слов) плюс сведения о пациентах;
+    · список зарубежных коллег поимённо - читается как сравнение и ничего не даёт
+      человеку, который выбирает врача.
+    ⚠️ Титул и специализация должны стоять СЛОВО В СЛОВО как в лицензии DHA
+    (ST-21, п. 8.1.3). Пока лицензии нет, стоит формулировка с сайта врача.
+  */
+  doctor: {
+    label: '[03] О докторе',
+    title: 'Отоларинголог по образованию, ринопласт по практике.',
+    lead: 'Эльдар Камалов родился в Махачкале, в семье отоларинголога и пластического хирурга Шамсутина Камалова. Ассистировал отцу ещё студентом - оттуда и специальность, и школа. В 2016 году открыл клинику и назвал её именем отца. Сегодня оперирует в Дубае.',
+    facts: [
+      { mark: '1988', text: 'Тартуский университет, Эстония - начало медицинского образования' },
+      { mark: '1994', text: 'Дагестанский медицинский институт, диплом врача' },
+      { mark: 'Наука', text: 'Кандидат медицинских наук. Диссертация защищена в Московском медицинском институте им. Н. И. Пирогова' },
+      { mark: 'Специальность', text: 'Интернатура, ординатура и аспирантура по отоларингологии' },
+      { mark: 'Практика', text: 'Открытая и закрытая ринопластика, септопластика, повторные и реконструктивные операции на носу' },
+      { mark: 'Общества', text: 'Европейское общество ринопластов; Общество пластических, реконструктивных и эстетических хирургов России' },
+      { mark: '2017', text: 'Премия «Хрустальный Лотос» в области ринопластики' },
+      { mark: 'Дубай', text: 'Лицензия департамента здравоохранения Дубая (DHA). Приём и операции - в Dubai London Hospital' },
+    ],
+    photoAlt: 'Шамсутин Камалов, отоларинголог и пластический хирург, архивный снимок',
+    photoCaption: 'Шамсутин Камалов - отоларинголог и пластический хирург. Отец и первый учитель.',
+    note: 'Данные об образовании и практике приведены по документам врача. Титул и специализация указываются так, как они значатся в лицензии департамента здравоохранения Дубая.',
+  },
+  /*
+    Блоки операций. Общее правило: говорим о том, какие задачи операция решает,
+    а не о том, каким станет человек. Ни одного обещания результата, ни одного
+    обращения к недостаткам внешности - это прямые запреты Meta и DHA.
+    Блок про риски обязателен (ST-21, п. 7.1.3) и стоит внутри каждой услуги.
+  */
+  rhinoplasty: {
+    label: '[04] Ринопластика',
+    title: 'Форма и дыхание - одна задача, а не две.',
+    lead: 'Ринопластика меняет форму носа: горбинку, кончик, крылья, ширину спинки. Вместе с формой хирург смотрит на дыхание - внутренний каркас носа отвечает и за то, и за другое, поэтому менять их по отдельности нельзя.',
+    facts: [
+      { mark: 'Форма', text: 'Горбинка, кончик, крылья, ширина спинки, пропорции носа относительно лица' },
+      { mark: 'Дыхание', text: 'Носовое дыхание, в том числе при искривлённой перегородке - тогда операции совмещают' },
+      { mark: 'Повторно', text: 'Коррекция после ранее перенесённых операций на носу' },
+      { mark: 'Травма', text: 'Восстановление формы и проходимости носа после травм' },
+      { mark: 'Техника', text: 'Открытая и закрытая ринопластика. Доступ выбирается по задаче и анатомии, а не по желанию' },
+    ],
+    risks: 'Ринопластика - хирургическая операция. Она проходит под наркозом, требует восстановления и имеет риски: отёк, временное нарушение носового дыхания, изменение чувствительности, необходимость повторной коррекции. Хирург разбирает их на консультации до принятия решения. Результат зависит от анатомии и особенностей заживления и не может быть одинаковым у разных людей.',
+  },
+  septoplasty: {
+    label: '[05] Септопластика',
+    title: 'Операция про дыхание, а не про форму.',
+    lead: 'Септопластика возвращает носовую перегородку в правильное положение. Задача функциональная - восстановить свободное носовое дыхание. Наружная форма носа при этом не меняется.',
+    facts: [
+      { mark: 'Показание', text: 'Стойкое затруднение носового дыхания, связанное с искривлением перегородки' },
+      { mark: 'Что делают', text: 'Выравнивают перегородку изнутри, не меняя наружную форму носа' },
+      { mark: 'Вместе', text: 'При необходимости совмещается с ринопластикой - одна операция вместо двух' },
+      { mark: 'Решение', text: 'Принимается по осмотру и снимкам, а не по фотографии носа' },
+    ],
+    risks: 'Септопластика - хирургическая операция. Она проходит с обезболиванием, требует восстановления и имеет риски: отёк, сухость в носу, кровотечение, повторное искривление перегородки. Хирург разбирает их на консультации. Результат зависит от индивидуальных особенностей и не может быть одинаковым у разных людей.',
   },
 }
 
@@ -92,6 +156,9 @@ const en: typeof ru = {
     bookShort: 'Consultation',
     whatsapp: 'WhatsApp',
   },
+  service: {
+    risksLabel: 'Risks',
+  },
   hero: {
     eyebrow: '[01] Sees patients at Dubai London Hospital',
     name: 'Eldar Kamalov',
@@ -105,6 +172,49 @@ const en: typeof ru = {
     label: '[02] Approach',
     lead: 'Nose surgery is a calculation. Shape, breathing, anatomy and recovery time are linked to one another. The decisions are made before the operation, not during it.',
     note: 'At the consultation the surgeon examines the anatomy, explains which tasks the operation addresses and which it does not, and goes through the risks. Results depend on individual characteristics and cannot be the same for different people.',
+  },
+  doctor: {
+    label: '[03] About the doctor',
+    title: 'An ENT surgeon by training, a rhinoplasty surgeon in practice.',
+    lead: 'Eldar Kamalov was born in Makhachkala, into the family of Shamsutin Kamalov, an ENT and plastic surgeon. He assisted his father while still a student - that is where both the speciality and the school of thought come from. In 2016 he opened a clinic and named it after his father. Today he operates in Dubai.',
+    facts: [
+      { mark: '1988', text: 'University of Tartu, Estonia - the start of his medical education' },
+      { mark: '1994', text: 'Dagestan Medical Institute, medical degree' },
+      { mark: 'Research', text: 'PhD in Medicine. Thesis defended at the Pirogov Medical Institute in Moscow' },
+      { mark: 'Speciality', text: 'Internship, residency and postgraduate training in otorhinolaryngology' },
+      { mark: 'Practice', text: 'Open and closed rhinoplasty, septoplasty, revision and reconstructive nose surgery' },
+      { mark: 'Societies', text: 'European Rhinoplasty Society; Russian Society of Plastic, Reconstructive and Aesthetic Surgeons' },
+      { mark: '2017', text: 'Crystal Lotus award in the field of rhinoplasty' },
+      { mark: 'Dubai', text: 'Licensed by the Dubai Health Authority (DHA). Consultations and surgery at Dubai London Hospital' },
+    ],
+    photoAlt: 'Shamsutin Kamalov, ENT and plastic surgeon, archive photograph',
+    photoCaption: 'Shamsutin Kamalov - ENT and plastic surgeon. Father and first teacher.',
+    note: 'Education and practice details are given according to the doctor’s documents. The title and speciality are stated as they appear in the Dubai Health Authority licence.',
+  },
+  rhinoplasty: {
+    label: '[04] Rhinoplasty',
+    title: 'Shape and breathing are one task, not two.',
+    lead: 'Rhinoplasty changes the shape of the nose: the hump, the tip, the nostrils, the width of the bridge. Along with the shape the surgeon looks at breathing - the internal framework of the nose is responsible for both, so they cannot be changed separately.',
+    facts: [
+      { mark: 'Shape', text: 'Hump, tip, nostrils, width of the bridge, proportions of the nose relative to the face' },
+      { mark: 'Breathing', text: 'Nasal breathing, including cases with a deviated septum - the operations are then combined' },
+      { mark: 'Revision', text: 'Correction after previous nose surgery' },
+      { mark: 'Trauma', text: 'Restoring the shape and patency of the nose after an injury' },
+      { mark: 'Technique', text: 'Open and closed rhinoplasty. The approach is chosen by the task and the anatomy, not by preference' },
+    ],
+    risks: 'Rhinoplasty is a surgical operation. It is performed under anaesthesia, requires a recovery period and carries risks: swelling, temporary difficulty with nasal breathing, changes in sensation, the possibility of a revision procedure. The surgeon goes through them at the consultation, before any decision is made. The outcome depends on the anatomy and on how the tissues heal, and cannot be the same for different people.',
+  },
+  septoplasty: {
+    label: '[05] Septoplasty',
+    title: 'An operation about breathing, not about shape.',
+    lead: 'Septoplasty returns the nasal septum to the correct position. The task is functional - to restore free nasal breathing. The external shape of the nose is not changed.',
+    facts: [
+      { mark: 'Indication', text: 'Persistent difficulty with nasal breathing related to a deviated septum' },
+      { mark: 'The procedure', text: 'The septum is straightened from the inside, without changing the external shape of the nose' },
+      { mark: 'Combined', text: 'Where needed it is combined with rhinoplasty - one operation instead of two' },
+      { mark: 'Decision', text: 'Made on examination and imaging, not on a photograph of the nose' },
+    ],
+    risks: 'Septoplasty is a surgical operation. It is performed with anaesthesia, requires a recovery period and carries risks: swelling, dryness in the nose, bleeding, recurrence of the deviation. The surgeon goes through them at the consultation. The outcome depends on individual characteristics and cannot be the same for different people.',
   },
 }
 

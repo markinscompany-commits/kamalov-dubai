@@ -10,9 +10,14 @@
 <script setup lang="ts">
 interface Props {
   text: string
+  /**
+   * Каким тегом рисовать. По умолчанию абзац, но в блоках это заголовок раздела:
+   * иерархия заголовков должна оставаться целой (один h1, дальше без пропусков).
+   */
+  tag?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { tag: 'p' })
 
 const root = ref<HTMLElement | null>(null)
 const progress = ref(0)
@@ -137,7 +142,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <p ref="root" class="karaoke">
+  <component :is="tag" ref="root" class="karaoke">
     <span
       v-for="(token, i) in tokens"
       :key="token.key"
@@ -148,7 +153,7 @@ onBeforeUnmount(() => {
       "
       >{{ token.text }}</span
     >
-  </p>
+  </component>
 </template>
 
 <style scoped>

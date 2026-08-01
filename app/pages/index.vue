@@ -14,5 +14,26 @@ useHead(() => ({
   <main>
     <HeroSection />
     <ManifestSection />
+    <DoctorSection />
+
+    <!-- Обе услуги собраны одним компонентом: структура у них общая, разный текст.
+         Фон чередуется, чтобы блоки не слипались в одно полотно. -->
+    <ServiceSection
+      id="rhinoplasty"
+      tone="deep"
+      :label="m.rhinoplasty.label"
+      :title="m.rhinoplasty.title"
+      :lead="m.rhinoplasty.lead"
+      :facts="m.rhinoplasty.facts"
+      :risks="m.rhinoplasty.risks"
+    />
+    <ServiceSection
+      id="septoplasty"
+      :label="m.septoplasty.label"
+      :title="m.septoplasty.title"
+      :lead="m.septoplasty.lead"
+      :facts="m.septoplasty.facts"
+      :risks="m.septoplasty.risks"
+    />
   </main>
 </template>
