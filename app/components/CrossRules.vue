@@ -1,35 +1,72 @@
 <!--
-  Разметка блока — крестик и четыре луча, растущие из него.
+  Разметка блока — четыре пунктирных луча, растущие из одной точки.
 
-  Правило Марка: по каждому блоку проходит ровно одна вертикаль и одна горизонталь.
-  Но рисуются они не как две линии, которые где-то пересеклись, а как ЧЕТЫРЕ отдельных
-  луча: сначала появляется крестик-узел, потом из него в четыре стороны прочерчиваются
-  линии до краёв блока. Так разметка читается как то, что хирург рисует от точки, а не
-  как чертёжная сетка, случайно наложенная сверху.
+  По каждому блоку проходит ровно одна вертикаль и одна горизонталь, но рисуются они
+  не как две линии, которые где-то пересеклись, а как четыре луча из общей точки.
+  Отдельного крестика на пересечении нет (решение Марка): раз лучи и так растут из
+  одной точки, она читается сама.
 
-  Точку задаёт блок снаружи, переменными --cross-x и --cross-y: «пустое место» у
-  каждого блока своё, и Марк отмечает его на скриншоте.
+  Точку задаёт блок снаружи, переменными --cross-x и --cross-y: «пустое место»
+  у каждого блока своё.
 
-  Цвета берутся снаружи: --rule для лучей, --rule-node для крестика.
+  ПОЯВЛЕНИЕ ПРИВЯЗАНО К ПРОКРУТКЕ. Лучи прочерчиваются, когда на экране появляется
+  точка, из которой они растут, и сбрасываются, когда блок целиком ушёл с экрана.
+  Долистал обратно — рисуются заново.
+
+  Цвет и толщина берутся снаружи: --rule и --rule-w.
 -->
 <script setup lang="ts">
 interface Props {
-  /** Задержка появления крестика, мс. Лучи стартуют после него */
+  /** Задержка прочерчивания после появления точки, мс */
   delay?: number
 }
 
 const props = withDefaults(defineProps<Props>(), { delay: 0 })
 
+const root = ref<HTMLElement | null>(null)
+const origin = ref<HTMLElement | null>(null)
+const drawn = ref(false)
+
+let originWatch: IntersectionObserver | null = null
+let blockWatch: IntersectionObserver | null = null
+
+onMounted(() => {
+  // Точка появилась на экране — рисуем
+  originWatch = new IntersectionObserver(
+    (entries) => {
+      if (entries[0]?.isIntersecting) drawn.value = true
+    },
+    { threshold: 0 },
+  )
+  if (origin.value) originWatch.observe(origin.value)
+
+  // Блок целиком ушёл с экрана — сбрасываем, чтобы при возврате нарисовалось заново
+  blockWatch = new IntersectionObserver(
+    (entries) => {
+      if (!entries[0]?.isIntersecting) drawn.value = false
+    },
+    { threshold: 0 },
+  )
+  if (root.value) blockWatch.observe(root.value)
+})
+
+onBeforeUnmount(() => {
+  originWatch?.disconnect()
+  blockWatch?.disconnect()
+})
+
 const style = computed(() => ({ '--delay': `${props.delay}ms` }))
 </script>
 
 <template>
-  <div class="cross" :style="style" aria-hidden="true">
+  <div ref="root" class="cross" :class="{ 'cross--on': drawn }" :style="style" aria-hidden="true">
+    <!-- Точка отсчёта: невидимая, нужна только чтобы поймать её появление на экране -->
+    <span ref="origin" class="cross__origin" />
+
     <span class="cross__ray cross__ray--up" />
     <span class="cross__ray cross__ray--down" />
     <span class="cross__ray cross__ray--start" />
     <span class="cross__ray cross__ray--end" />
-    <span class="cross__node" />
   </div>
 </template>
 
@@ -38,53 +75,56 @@ const style = computed(() => ({ '--delay': `${props.delay}ms` }))
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* Луч трогается с места, когда крестик уже проявился */
-  --ray-delay: calc(var(--delay) + 260ms);
 }
 
+.cross__origin {
+  position: absolute;
+  inset-inline-start: var(--cross-x);
+  inset-block-start: var(--cross-y);
+  inline-size: 1px;
+  block-size: 1px;
+}
+
+/* В покое лучи спрятаны: обрезаны в ноль у самой точки. Так же они выглядят и после
+   сброса, когда блок ушёл с экрана */
 .cross__ray {
   position: absolute;
   display: block;
 }
 
-/* --- Вертикальные лучи ---
-
-   ⚠️ Луч сдвигается на половину своей толщины: без этого его КРАЙ садится на
-   точку пересечения, а крестик садится на неё ЦЕНТРОМ — и они расходятся на
-   полпикселя. Именно это выглядело как «крестик стоит криво». */
+/* --- Вертикальные лучи --- */
 
 .cross__ray--up,
 .cross__ray--down {
   inline-size: var(--rule-w);
   inset-inline-start: var(--cross-x);
-  translate: -50% 0;
 }
 
 /*
-  Направление градиента у каждого луча своё: штрихи должны начинаться ОТ крестика,
+  Направление градиента у каждого луча своё: штрихи должны начинаться ОТ точки,
   иначе у противоположных лучей шаг пунктира не совпадает по фазе и на глаз
   видно, что это две разные линии.
 */
 .cross__ray--up {
   inset-block-start: 0;
   block-size: var(--cross-y);
+  clip-path: inset(100% 0 0 0);
   background-image: repeating-linear-gradient(
     to top,
     var(--rule) 0 var(--dash-on),
     transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))
   );
-  animation: ray-up var(--dur-draw) var(--ease-draw) var(--ray-delay) both;
 }
 
 .cross__ray--down {
   inset-block-start: var(--cross-y);
   inset-block-end: 0;
+  clip-path: inset(0 0 100% 0);
   background-image: repeating-linear-gradient(
     to bottom,
     var(--rule) 0 var(--dash-on),
     transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))
   );
-  animation: ray-down var(--dur-draw) var(--ease-draw) var(--ray-delay) both;
 }
 
 /* --- Горизонтальные лучи --- */
@@ -93,52 +133,56 @@ const style = computed(() => ({ '--delay': `${props.delay}ms` }))
 .cross__ray--end {
   block-size: var(--rule-w);
   inset-block-start: var(--cross-y);
-  translate: 0 -50%;
 }
 
 .cross__ray--start {
   inset-inline-start: 0;
   inline-size: var(--cross-x);
+  clip-path: inset(0 0 0 100%);
   background-image: repeating-linear-gradient(
     to left,
     var(--rule) 0 var(--dash-on),
     transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))
   );
-  animation: ray-start var(--dur-draw) var(--ease-draw) var(--ray-delay) both;
 }
 
 .cross__ray--end {
   inset-inline-start: var(--cross-x);
   inset-inline-end: 0;
+  clip-path: inset(0 100% 0 0);
   background-image: repeating-linear-gradient(
     to right,
     var(--rule) 0 var(--dash-on),
     transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))
   );
-  animation: ray-end var(--dur-draw) var(--ease-draw) var(--ray-delay) both;
-}
-
-/* --- Крестик-узел --- */
-
-.cross__node {
-  position: absolute;
-  inset-inline-start: var(--cross-x);
-  inset-block-start: var(--cross-y);
-  inline-size: 19px;
-  block-size: 19px;
-  translate: -50% -50%;
-  /* Та же толщина и тот же цвет, что у лучей. Узел читается не как отдельный
-     элемент поверх линий, а как сплошной участок на их пересечении: там, где
-     штрихи расступаются, стоит целый крест */
-  background:
-    linear-gradient(var(--rule-node), var(--rule-node)) center / 100% var(--rule-w) no-repeat,
-    linear-gradient(var(--rule-node), var(--rule-node)) center / var(--rule-w) 100% no-repeat;
-  animation: node-in var(--dur-base) var(--ease-out) var(--delay) both;
 }
 
 /* --- Прочерчивание ---
-   clip-path, а не размер: при изменении размера штрихи сжимались бы вместе с
-   линией и шаг пунктира плыл. clip-path просто открывает готовый луч. */
+   Запускается, когда точка появилась на экране. clip-path, а не размер: при
+   изменении размера штрихи сжимались бы вместе с лучом и шаг пунктира плыл. */
+
+.cross--on .cross__ray {
+  animation-duration: var(--dur-draw);
+  animation-timing-function: var(--ease-draw);
+  animation-delay: var(--delay);
+  animation-fill-mode: both;
+}
+
+.cross--on .cross__ray--up {
+  animation-name: ray-up;
+}
+
+.cross--on .cross__ray--down {
+  animation-name: ray-down;
+}
+
+.cross--on .cross__ray--start {
+  animation-name: ray-start;
+}
+
+.cross--on .cross__ray--end {
+  animation-name: ray-end;
+}
 
 @keyframes ray-up {
   from {
@@ -176,25 +220,14 @@ const style = computed(() => ({ '--delay': `${props.delay}ms` }))
   }
 }
 
-@keyframes node-in {
-  from {
-    opacity: 0;
-    scale: 0.4;
-  }
-  to {
-    opacity: 1;
-    scale: 1;
-  }
-}
-
 /* RTL: clip-path и направление градиента — свойства физические, логического аналога
    нет. Для арабской версии горизонтальные лучи меняются местами.
    См. design-system.md, раздел 9. */
-:global([dir='rtl']) .cross__ray--start {
+:global([dir='rtl']) .cross--on .cross__ray--start {
   animation-name: ray-end;
 }
 
-:global([dir='rtl']) .cross__ray--end {
+:global([dir='rtl']) .cross--on .cross__ray--end {
   animation-name: ray-start;
 }
 </style>

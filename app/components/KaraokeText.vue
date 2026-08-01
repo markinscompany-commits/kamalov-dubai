@@ -54,6 +54,7 @@ let live = false
 let docTop = 0
 let blockH = 0
 let vh = 0
+let lastWidth = 0
 
 function remeasure() {
   const node = root.value
@@ -62,6 +63,7 @@ function remeasure() {
   docTop = rect.top + window.scrollY
   blockH = rect.height
   vh = window.innerHeight
+  lastWidth = window.innerWidth
   apply()
 }
 
@@ -79,7 +81,24 @@ function onScroll() {
   frame = requestAnimationFrame(apply)
 }
 
+/**
+ * ⚠️ САМОЕ ВАЖНОЕ МЕСТО В ЭТОМ ФАЙЛЕ.
+ *
+ * На телефоне браузер прячет адресную строку РОВНО В МОМЕНТ, когда человек начал
+ * прокручивать. Высота окна меняется — и браузер выдаёт событие resize. Если по нему
+ * пересчитывать положение блока, получается принудительный пересчёт раскладки прямо
+ * посреди первого движения пальца. Отсюда и подёргивание строго в начале прокрутки,
+ * которое Марк описал, и которого не видно ни на одном замере: на настольном браузере
+ * адресная строка не сворачивается, и событие просто не приходит.
+ *
+ * Поэтому: изменилась только высота — это адресная строка, раскладку не трогаем,
+ * обновляем дешёвое число. Изменилась ширина — вот это настоящая перевёрстка,
+ * можно замерять.
+ */
 function onResize() {
+  vh = window.innerHeight
+  if (window.innerWidth === lastWidth) return
+
   cancelAnimationFrame(frame)
   frame = requestAnimationFrame(remeasure)
 }

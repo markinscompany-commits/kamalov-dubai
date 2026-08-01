@@ -12,6 +12,8 @@
  * Тире по всему сайту короткие «-» — решение Марка.
  */
 
+import { typoDeep } from '~/utils/typo'
+
 export type Locale = 'ru' | 'en'
 
 export const locales: { code: Locale; label: string }[] = [
@@ -60,7 +62,7 @@ const ru = {
   },
   manifest: {
     label: '[02] Подход',
-    lead: 'Хирургия носа - это расчёт. Форма, дыхание, анатомия и срок восстановления связаны между собой, и решения принимаются до операции, а не во время неё.',
+    lead: 'Хирургия носа - это расчёт. Форма, дыхание, анатомия и срок восстановления связаны между собой. Решения принимаются до операции, а не во время неё.',
     note: 'На консультации хирург разбирает анатомию, объясняет, какие задачи операция решает, а какие - нет, и проговаривает риски. Результат зависит от индивидуальных особенностей и не может быть одинаковым у разных людей.',
   },
 }
@@ -101,10 +103,19 @@ const en: typeof ru = {
   },
   manifest: {
     label: '[02] Approach',
-    lead: 'Nose surgery is a calculation. Shape, breathing, anatomy and recovery time are linked to one another, and the decisions are made before the operation, not during it.',
+    lead: 'Nose surgery is a calculation. Shape, breathing, anatomy and recovery time are linked to one another. The decisions are made before the operation, not during it.',
     note: 'At the consultation the surgeon examines the anatomy, explains which tasks the operation addresses and which it does not, and goes through the risks. Results depend on individual characteristics and cannot be the same for different people.',
   },
 }
 
-export const messages = { ru, en }
+/*
+  Тексты прогоняются через типограф один раз при сборке словаря: короткие предлоги
+  и союзы приклеиваются к следующему слову неразрывным пробелом и переносятся вместе
+  с ним. Делать это на каждую отрисовку было бы расточительно, а тексты не меняются.
+*/
+export const messages = {
+  ru: typoDeep(ru),
+  en: typoDeep(en),
+}
+
 export type Messages = typeof ru
