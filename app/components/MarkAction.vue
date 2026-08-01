@@ -33,7 +33,9 @@ withDefaults(defineProps<Props>(), {
 <style scoped>
 .action {
   --action-fill: var(--ink);
-  --action-fill-hover: var(--plum-deep);
+  /* При наведении глубокие чернила светлеют ровно до фирменного синего:
+     цвет клиники появляется в тот момент, когда человек тянется к кнопке */
+  --action-fill-hover: var(--blue);
   --action-on-fill: var(--paper);
   --action-line: var(--ink);
 

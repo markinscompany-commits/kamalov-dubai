@@ -277,7 +277,7 @@ onBeforeUnmount(() => {
 }
 
 .nav__close:hover {
-  color: var(--plum-deep);
+  color: var(--blue);
 }
 
 .nav__close:hover .nav__close-line:first-child {
@@ -356,11 +356,13 @@ onBeforeUnmount(() => {
 }
 
 .nav__link:hover .nav__num {
-  color: var(--plum);
+  color: var(--blue);
 }
 
+/* Наведение на пункт меню — фирменным синим: номер светлее, надпись глубже,
+   как раньше было у сливового. Две ступени одного цвета, а не два разных цвета */
 .nav__link:hover .nav__label {
-  color: var(--plum-deep);
+  color: var(--blue-deep);
 }
 
 .nav__item--last {

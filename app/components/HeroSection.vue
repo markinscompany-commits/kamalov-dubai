@@ -152,6 +152,9 @@ const base = useRuntimeConfig().app.baseURL
   padding-block-start: var(--header-h);
   /* Текст лежит на чернильной половине */
   color: var(--paper);
+  /* Обводка фокуса на тёмном: фирменный синий на глубоком синем не виден,
+     поэтому здесь фокус светло-золотой (7.20 : 1) */
+  --focus: var(--gold-light);
 }
 
 .hero__eyebrow {
@@ -182,10 +185,13 @@ const base = useRuntimeConfig().app.baseURL
   color: color-mix(in srgb, var(--paper) 82%, transparent);
 }
 
-/* Курсивом, но без цвета: сливовый на чернильном фоне не читается */
+/* Курсивное выделение — фирменным золотом.
+   Раньше цвета здесь не было: сливовый акцент на чернильном фоне не читался.
+   Золото клиники на глубоком синем даёт 5.47 : 1 — читается спокойно, и это
+   единственное место на первом экране, где фирменный тёплый цвет виден крупно. */
 .hero__spec em {
   font-style: italic;
-  color: var(--paper);
+  color: var(--gold);
 }
 
 .hero__spec-second {
@@ -212,10 +218,13 @@ const base = useRuntimeConfig().app.baseURL
   display: none;
 }
 
-/* Кнопки стоят на тёмном — заливка и линии становятся светлыми */
+/* Кнопки стоят на тёмном — заливка и линии становятся светлыми.
+   При наведении светлая заливка уходит в фирменное золото (текст на нём — чернила,
+   5.47 : 1). На бумаге тот же жест сделан синим: тёплое работает на тёмном,
+   холодное — на светлом. */
 .hero__actions :deep(.action) {
   --action-fill: var(--paper);
-  --action-fill-hover: var(--plum-light);
+  --action-fill-hover: var(--gold);
   --action-on-fill: var(--ink);
   --action-line: var(--paper);
 }

@@ -61,13 +61,17 @@ const { visible } = usePreloader()
   opacity: 0.6;
 }
 
-/* Пунктир того же шага, что вся разметка сайта */
+/* Пунктир того же шага, что вся разметка сайта.
+   Здесь он фирменного золотого цвета: заставка — единственный кадр, где на экране
+   больше ничего нет, и сочетание «глубокий синий + золотая линия» сразу читается
+   как цвета клиники. Дальше по странице разметка снова нейтральная, чтобы золото
+   не превратилось в фон. */
 .pre__rule {
   inline-size: 100%;
   block-size: 1px;
   background-image: repeating-linear-gradient(
     to right,
-    color-mix(in srgb, var(--paper) 55%, transparent) 0 var(--dash-on),
+    var(--gold) 0 var(--dash-on),
     transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))
   );
   /* Прочерчивается и остаётся: clip-path не сжимает штрихи, шаг пунктира не плывёт */
