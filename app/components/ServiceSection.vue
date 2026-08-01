@@ -43,7 +43,7 @@ const { m } = useLocale()
       <ProfileMark class="service__mark" :variant="mark" :caption="markCaption" />
     </template>
 
-    <KaraokeText tag="h2" :key="title" :text="title" />
+    <SectionTitle :text="title" />
 
     <p class="service__lead">{{ lead }}</p>
 

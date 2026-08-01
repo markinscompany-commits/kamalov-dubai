@@ -88,10 +88,14 @@ const ru = {
     stats: [
       { value: '30+', caption: 'лет в медицине' },
       { value: '2017', caption: 'премия «Хрустальный Лотос»' },
+      { value: '2', caption: 'профессиональных общества' },
       { value: 'DHA', caption: 'регистрация в Дубае' },
     ],
     // Хронология. Все годы сверены со сканами документов в assets-temp/docs
+    fullName: 'Камалов Эльдар Шамсутинович',
     timelineLabel: '// Путь',
+    timelineMore: 'Раскрыть - ещё {n}',
+    timelineLess: 'Свернуть',
     timeline: [
       { year: '1988', text: 'Поступил в Дагестанский государственный медицинский институт' },
       { year: '1994', text: 'Окончил институт по специальности «лечебное дело», квалификация врача' },
@@ -199,9 +203,13 @@ const en: typeof ru = {
     stats: [
       { value: '30+', caption: 'years in medicine' },
       { value: '2017', caption: 'Crystal Lotus award' },
+      { value: '2', caption: 'professional societies' },
       { value: 'DHA', caption: 'registered in Dubai' },
     ],
+    fullName: 'Eldar Shamsutinovich Kamalov',
     timelineLabel: '// Path',
+    timelineMore: 'Show more - {n} entries',
+    timelineLess: 'Collapse',
     timeline: [
       { year: '1988', text: 'Entered the Dagestan State Medical Institute' },
       { year: '1994', text: 'Graduated in general medicine, qualified as a physician' },

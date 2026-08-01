@@ -42,14 +42,17 @@ const base = useRuntimeConfig().app.baseURL
     <template #side>
       <!-- ⚠️ ВРЕМЕННО: это другой план того же кадра, что на первом экране.
            Заменить на снимок из второй фотосессии, когда клиника её передаст. -->
-      <img
-        class="doctor__portrait"
-        :src="`${base}media/doctor-close.jpg`"
-        :alt="m.doctor.portraitAlt"
-        width="800"
-        height="920"
-        loading="lazy"
-      />
+      <figure class="doctor__figure" data-mobile-first>
+        <img
+          class="doctor__portrait"
+          :src="`${base}media/doctor-close.jpg`"
+          :alt="m.doctor.portraitAlt"
+          width="800"
+          height="920"
+          loading="lazy"
+        />
+        <figcaption class="doctor__name">{{ m.doctor.fullName }}</figcaption>
+      </figure>
 
       <figure class="doctor__figure">
         <img
@@ -63,24 +66,34 @@ const base = useRuntimeConfig().app.baseURL
       </figure>
     </template>
 
-    <KaraokeText tag="h2" :key="m.doctor.title" :text="m.doctor.title" />
+    <SectionTitle :text="m.doctor.title" />
 
     <p class="doctor__lead">{{ m.doctor.lead }}</p>
 
-    <!-- Три цифры: стаж, награда, регистрация в Дубае -->
+    <!-- Цифры: стаж, награда, общества, регистрация в Дубае -->
     <div class="doctor__stats">
-      <LaurelStat
-        v-for="stat in m.doctor.stats"
-        :key="stat.value"
-        :value="stat.value"
-        :caption="stat.caption"
-      />
+      <div class="doctor__stats-row">
+        <LaurelStat
+          v-for="stat in m.doctor.stats"
+          :key="stat.value"
+          :value="stat.value"
+          :caption="stat.caption"
+        />
+      </div>
+
+      <!-- Расшифровка к венку «2 общества»: сами названия длинные, внутрь венка
+           они не влезут, но и терять их нельзя - это подтверждаемый факт -->
+      <p class="doctor__societies">{{ m.doctor.societies }}</p>
     </div>
 
     <div class="doctor__part">
       <p class="mono doctor__part-label">{{ m.doctor.timelineLabel }}</p>
-      <TimeLine :items="m.doctor.timeline" />
-      <p class="doctor__societies">{{ m.doctor.societies }}</p>
+      <TimeLine
+        :items="m.doctor.timeline"
+        :visible="3"
+        :more-label="m.doctor.timelineMore"
+        :less-label="m.doctor.timelineLess"
+      />
     </div>
 
     <DocGrid :label="m.doctor.docsLabel" :items="m.doctor.docs" />
@@ -92,6 +105,13 @@ const base = useRuntimeConfig().app.baseURL
   inline-size: 100%;
   block-size: auto;
   background: var(--photo-bg);
+}
+
+/* Полное имя под портретом - так, как оно значится в документах */
+.doctor__name {
+  font-size: var(--fs-body);
+  line-height: 1.4;
+  color: var(--ink);
 }
 
 .doctor__figure {
@@ -128,9 +148,15 @@ const base = useRuntimeConfig().app.baseURL
 */
 .doctor__stats {
   display: flex;
-  flex-wrap: wrap;
-  gap: clamp(var(--s-3), 4vw, var(--s-16));
+  flex-direction: column;
+  gap: var(--s-5);
   padding-block: var(--s-4);
+}
+
+.doctor__stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(var(--s-4), 3vw, var(--s-10));
 }
 
 .doctor__part {
@@ -152,13 +178,12 @@ const base = useRuntimeConfig().app.baseURL
 @media (max-width: 900px) {
   /* На телефоне снимки уходят под текст блока и занимают не всю ширину:
      во всю ширину они начинают спорить с портретом на первом экране */
-  .doctor__portrait,
   .doctor__figure {
     max-inline-size: 15rem;
   }
 
-  .doctor__portrait {
-    margin-block-start: var(--s-4);
+  .doctor__figure[data-mobile-first] {
+    margin-block-end: var(--s-2);
   }
 }
 </style>
