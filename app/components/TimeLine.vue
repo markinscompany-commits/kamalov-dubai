@@ -6,16 +6,20 @@
 
   Лента собрана в языке сайта: вертикальная пунктирная линия того же шага, что вся
   разметка, и на каждом году - такой же крестик-узел, как на пересечении лучей.
-  То есть хронология выглядит как продолжение чертежа, а не отдельный виджет.
 
-  СВОРАЧИВАНИЕ (правка Марка, 01.08). Сразу видны первые записи, остальные
-  раскрываются по кнопке. На кнопке стоит число - человек видит, сколько ещё
-  спрятано, и решает сам.
+  СВОРАЧИВАНИЕ (правки Марка). Свёрнутая хронология обрезана НЕ по последней
+  видимой записи, а посередине следующей: край уходит в затухание, и следующий год
+  виден наполовину. Это честная подсказка «здесь есть продолжение» - работает
+  лучше, чем число на кнопке.
 
-  Скрытые записи не лежат в разметке спрятанными, а появляются при раскрытии и
-  выезжают по очереди сверху вниз. Так не нужно подгонять высоту числом (max-height
-  всегда врёт на длинном тексте), и в готовом HTML нет текста, которого человек
-  не видит - лишний повод для вопросов у модерации.
+  Как устроено раскрытие:
+  · высота хвоста анимируется через grid-template-rows 0fr → 1fr. Настоящую высоту
+    знать не нужно, поэтому ничего не приходится подгонять числом, а на длинном
+    тексте ничего не обрезается (max-height так не умеет);
+  · пунктирная лента растёт вместе с высотой, а не появляется целиком: она живёт
+    внутри того же контейнера и открывается вместе с ним;
+  · записи проявляются по очереди сверху вниз.
+  Свёртывание идёт тем же движением в обратную сторону.
 -->
 <script setup lang="ts">
 interface Item {
@@ -27,50 +31,67 @@ interface Props {
   items: Item[]
   /** Сколько записей видно до раскрытия. 0 - показывать все */
   visible?: number
-  /** Подписи кнопки: {n} заменяется на число спрятанных записей */
   moreLabel?: string
   lessLabel?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   visible: 0,
-  moreLabel: 'Раскрыть - ещё {n}',
+  moreLabel: 'Раскрыть',
   lessLabel: 'Свернуть',
 })
 
 const open = ref(false)
 
+/** Всегда видимая часть. Последняя её запись наполовину уходит в затухание */
 const head = computed(() =>
-  props.visible > 0 && !open.value ? props.items.slice(0, props.visible) : props.items,
+  props.visible > 0 ? props.items.slice(0, props.visible + 1) : props.items,
 )
-const hiddenCount = computed(() => Math.max(0, props.items.length - props.visible))
-const buttonLabel = computed(() =>
-  open.value ? props.lessLabel : props.moreLabel.replace('{n}', String(hiddenCount.value)),
-)
+/** Часть, которая открывается кнопкой */
+const rest = computed(() => (props.visible > 0 ? props.items.slice(props.visible + 1) : []))
+
+const folded = computed(() => props.visible > 0 && !open.value)
+const buttonLabel = computed(() => (open.value ? props.lessLabel : props.moreLabel))
 </script>
 
 <template>
-  <div class="tl" :class="{ 'tl--folded': visible > 0 && !open }">
-    <ol class="tl__list">
-      <li v-for="(item, i) in head" :key="item.year + i" class="tl__row" :style="{ '--i': i }">
-        <span class="tl__year">{{ item.year }}</span>
-        <span class="tl__node" aria-hidden="true" />
-        <span class="tl__text">{{ item.text }}</span>
-      </li>
-    </ol>
+  <div class="tl" :class="{ 'tl--folded': folded }">
+    <div class="tl__head">
+      <ol class="tl__list">
+        <li v-for="(item, i) in head" :key="item.year + i" class="tl__row">
+          <span class="tl__year">{{ item.year }}</span>
+          <span class="tl__node" aria-hidden="true" />
+          <span class="tl__text">{{ item.text }}</span>
+        </li>
+      </ol>
+
+      <!-- Затухание нижнего края: гаснет при раскрытии, поэтому переход мягкий -->
+      <span class="tl__fade" aria-hidden="true" />
+    </div>
+
+    <div class="tl__rest">
+      <div class="tl__rest-inner">
+        <ol class="tl__list tl__list--rest">
+          <li v-for="(item, i) in rest" :key="item.year + i" class="tl__row" :style="{ '--i': i }">
+            <span class="tl__year">{{ item.year }}</span>
+            <span class="tl__node" aria-hidden="true" />
+            <span class="tl__text">{{ item.text }}</span>
+          </li>
+        </ol>
+      </div>
+    </div>
 
     <button
-      v-if="hiddenCount > 0 && visible > 0"
+      v-if="rest.length"
       type="button"
       class="tl__toggle"
       :aria-expanded="open"
       @click="open = !open"
     >
-      <span class="tl__toggle-node" aria-hidden="true">
-        <span class="tl__toggle-bar" />
-        <span class="tl__toggle-bar tl__toggle-bar--v" />
-      </span>
       <span class="mono tl__toggle-label">{{ buttonLabel }}</span>
+      <svg class="tl__chevron" viewBox="0 0 24 14" aria-hidden="true" focusable="false">
+        <path d="M2 2 L12 12 L22 2" />
+      </svg>
     </button>
   </div>
 </template>
@@ -79,10 +100,27 @@ const buttonLabel = computed(() =>
 .tl {
   --tl-line: 7.5rem; /* где идёт вертикаль: сразу за колонкой годов */
   --tl-node: 11px;
+  /* Насколько видна следующая запись в свёрнутом виде */
+  --tl-peek: 3.5rem;
 
   display: flex;
   flex-direction: column;
   align-items: start;
+  inline-size: 100%;
+}
+
+.tl__head {
+  position: relative;
+  inline-size: 100%;
+}
+
+/*
+  В свёрнутом виде голова обрезана посередине следующей записи. Обрезаем контейнер,
+  а не считаем записи: тогда «половина» остаётся половиной при любой длине текста.
+*/
+.tl--folded .tl__head {
+  max-block-size: calc(100% - var(--tl-peek));
+  overflow: hidden;
 }
 
 .tl__list {
@@ -93,11 +131,11 @@ const buttonLabel = computed(() =>
   inline-size: 100%;
 }
 
-/* Вертикальная пунктирная лента через всю хронологию */
+/* Вертикальная пунктирная лента */
 .tl__list::before {
   content: '';
   position: absolute;
-  inset-block: 0.9rem;
+  inset-block: 0.9rem -0.4rem;
   inset-inline-start: calc(var(--tl-line) - var(--rule-w) / 2);
   inline-size: var(--rule-w);
   background-image: repeating-linear-gradient(
@@ -107,9 +145,27 @@ const buttonLabel = computed(() =>
   );
 }
 
-/* Когда часть записей спрятана, лента уходит вниз к кнопке и не обрывается */
-.tl--folded .tl__list::before {
-  inset-block-end: -1.5rem;
+/* У хвоста лента начинается выше первой записи - стыка с головной не видно */
+.tl__list--rest::before {
+  inset-block-start: -0.4rem;
+}
+
+/* --- Хвост, который раскрывается --- */
+
+.tl__rest {
+  inline-size: 100%;
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--dur-slow) var(--ease-out);
+}
+
+.tl--folded .tl__rest {
+  grid-template-rows: 0fr;
+}
+
+.tl__rest-inner {
+  overflow: hidden;
+  min-block-size: 0;
 }
 
 .tl__row {
@@ -120,19 +176,21 @@ const buttonLabel = computed(() =>
   column-gap: var(--s-6);
   align-items: baseline;
   padding-block: var(--s-4);
-  /* Появление раскрытых записей по очереди сверху вниз */
-  animation: tl-in var(--dur-base) var(--ease-out) calc(var(--i, 0) * 45ms) both;
 }
 
-@keyframes tl-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+/* Записи хвоста проявляются по очереди, когда лента уже поехала вниз */
+.tl__list--rest .tl__row {
+  opacity: 1;
+  transition:
+    opacity var(--dur-base) var(--ease-out) calc(140ms + var(--i, 0) * 60ms),
+    transform var(--dur-base) var(--ease-out) calc(140ms + var(--i, 0) * 60ms);
+}
+
+.tl--folded .tl__list--rest .tl__row {
+  opacity: 0;
+  transform: translateY(8px);
+  /* При сворачивании гаснут сразу, чтобы не мелькать в схлопывающейся ленте */
+  transition-delay: 0ms;
 }
 
 .tl__year {
@@ -162,15 +220,32 @@ const buttonLabel = computed(() =>
   max-inline-size: min(52ch, 100%);
 }
 
+/* --- Затухание нижнего края --- */
+
+.tl__fade {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: var(--tl-peek);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+  /* Цвет фона секции задаётся снаружи через --fade-to: блоки чередуются */
+  background: linear-gradient(to bottom, transparent, var(--fade-to, var(--paper)) 92%);
+}
+
+.tl--folded .tl__fade {
+  opacity: 1;
+}
+
 /* --- Кнопка --- */
 
 .tl__toggle {
   display: inline-flex;
   align-items: center;
-  gap: var(--s-4);
+  gap: var(--s-3);
   padding: 0;
   margin-block-start: var(--s-4);
-  /* Кнопка стоит ровно на ленте: её узел продолжает вертикаль */
   padding-inline-start: calc(var(--tl-line) - var(--tl-node) / 2);
   color: var(--ink-soft);
   transition: color var(--dur-fast) var(--ease-out);
@@ -181,43 +256,26 @@ const buttonLabel = computed(() =>
   color: var(--blue);
 }
 
-/* Узел кнопки - плюс, который при раскрытии превращается в минус */
-.tl__toggle-node {
-  position: relative;
-  flex: none;
-  inline-size: var(--tl-node);
-  block-size: var(--tl-node);
-}
-
-.tl__toggle-bar {
-  position: absolute;
-  inset-block-start: 50%;
-  inset-inline: 0;
-  block-size: var(--rule-w);
-  background: currentColor;
-}
-
-.tl__toggle-bar--v {
-  inset-block: 0;
-  inset-inline-start: 50%;
-  inline-size: var(--rule-w);
+.tl__chevron {
+  inline-size: 0.85rem;
   block-size: auto;
-  transform-origin: center;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   transition: transform var(--dur-base) var(--ease-out);
 }
 
-/* Раскрыто - вертикальная палочка поворачивается и плюс становится минусом */
-.tl:not(.tl--folded) .tl__toggle-bar--v {
-  transform: rotate(90deg) scaleX(0.001);
-}
-
-.tl__toggle-label {
-  white-space: nowrap;
+/* Раскрыто - шеврон смотрит вверх */
+.tl:not(.tl--folded) .tl__chevron {
+  transform: rotate(180deg);
 }
 
 @media (max-width: 700px) {
   .tl {
     --tl-line: 4.25rem;
+    --tl-peek: 2.75rem;
   }
 
   .tl__row {

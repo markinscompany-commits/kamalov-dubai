@@ -14,7 +14,6 @@ interface Doc {
   file: string
   logo?: string
   title: string
-  meta: string
 }
 
 interface Props {
@@ -32,7 +31,7 @@ defineProps<Props>()
 
     <ul class="docs__grid">
       <li v-for="doc in items" :key="doc.file" class="docs__cell">
-        <DocCard :file="doc.file" :logo="doc.logo" :title="doc.title" :meta="doc.meta" />
+        <DocCard :file="doc.file" :logo="doc.logo" :title="doc.title" />
       </li>
     </ul>
   </div>
@@ -54,7 +53,7 @@ defineProps<Props>()
   padding: 0;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
   /* Отступ между карточками больше, чем зазор уголков (0.7rem), иначе рамки
      соседних карточек при наведении сходятся вплотную */
   gap: var(--s-8) var(--s-6);

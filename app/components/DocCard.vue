@@ -1,28 +1,27 @@
 <!--
   Карточка документа: значок листа, внутри - герб организации, выдавшей документ,
-  под значком короткая подпись.
+  под значком короткое название.
 
-  Решение Марка (01.08): показываем НЕ фотографии сканов, а одинаковые значки.
-  Причина понятная: сканы разного цвета, размера и качества, рядом они выглядят
-  свалкой, а значок с гербом читается за долю секунды и держит ряд ровным.
+  Решение Марка: показываем НЕ фотографии сканов, а одинаковые значки. Причина
+  понятная: сканы разного цвета, размера и качества, рядом они выглядят свалкой,
+  а значок с гербом читается за долю секунды и держит ряд ровным.
 
-  Пока герба нет, внутри листа рисуются строки - тот же значок, но «пустой».
-  Как только файл появится в public/media/docs/logos, он встаёт на место строк.
+  Значок выровнен ПО ЛЕВОМУ КРАЮ с названием (правка Марка): по центру он выпадал
+  из левого края всего остального на странице.
 
-  Сам скан открывается по клику в новой вкладке: человеку, который хочет
-  проверить документ, он доступен, но на странице не шумит.
+  Строк внутри листа нет - вместо них герб. Пока герба нет, лист остаётся пустым:
+  это честнее, чем рисовать заглушку, и сразу видно, чего не хватает.
 
-  ⚠️ Герб и логотип департамента здравоохранения Дубая сюда ставить нельзя без
-  письменного разрешения клиники - ST-21 п. 7.2.
+  Сам скан открывается по клику в новой вкладке: человеку, который хочет проверить
+  документ, он доступен, но на странице не шумит.
 -->
 <script setup lang="ts">
 interface Props {
   /** Скан документа в public/media/docs - открывается по клику */
   file: string
-  /** Герб организации в public/media/docs/logos. Нет - рисуются строки */
+  /** Герб организации, путь от public/ */
   logo?: string
   title: string
-  meta: string
 }
 
 defineProps<Props>()
@@ -40,19 +39,10 @@ const base = useRuntimeConfig().app.baseURL
         <path class="doc__outline" d="M68 4 V32 H96" />
       </svg>
 
-      <img v-if="logo" class="doc__logo" :src="`${base}${logo}`" alt="" />
-      <svg v-else class="doc__lines" viewBox="0 0 52 34" aria-hidden="true" focusable="false">
-        <g class="doc__rule">
-          <path d="M0 3 H22" />
-          <path d="M0 13 H52" />
-          <path d="M0 21 H52" />
-          <path d="M0 29 H52" />
-        </g>
-      </svg>
+      <img v-if="logo" class="doc__logo" :src="`${base}${logo}`" alt="" aria-hidden="true" />
     </span>
 
     <span class="doc__title">{{ title }}</span>
-    <span class="mono doc__meta">{{ meta }}</span>
   </a>
 </template>
 
@@ -62,9 +52,9 @@ const base = useRuntimeConfig().app.baseURL
 
   block-size: 100%;
   display: grid;
-  /* Значок, заголовок, подпись - три ряда фиксированного порядка. Заголовок
-     тянется, поэтому карточки в ряду одинаковой высоты независимо от длины текста */
-  grid-template-rows: auto 1fr auto;
+  /* Значок и название прижаты к левому краю карточки - как весь текст на странице */
+  justify-items: start;
+  align-content: start;
   gap: var(--s-3);
   color: var(--ink);
 }
@@ -73,7 +63,7 @@ const base = useRuntimeConfig().app.baseURL
   position: relative;
   display: grid;
   place-items: center;
-  block-size: 6.5rem;
+  block-size: 5.5rem;
 }
 
 .doc__icon {
@@ -84,26 +74,21 @@ const base = useRuntimeConfig().app.baseURL
 .doc__outline {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 4;
+  stroke-width: 3;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
   transition: stroke var(--dur-fast) var(--ease-out);
 }
 
-/* Герб и строки лежат внутри листа, по центру */
-.doc__logo,
-.doc__lines {
+/* Герб лежит внутри листа, по центру. Ограничен и по ширине, и по высоте:
+   у гербов разные пропорции, без второго предела широкий вылезает за лист */
+.doc__logo {
   position: absolute;
-  inline-size: 42%;
-  max-block-size: 42%;
+  max-inline-size: 72%;
+  max-block-size: 48%;
+  inline-size: auto;
+  block-size: auto;
   object-fit: contain;
-}
-
-.doc__rule path {
-  fill: none;
-  stroke: var(--ink-faint);
-  stroke-width: 2;
-  vector-effect: non-scaling-stroke;
 }
 
 .doc:hover .doc__outline,
@@ -112,11 +97,7 @@ const base = useRuntimeConfig().app.baseURL
 }
 
 .doc__title {
-  font-size: var(--fs-body);
-  line-height: 1.35;
-}
-
-.doc__meta {
-  color: var(--ink-soft);
+  font-size: var(--fs-small);
+  line-height: 1.4;
 }
 </style>

@@ -75,15 +75,14 @@ const base = useRuntimeConfig().app.baseURL
       <div class="doctor__stats-row">
         <LaurelStat
           v-for="stat in m.doctor.stats"
-          :key="stat.value"
+          :key="stat.caption"
           :value="stat.value"
+          :logo="stat.logo"
+          :wide="stat.wide"
           :caption="stat.caption"
         />
       </div>
 
-      <!-- Расшифровка к венку «2 общества»: сами названия длинные, внутрь венка
-           они не влезут, но и терять их нельзя - это подтверждаемый факт -->
-      <p class="doctor__societies">{{ m.doctor.societies }}</p>
     </div>
 
     <div class="doctor__part">
@@ -143,20 +142,25 @@ const base = useRuntimeConfig().app.baseURL
 }
 
 /*
-  Цифры стоят в ряд и отбиты от текста воздухом с обеих сторон: это пауза в чтении,
-  ради неё они и нужны.
+  Знаки стоят в ряд и отбиты от текста воздухом с обеих сторон: это пауза в чтении,
+  ради неё они и нужны. Отступ щедрый - на скриншоте Марка блок читался слипшимся.
 */
 .doctor__stats {
   display: flex;
   flex-direction: column;
-  gap: var(--s-5);
-  padding-block: var(--s-4);
+  padding-block: var(--s-8);
 }
 
+/*
+  Ряд знаков - сетка с равными колонками, а не гибкая строка: у знаков разные по
+  длине подписи, и во flex они разъезжались по ширине. Одинаковая колонка = ровный
+  ряд независимо от текста.
+*/
 .doctor__stats-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(var(--s-4), 3vw, var(--s-10));
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: clamp(var(--s-8), 3vw, var(--s-12)) var(--s-6);
+  align-items: start;
 }
 
 .doctor__part {
@@ -169,10 +173,14 @@ const base = useRuntimeConfig().app.baseURL
   margin: 0;
 }
 
-.doctor__societies {
-  font-size: var(--fs-body);
-  color: var(--ink-soft);
-  max-inline-size: min(58ch, 100%);
+
+/* На телефоне знаки встают по два в ряд: по одному ряд растягивается
+   на пол-экрана прокрутки и перестаёт читаться как ряд */
+@media (max-width: 700px) {
+  .doctor__stats-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-8) var(--s-4);
+  }
 }
 
 @media (max-width: 900px) {
