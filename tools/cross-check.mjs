@@ -76,17 +76,33 @@ for (const vp of [
     clip: { x: geom.node.cx - pad, y: geom.node.cy - pad, width: pad * 2, height: pad * 2 },
   })
 
-  // Ушли далеко вниз и вернулись: разметка должна остаться нарисованной
+  // Сценарий Марка: пролистали в самый верх — разметка должна СТЕРЕТЬСЯ
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
-  await page.waitForTimeout(700)
-  await page.evaluate(() => document.querySelector('.manifest').scrollIntoView())
-  await page.waitForTimeout(300)
-  const after = await page.evaluate(() => ({
-    класс: document.querySelector('.cross').classList.contains('cross--on'),
+  await page.waitForTimeout(600)
+  const наверху = await page.evaluate(() => ({
+    чертитсяКласс: document.querySelector('.cross').classList.contains('cross--on'),
     прозрачностьУзла: getComputedStyle(document.querySelector('.cross__node')).opacity,
     обрезкаЛуча: getComputedStyle(document.querySelector('.cross__ray--down')).clipPath,
   }))
-  console.log('после возврата:', JSON.stringify(after))
+  console.log('страница в самом верху (ждём: стёрто):', JSON.stringify(наверху))
+
+  // Вернулись к блоку — должно начать чертиться заново
+  await page.evaluate(() => {
+    const r = document.querySelector('.manifest').getBoundingClientRect()
+    window.scrollTo({ top: window.scrollY + r.top - window.innerHeight * 0.35, behavior: 'instant' })
+  })
+  await page.waitForTimeout(120)
+  const сразу = await page.evaluate(() => ({
+    чертитсяКласс: document.querySelector('.cross').classList.contains('cross--on'),
+    обрезкаЛуча: getComputedStyle(document.querySelector('.cross__ray--down')).clipPath,
+  }))
+  console.log('вернулись, сразу (ждём: класс есть, луч ещё обрезан):', JSON.stringify(сразу))
+  await page.waitForTimeout(2200)
+  const дочертил = await page.evaluate(() => ({
+    прозрачностьУзла: getComputedStyle(document.querySelector('.cross__node')).opacity,
+    обрезкаЛуча: getComputedStyle(document.querySelector('.cross__ray--down')).clipPath,
+  }))
+  console.log('вернулись, через 2 с (ждём: нарисовано):', JSON.stringify(дочертил))
 
   await page.close()
 }

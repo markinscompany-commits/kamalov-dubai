@@ -17,10 +17,18 @@
   Точку задаёт блок снаружи, переменными --cross-x и --cross-y: «пустое место»
   у каждого блока своё. Размер узла — --cross-node.
 
-  ПОЯВЛЕНИЕ ПРИВЯЗАНО К ПРОКРУТКЕ и происходит ОДИН РАЗ (правка Марка, 01.08):
-  разметка прочерчивается, когда точка впервые попала на экран, и остаётся на месте.
-  Раньше она сбрасывалась при уходе блока с экрана и рисовалась заново при возврате —
-  на длинной странице это выглядело как мигание, а не как чертёж.
+  ПОЯВЛЕНИЕ ПРИВЯЗАНО К ПРОКРУТКЕ И ПОВТОРЯЕТСЯ.
+  · Рисуем, когда на экране появилась ТОЧКА, из которой растут лучи.
+  · Стираем, когда БЛОК целиком ушёл с экрана. Вернулся — чертится заново.
+  Именно блок, а не точка: точка стоит у верхнего края блока, и если считать по ней,
+  разметка пропадала бы прямо во время чтения.
+
+  ⚠️ Почему это не работало раньше. Сброс висел на наблюдателе без запаса, а первый
+  экран ровно во всю высоту окна: когда страница прокручена в самый верх, верхняя
+  граница следующего блока совпадает с нижней границей экрана. Площадь пересечения
+  ноль — браузер такой случай считает пограничным, и событие «блок ушёл» не приходило.
+  Лечится запасом --watch-slack: экран для наблюдателя ужимается на несколько пикселей,
+  и совпадение границ перестаёт быть пограничным случаем.
 
   Цвет и толщина берутся снаружи: --rule и --rule-w.
 -->
@@ -32,34 +40,46 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), { delay: 0 })
 
+/** Запас для наблюдателя, px. Убирает пограничный случай «граница блока = граница экрана» */
+const WATCH_SLACK = 4
+
+const root = ref<HTMLElement | null>(null)
 const origin = ref<HTMLElement | null>(null)
 const drawn = ref(false)
 
 let originWatch: IntersectionObserver | null = null
+let blockWatch: IntersectionObserver | null = null
 
 onMounted(() => {
+  // Точка появилась на экране — чертим
   originWatch = new IntersectionObserver(
     (entries) => {
-      if (!entries[0]?.isIntersecting) return
-      drawn.value = true
-      // Рисуем один раз: наблюдение больше не нужно
-      originWatch?.disconnect()
-      originWatch = null
+      if (entries[0]?.isIntersecting) drawn.value = true
     },
     { threshold: 0 },
   )
   if (origin.value) originWatch.observe(origin.value)
+
+  // Блок целиком ушёл с экрана — стираем, чтобы при возврате нарисовалось заново
+  blockWatch = new IntersectionObserver(
+    (entries) => {
+      if (!entries[0]?.isIntersecting) drawn.value = false
+    },
+    { threshold: 0, rootMargin: `-${WATCH_SLACK}px` },
+  )
+  if (root.value) blockWatch.observe(root.value)
 })
 
 onBeforeUnmount(() => {
   originWatch?.disconnect()
+  blockWatch?.disconnect()
 })
 
 const style = computed(() => ({ '--delay': `${props.delay}ms` }))
 </script>
 
 <template>
-  <div class="cross" :class="{ 'cross--on': drawn }" :style="style" aria-hidden="true">
+  <div ref="root" class="cross" :class="{ 'cross--on': drawn }" :style="style" aria-hidden="true">
     <!-- Узел. Он же точка отсчёта для наблюдателя: ловим момент, когда он попал на экран -->
     <span ref="origin" class="cross__node" />
 
