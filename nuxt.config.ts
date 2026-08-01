@@ -11,7 +11,9 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       { name: 'Cormorant Garamond', provider: 'google', weights: [300, 400], styles: ['normal', 'italic'] },
-      { name: 'IBM Plex Sans', provider: 'google', weights: [400, 500] },
+      // Курсив нужен для выделения «ринопласт» в первом экране: специализация
+      // набрана гротеском, и браузер иначе рисует поддельный наклон
+      { name: 'IBM Plex Sans', provider: 'google', weights: [400, 500], styles: ['normal', 'italic'] },
       // 500 нужен для строки разделов в шапке: на чернильном фоне тонкий моношрифт
       // читается заметно хуже
       { name: 'IBM Plex Mono', provider: 'google', weights: [400, 500] },

@@ -177,11 +177,15 @@ const base = useRuntimeConfig().app.baseURL
   line-height: 0.95;
 }
 
+/* Специализация набрана тем же гротеском, что регалии под ней (правка Марка):
+   антиква осталась только на имени. Кегль при переводе на гротеск пришлось опустить —
+   Plex Sans при равном размере выглядит заметно крупнее и плотнее тонкой антиквы. */
 .hero__spec {
-  font-family: var(--font-display);
-  font-size: var(--fs-h2);
-  font-weight: 300;
-  line-height: 1.12;
+  font-family: var(--font-text);
+  font-size: clamp(1.25rem, 2.1vw, 2rem);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
   color: color-mix(in srgb, var(--paper) 82%, transparent);
 }
 
@@ -286,7 +290,7 @@ const base = useRuntimeConfig().app.baseURL
   }
 
   .hero__spec {
-    font-size: clamp(1.25rem, 2vw, 1.625rem);
+    font-size: clamp(1.125rem, 1.7vw, 1.5rem);
   }
 }
 
@@ -381,7 +385,7 @@ const base = useRuntimeConfig().app.baseURL
   }
 
   .hero__spec {
-    font-size: clamp(1.125rem, 5.2vw, 1.5rem);
+    font-size: clamp(1rem, 4.4vw, 1.25rem);
   }
 
   /* Та же отбивка, что на десктопе: регалии и кнопки отделены от специализации */
