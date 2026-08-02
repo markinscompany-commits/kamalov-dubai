@@ -19,6 +19,8 @@ interface Doc {
   file: string
   logo?: string
   logoWide?: boolean
+  /** Надпись вместо герба - для документов госорганов, см. DocCard */
+  mark?: string
   title: string
 }
 
@@ -71,6 +73,7 @@ onBeforeUnmount(() => {
             :file="doc.file"
             :logo="doc.logo"
             :logo-wide="doc.logoWide"
+            :mark="doc.mark"
             :title="doc.title"
           />
         </li>

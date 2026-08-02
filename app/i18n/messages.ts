@@ -136,7 +136,11 @@ const ru = {
     ],
     docsLabel: '// Документы',
     docs: [
-      { file: 'doc-dha-2025.jpg', logo: 'media/logos/org-dha.svg', logoWide: true, title: 'Регистрация DHA, Дубай' },
+      // ⚠️ Надпись, а не герб: ST-21 п. 7.2 запрещает эмблему госоргана в оформлении
+      // без письменного разрешения. Скан с гербом внутри открывается по клику - это
+      // воспроизведение документа, и оно разрешено. Файл logos/org-dha.svg оставлен
+      // на месте: придёт разрешение - меняем mark обратно на logo.
+      { file: 'doc-dha-2025.jpg', mark: 'DHA', title: 'Регистрация DHA, Дубай' },
       { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.png', title: 'Диплом врача, 1994' },
       { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.png', title: 'Кандидат наук, 2003' },
       { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Сертификат специалиста, 2020' },
@@ -343,7 +347,8 @@ const en: typeof ru = {
     ],
     docsLabel: '// Documents',
     docs: [
-      { file: 'doc-dha-2025.jpg', logo: 'media/logos/org-dha.svg', logoWide: true, title: 'DHA registration, Dubai' },
+      // Надпись вместо герба, см. пояснение в русской версии
+      { file: 'doc-dha-2025.jpg', mark: 'DHA', title: 'DHA registration, Dubai' },
       { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.png', title: 'Medical degree, 1994' },
       { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.png', title: 'PhD in Medicine, 2003' },
       { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Specialist certificate, 2020' },

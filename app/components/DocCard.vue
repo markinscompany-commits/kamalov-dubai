@@ -23,6 +23,14 @@ interface Props {
   logo?: string
   /** Логотип вытянутый по горизонтали - размер считается по другим правилам */
   logoWide?: boolean
+  /**
+   * Короткая надпись вместо герба.
+   * ⚠️ Нужна для документов государственных органов: ST-21 п. 7.2 запрещает
+   * использовать название или эмблему госоргана в оформлении без письменного
+   * разрешения. Скан документа с гербом внутри показывать можно - это
+   * воспроизведение документа; вырезать герб и ставить его значком - уже нельзя.
+   */
+  mark?: string
   title: string
 }
 
@@ -41,8 +49,11 @@ const base = useRuntimeConfig().app.baseURL
         <path class="doc__outline" d="M68 4 V32 H96" />
       </svg>
 
+      <!-- Надпись вместо герба - для документов госорганов, см. проп mark -->
+      <span v-if="mark" class="mono doc__mark" aria-hidden="true">{{ mark }}</span>
+
       <img
-        v-if="logo"
+        v-else-if="logo"
         class="doc__logo"
         :class="{ 'doc__logo--wide': logoWide }"
         :src="`${base}${logo}`"
@@ -115,7 +126,28 @@ const base = useRuntimeConfig().app.baseURL
   transform: translateY(18%);
 }
 
-/* Широкий логотип (DHA) остаётся в прежнем размере и по центру: он вытянутый,
+/*
+  Надпись вместо герба. Стоит там же, где стоял бы герб - опущена ниже середины
+  листа, потому что сверху у него загнутый угол. Кегль крупнее обычного моно:
+  это единственное содержимое листа, и оно должно читаться как знак, а не как
+  подпись. Цвет перебиваем: класс .mono задаёт свой, приглушённый.
+*/
+.doc__mark {
+  position: absolute;
+  transform: translateY(18%);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.doc:hover .doc__mark,
+.doc:focus-visible .doc__mark {
+  color: var(--blue);
+}
+
+/* Широкий логотип остаётся в прежнем размере и по центру: он вытянутый,
    и по общим правилам превратился бы в узкую полосу через весь лист */
 .doc__logo--wide {
   max-inline-size: 72%;
