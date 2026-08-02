@@ -39,36 +39,42 @@ const base = useRuntimeConfig().app.baseURL
     cross-y="5.5rem"
     :cross-fraction="0.207"
   >
+    <!--
+      На телефоне порядок задан вручную: заголовок, оба снимка в ряд, потом текст.
+      Числа в data-mobile-order разбирает PageSection.
+    -->
     <template #side>
-      <!-- ⚠️ ВРЕМЕННО: это другой план того же кадра, что на первом экране.
-           Заменить на снимок из второй фотосессии, когда клиника её передаст. -->
-      <figure class="doctor__figure" data-mobile-first>
-        <img
-          class="doctor__portrait"
-          :src="`${base}media/doctor-close.jpg`"
-          :alt="m.doctor.portraitAlt"
-          width="800"
-          height="920"
-          loading="lazy"
-        />
-        <figcaption class="doctor__name">{{ m.doctor.fullName }}</figcaption>
-      </figure>
+      <div class="doctor__photos" data-mobile-order="2">
+        <!-- ⚠️ ВРЕМЕННО: это другой план того же кадра, что на первом экране.
+             Заменить на снимок из второй фотосессии, когда клиника её передаст. -->
+        <figure class="doctor__figure">
+          <img
+            class="doctor__portrait"
+            :src="`${base}media/doctor-close.jpg`"
+            :alt="m.doctor.portraitAlt"
+            width="800"
+            height="920"
+            loading="lazy"
+          />
+          <figcaption class="doctor__name">{{ m.doctor.fullName }}</figcaption>
+        </figure>
 
-      <figure class="doctor__figure">
-        <img
-          :src="`${base}media/archive-father.jpg`"
-          :alt="m.doctor.photoAlt"
-          width="900"
-          height="1234"
-          loading="lazy"
-        />
-        <figcaption class="doctor__caption">{{ m.doctor.photoCaption }}</figcaption>
-      </figure>
+        <figure class="doctor__figure">
+          <img
+            :src="`${base}media/archive-father.jpg`"
+            :alt="m.doctor.photoAlt"
+            width="900"
+            height="1234"
+            loading="lazy"
+          />
+          <figcaption class="doctor__caption">{{ m.doctor.photoCaption }}</figcaption>
+        </figure>
+      </div>
     </template>
 
-    <SectionTitle :text="m.doctor.title" />
+    <SectionTitle :text="m.doctor.title" data-mobile-order="1" />
 
-    <p class="doctor__lead">{{ m.doctor.lead }}</p>
+    <p class="doctor__lead" data-mobile-order="3">{{ m.doctor.lead }}</p>
 
     <!-- Цифры: стаж, награда, общества, регистрация в Дубае -->
     <div class="doctor__stats">
@@ -111,6 +117,13 @@ const base = useRuntimeConfig().app.baseURL
   font-size: var(--fs-body);
   line-height: 1.4;
   color: var(--ink);
+}
+
+/* На десктопе снимки идут друг под другом в боковой колонке */
+.doctor__photos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
 }
 
 .doctor__figure {
@@ -190,14 +203,40 @@ const base = useRuntimeConfig().app.baseURL
 }
 
 @media (max-width: 900px) {
-  /* На телефоне снимки уходят под текст блока и занимают не всю ширину:
-     во всю ширину они начинают спорить с портретом на первом экране */
-  .doctor__figure {
-    max-inline-size: 15rem;
+  /* На телефоне снимки встают в ряд, сразу под заголовком: сначала лицо,
+     потом отец. Колонки равные, поэтому ряд читается парой, а не списком */
+  .doctor__photos {
+    flex-direction: row;
+    align-items: start;
+    gap: var(--s-4);
   }
 
-  .doctor__figure[data-mobile-first] {
-    margin-block-end: var(--s-2);
+  .doctor__figure {
+    flex: 1 1 0;
+    min-inline-size: 0;
+  }
+
+  /*
+    Снимки разной пропорции (портрет 800x920, архив 900x1234), поэтому в ряду
+    их низы и подписи расходились по высоте. На телефоне обрезаем оба под одну
+    пропорцию - ряд читается парой.
+
+    Кадр прижат к ВЕРХУ: у архивного снимка он выше нужной пропорции, и обрезка
+    по центру срезала бы шапку с рефлектором. Портрет наоборот шире нужного,
+    у него подрезаются поля по бокам, и вертикаль на него не влияет.
+  */
+  .doctor__figure img {
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 0;
+  }
+
+  /* Подписи под снимками мельче: в половину ширины экрана длинная подпись
+     занимает пять строк и перевешивает сам снимок */
+  .doctor__name,
+  .doctor__caption {
+    font-size: 0.8125rem;
+    line-height: 1.4;
   }
 }
 </style>
