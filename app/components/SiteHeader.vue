@@ -76,16 +76,20 @@ onBeforeUnmount(() => {
           гаснут, но МЕСТО за собой сохраняют — поэтому «Ринопластика» и «Септопластика»
           остаются ровно там же, где стояли до прокрутки, и не съезжают влево.
         -->
+        <!-- ⚠️ menuOnly-пункты в строку не попадают: с пятью пунктами английская
+             строка пересекала границу половин (правило шапки). Блоков будет
+             одиннадцать - в строке живёт подмножество, полный список в меню -->
         <nav class="header__nav mono" :aria-label="m.nav.sections">
-          <a
-            v-for="item in m.nav.links"
-            :key="item.href"
-            class="header__link"
-            :class="{ 'header__link--secondary': !item.service }"
-            :href="item.href"
-          >
-            {{ item.short }}
-          </a>
+          <template v-for="item in m.nav.links" :key="item.href">
+            <a
+              v-if="!item.menuOnly"
+              class="header__link"
+              :class="{ 'header__link--secondary': !item.service }"
+              :href="item.href"
+            >
+              {{ item.short }}
+            </a>
+          </template>
         </nav>
       </div>
 

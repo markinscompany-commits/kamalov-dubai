@@ -39,6 +39,9 @@ const ru = {
       // пока блоков нет, эти ссылки никуда не ведут - клик просто ничего не делает.
       { label: 'Ринопластика', short: 'Ринопластика', href: '#rhinoplasty', service: true },
       { label: 'Септопластика', short: 'Септопластика', href: '#septoplasty', service: true },
+      // menuOnly: в строке шапки места нет (с пятью пунктами английская строка
+      // пересекала границу половин) - пункт живёт только в бургер-меню
+      { label: 'Где принимает', short: 'Госпиталь', href: '#clinic', service: false, menuOnly: true },
       { label: 'Контакты', short: 'Контакты', href: '#contacts', service: false },
     ],
     sections: 'Разделы страницы',
@@ -195,6 +198,55 @@ const ru = {
     risks: 'Септопластика - хирургическая операция. Она проходит с обезболиванием, требует восстановления и имеет риски: отёк, сухость в носу, кровотечение, повторное искривление перегородки. Хирург разбирает их на консультации. Результат зависит от индивидуальных особенностей и не может быть одинаковым у разных людей.',
   },
   /*
+    Блок «Где принимает» - Dubai London Hospital.
+
+    Факты сверены 03.08.2026: адрес и участок 760 - 2GIS/Nominatim, круглосуточный
+    режим, аккредитация ACHSI и ЛОР-отделение - сайт больницы (записано в session-log
+    сессии 4). Координаты - OpenStreetMap: 25.1530° N, 55.2013° E.
+
+    ⚠️ Телефоны больницы сюда НЕ ставим: все заявки идут через форму и WhatsApp
+    клиники, звонок в регистратуру больницы - потерянный лид.
+
+    ⚠️ Залив в английской версии - Arabian Gulf, а не Persian Gulf: в Эмиратах
+    принято только это название, «Персидский» для местной аудитории - раздражитель.
+    По-русски оставлен «Персидский залив» - русскоязычные жители иначе не говорят.
+  */
+  clinic: {
+    label: '[06] Где принимает',
+    title: 'Стационар, а не кабинет.',
+    lead: 'Эльдар Камалов консультирует и оперирует в Dubai London Hospital - частном госпитале на берегу Джумейры. Консультация, операция и первые дни восстановления проходят в одном здании, наблюдение - круглосуточное.',
+    facts: [
+      { mark: 'Адрес', text: '760, Jumeirah Beach Road, район Umm Suqeim 2, Дубай' },
+      { mark: 'Формат', text: 'Частный многопрофильный госпиталь, стационар работает круглосуточно' },
+      { mark: 'Лицензия', text: 'Медицинское учреждение, лицензированное Департаментом здравоохранения Дубая (DHA)' },
+      { mark: 'Аккредитация', text: 'Международная аккредитация ACHSI - австралийский стандарт качества госпиталей' },
+      { mark: 'Отделение', text: 'Работает оториноларингологическое отделение - профильное для хирургии носа' },
+      { mark: 'Язык', text: 'Приём ведётся на русском и английском' },
+    ],
+    map: {
+      alt: 'Карта побережья Джумейры: Dubai London Hospital стоит на Jumeirah Beach Road в районе Umm Suqeim 2, в двух километрах северо-восточнее Бурдж-аль-Араба',
+      sea: 'Персидский залив',
+      road: 'Jumeirah Beach Road',
+      hospital: 'Dubai London Hospital',
+      area: 'Umm Suqeim 2',
+      coords: '25.15° N · 55.20° E',
+      burj: 'Бурдж-аль-Араб',
+      scale: '1 км',
+    },
+    photos: [
+      {
+        file: 'clinic/facade.jpg',
+        caption: '// Вход с Jumeirah Beach Road',
+        alt: 'Фасад Dubai London Hospital со стороны Jumeirah Beach Road',
+      },
+      {
+        file: 'clinic/reception.jpg',
+        caption: '// Ресепшен амбулаторного отделения',
+        alt: 'Ресепшен амбулаторного отделения Dubai London Hospital',
+      },
+    ],
+  },
+  /*
     Блок «Как проходит лечение». Отвечает на вопрос «что со мной будет от заявки
     до выписки» - его на странице не было вообще.
 
@@ -287,6 +339,8 @@ const en: typeof ru = {
       { label: 'About the doctor', short: 'About', href: '#doctor', service: false },
       { label: 'Rhinoplasty', short: 'Rhinoplasty', href: '#rhinoplasty', service: true },
       { label: 'Septoplasty', short: 'Septoplasty', href: '#septoplasty', service: true },
+      // menuOnly - см. пояснение в русской версии
+      { label: 'Where he sees patients', short: 'Hospital', href: '#clinic', service: false, menuOnly: true },
       { label: 'Contacts', short: 'Contacts', href: '#contacts', service: false },
     ],
     sections: 'Page sections',
@@ -386,6 +440,42 @@ const en: typeof ru = {
     ],
     markCaption: 'Septum and the airway',
     risks: 'Septoplasty is a surgical operation. It is performed with anaesthesia, requires a recovery period and carries risks: swelling, dryness in the nose, bleeding, recurrence of the deviation. The surgeon goes through them at the consultation. The outcome depends on individual characteristics and cannot be the same for different people.',
+  },
+  // Arabian Gulf, не Persian Gulf - местная норма, см. пояснение в русской версии
+  clinic: {
+    label: '[06] Where he sees patients',
+    title: 'A hospital, not a consulting room.',
+    lead: 'Eldar Kamalov consults and operates at Dubai London Hospital - a private hospital on the Jumeirah coast. The consultation, the operation and the first days of recovery all happen in one building, with round-the-clock care.',
+    facts: [
+      { mark: 'Address', text: '760, Jumeirah Beach Road, Umm Suqeim 2, Dubai' },
+      { mark: 'Setting', text: 'A private multi-speciality hospital with round-the-clock inpatient care' },
+      { mark: 'Licence', text: 'A medical facility licensed by the Dubai Health Authority (DHA)' },
+      { mark: 'Accreditation', text: 'ACHSI international accreditation - the Australian standard of hospital care' },
+      { mark: 'Department', text: 'Has an otolaryngology department - the profile field for nose surgery' },
+      { mark: 'Language', text: 'Consultations are held in Russian and English' },
+    ],
+    map: {
+      alt: 'Map of the Jumeirah coast: Dubai London Hospital stands on Jumeirah Beach Road in Umm Suqeim 2, two kilometres north-east of the Burj Al Arab',
+      sea: 'Arabian Gulf',
+      road: 'Jumeirah Beach Road',
+      hospital: 'Dubai London Hospital',
+      area: 'Umm Suqeim 2',
+      coords: '25.15° N · 55.20° E',
+      burj: 'Burj Al Arab',
+      scale: '1 km',
+    },
+    photos: [
+      {
+        file: 'clinic/facade.jpg',
+        caption: '// The entrance from Jumeirah Beach Road',
+        alt: 'The facade of Dubai London Hospital seen from Jumeirah Beach Road',
+      },
+      {
+        file: 'clinic/reception.jpg',
+        caption: '// Outpatient reception',
+        alt: 'The outpatient reception at Dubai London Hospital',
+      },
+    ],
   },
   treatment: {
     label: '[07] How treatment works',
