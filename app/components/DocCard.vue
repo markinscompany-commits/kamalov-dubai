@@ -112,7 +112,7 @@ const base = useRuntimeConfig().app.baseURL
   inline-size: auto;
   block-size: auto;
   object-fit: contain;
-  transform: translateY(8%);
+  transform: translateY(18%);
 }
 
 /* Широкий логотип (DHA) остаётся в прежнем размере и по центру: он вытянутый,

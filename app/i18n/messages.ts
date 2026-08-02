@@ -112,7 +112,7 @@ const ru = {
     docs: [
       { file: 'doc-dha-2025.jpg', logo: 'media/logos/org-dha.svg', logoWide: true, title: 'Регистрация DHA, Дубай' },
       { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.png', title: 'Диплом врача, 1994' },
-      { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.png', title: 'Кандидат медицинских наук, 2003' },
+      { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.png', title: 'Кандидат наук, 2003' },
       { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Сертификат специалиста, 2020' },
       { file: 'doc-course-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Повышение квалификации, 2020' },
       { file: 'doc-residency-2021.jpg', logo: 'media/logos/org-mgupp.png', title: 'Ординатура, 2021' },
