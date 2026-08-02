@@ -46,5 +46,8 @@ useHead(() => ({
       :mark-caption="m.septoplasty.markCaption"
     />
     -->
+
+    <TreatmentSection />
+    <RecoverySection />
   </main>
 </template>

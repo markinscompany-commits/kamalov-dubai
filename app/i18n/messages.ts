@@ -25,7 +25,7 @@ const ru = {
   meta: {
     title: 'Эльдар Камалов - ринопластика и септопластика в Дубае',
     description:
-      'Эльдар Камалов - пластический хирург, ринопласт. Кандидат медицинских наук, 30 лет практики. Приём в Dubai London Hospital, лицензия DHA. Запись на консультацию.',
+      'Эльдар Камалов - врач-специалист, оториноларингология. Хирургия носа: ринопластика и септопластика. Кандидат медицинских наук, 30 лет практики. Приём в Dubai London Hospital, регистрация DHA. Запись на консультацию.',
   },
   nav: {
     /*
@@ -56,13 +56,36 @@ const ru = {
   service: {
     risksLabel: 'Риски',
   },
+  /*
+    ⚠️ ТИТУЛ НА ПЕРВОМ ЭКРАНЕ = ЗАПИСЬ В РЕГИСТРАЦИИ DHA, СЛОВО В СЛОВО.
+    Требование ST-21 п. 8.1.3. В сертификате DHA (Healthcare Professional Registration
+    Certificate, DHA Unique ID 26320604) в строке Registration Title стоит
+    «Physician - Specialist - Otolaryngology» - и ничего про пластическую хирургию.
+    Поэтому титулом идёт именно он, а ринопластика и септопластика стоят ниже как
+    НАЗВАНИЕ УСЛУГИ, а не как звание врача. Разница принципиальная: рекламировать
+    услугу за пределами лицензированной специализации нельзя, называть операцию,
+    которую делает ЛОР-хирург, - можно.
+
+    Английская строка воспроизводит запись сертификата буквально; русская - её перевод.
+    Если клиника пришлёт лицензию, активированную через Dubai London Hospital, с другой
+    специализацией - меняются ровно эти две строки.
+  */
   hero: {
     eyebrow: '[01] Принимает в Dubai London Hospital',
     name: 'Эльдар Камалов',
-    specMain: 'пластический хирург,',
-    specEm: 'ринопласт',
-    creds: ['Кандидат медицинских наук, 30 лет практики,', 'член Европейского общества ринопластов'],
-    photoAlt: 'Эльдар Камалов, пластический хирург',
+    specMain: 'Врач-специалист -',
+    specEm: 'оториноларингология',
+    /*
+      Ровно ДВЕ строки. Третью пробовали - на 360×640 регалии выросли на строку,
+      полоса с фотографией упёрлась в потолок, и кнопки ушли за нижний край экрана
+      (запас --hero-text-reserve в HeroSection.vue измерен под две строки).
+      Членство в Европейском обществе ринопластов убрано отсюда не поэтому, а потому
+      что оно и так стоит в «О докторе» отдельным знаком в лавровой ветви - на первом
+      экране это был повтор. Заодно ближе к design-brief п. 9: одна короткая строка
+      опыта, остальные регалии во втором блоке.
+    */
+    creds: ['Ринопластика и септопластика', 'Кандидат медицинских наук, 30 лет практики'],
+    photoAlt: 'Эльдар Камалов, врач-специалист по оториноларингологии',
     scroll: 'Прокрутите ↓',
   },
   manifest: {
@@ -105,7 +128,10 @@ const ru = {
       { year: '2016', text: 'Открыл клинику и назвал её именем отца' },
       { year: '2017', text: 'Премия «Хрустальный Лотос» в области ринопластики' },
       { year: '2020', text: 'Сертификат специалиста по оториноларингологии' },
-      { year: '2021', text: 'Ординатура по пластической хирургии, квалификация врача-пластического хирурга' },
+      // ⚠️ «квалификация врача-пластического хирурга» снята намеренно: по ST-21 п. 8.1.3
+      // квалификация врача указывается так, как в лицензии DHA, а там - оториноларингология.
+      // Само обучение - факт, подтверждённый документом, поэтому строка осталась.
+      { year: '2021', text: 'Окончил ординатуру по пластической хирургии' },
       { year: '2025', text: 'Регистрация в департаменте здравоохранения Дубая. Приём и операции - в Dubai London Hospital' },
     ],
     docsLabel: '// Документы',
@@ -116,7 +142,16 @@ const ru = {
       { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Сертификат специалиста, 2020' },
       { file: 'doc-course-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Повышение квалификации, 2020' },
       { file: 'doc-residency-2021.jpg', logo: 'media/logos/org-mgupp.png', title: 'Ординатура, 2021' },
-      { file: 'doc-letter-2024.jpg', logo: 'media/logos/org-letter.png', title: 'Благодарственное письмо, 2024' },
+      /*
+        Благодарственное письмо Президента РФ, 2024 - УБРАНО (решение Марка, 02.08).
+        Причина не вкусовая: ST-21 п. 7.2 запрещает использовать в медицинской рекламе
+        название или эмблему DHA «или любого другого государственного либо публичного
+        органа» без письменного разрешения. На письме - герб России и название органа.
+        Плюс само письмо о благотворительной деятельности, к медицине отношения не имеет.
+        Вернуть - раскомментировать строку и файлы docs/doc-letter-2024.jpg,
+        logos/org-letter.png (оба на месте).
+        { file: 'doc-letter-2024.jpg', logo: 'media/logos/org-letter.png', title: 'Благодарственное письмо, 2024' },
+      */
     ],
     portraitAlt: 'Эльдар Камалов',
     photoAlt: 'Шамсутин Камалов, отоларинголог и пластический хирург, архивный снимок',
@@ -155,13 +190,93 @@ const ru = {
     markCaption: 'Перегородка и путь воздуха',
     risks: 'Септопластика - хирургическая операция. Она проходит с обезболиванием, требует восстановления и имеет риски: отёк, сухость в носу, кровотечение, повторное искривление перегородки. Хирург разбирает их на консультации. Результат зависит от индивидуальных особенностей и не может быть одинаковым у разных людей.',
   },
+  /*
+    Блок «Как проходит лечение». Отвечает на вопрос «что со мной будет от заявки
+    до выписки» - его на странице не было вообще.
+
+    🟡 ВРЕМЕННЫЕ ДАННЫЕ. Тексты шагов написаны нами по общей практике и НЕ содержат
+    ни одной цифры, которую мы не можем подтвердить: длительность консультации,
+    число дней в стационаре и график осмотров запрошены у клиники
+    (таблица `client-request/`, строки 2.3, 2.5, 2.6). Как придут - вставляются сюда.
+
+    ⚠️ Онлайн-консультация не упоминается нигде и упоминаться не может: в Дубае это
+    отдельно лицензируемая телемедицина, стандарт DHA ST-14.
+  */
+  treatment: {
+    label: '[07] Как проходит лечение',
+    title: 'Шесть шагов от заявки до последнего осмотра.',
+    lead: 'Порядок одинаковый для ринопластики и септопластики. Решение об операции принимается только после очного осмотра - по фотографии носа его не принимают.',
+    stepWord: 'Шаг',
+    steps: [
+      {
+        title: 'Заявка',
+        text: 'Вы оставляете заявку на сайте или пишете в WhatsApp. Клиника связывается с вами и подбирает время приёма.',
+      },
+      {
+        title: 'Консультация',
+        text: 'Очный приём в Dubai London Hospital. Хирург осматривает нос снаружи и изнутри, разбирает анатомию, объясняет, какие задачи операция решает, а какие - нет, и проговаривает риски.',
+        photo: 'consulting-room.jpg',
+        photoAlt: 'Кабинет приёма в Dubai London Hospital',
+      },
+      {
+        title: 'Обследование и план',
+        text: 'Анализы, снимки, осмотр анестезиолога. По результатам хирург составляет план операции и согласовывает дату.',
+        photo: 'imaging.jpg',
+        photoAlt: 'Кабинет компьютерной томографии в Dubai London Hospital',
+      },
+      {
+        title: 'Операция',
+        text: 'Проходит в стационаре больницы, под наркозом. Продолжительность зависит от объёма вмешательства и обсуждается заранее.',
+        photo: 'operating-room.jpg',
+        photoAlt: 'Операционная Dubai London Hospital',
+      },
+      {
+        title: 'Первые дни',
+        text: 'Наблюдение в палате, затем снятие повязки и швов в сроки, которые хирург назначает по ходу заживления.',
+        photo: 'ward.jpg',
+        photoAlt: 'Палата в Dubai London Hospital',
+      },
+      {
+        title: 'Наблюдение',
+        text: 'Контрольные осмотры по графику. Между визитами вопросы можно задать в клинику - к тому же хирургу, который оперировал.',
+      },
+    ],
+  },
+  /*
+    Блок «Восстановление».
+
+    🔴 ЦИФРЫ - ЗАГЛУШКА, ОБЯЗАТЕЛЬНА ПРОВЕРКА ДОКТОРОМ. Это медицинские утверждения,
+    а по ST-21 п. 8.1.5 любое такое утверждение надо уметь подтвердить. Сроки взяты
+    по общей практике ринопластики и запрошены у клиники (`client-request/`, строка 2.7).
+    До подтверждения доктором блок НЕ публикуем на боевом домене.
+
+    Ориентиры выбраны под аудиторию в ОАЭ: солнце, бассейн и море - не абстракция,
+    а то, из чего состоит здешняя жизнь, и первое, о чём спрашивают.
+  */
+  recovery: {
+    label: '[08] Восстановление',
+    title: 'Сколько времени это займёт.',
+    lead: 'Восстановление - часть операции, а не приложение к ней. Ниже обычные сроки. Они зависят от объёма вмешательства и от того, как заживают ткани, поэтому у разных людей отличаются.',
+    columns: { when: 'Когда', what: 'Что происходит' },
+    rows: [
+      { when: '1-2 день', what: 'Наблюдение в клинике. Отёк и заложенность носа наиболее заметны' },
+      { when: '7-10 дней', what: 'Снимают повязку. Дышать носом становится свободнее, но отёк ещё держится' },
+      { when: '2 недели', what: 'Основной отёк сходит. Обычно к этому времени возвращаются к работе и к перелётам' },
+      { when: '1 месяц', what: 'Внешне изменения уже незаметны для окружающих. Спорт, бассейн и море - по разрешению хирурга' },
+      { when: '6-12 месяцев', what: 'Форма носа окончательно устанавливается. Мелкий отёк уходит постепенно' },
+    ],
+    noteLabel: 'Что важно знать',
+    note: 'Сроки в таблице - ориентир, а не обещание. Они зависят от объёма операции, особенностей тканей и точности выполнения назначений. Точные сроки для вашего случая называет хирург на консультации, после осмотра.',
+    sunLabel: '// Отдельно про солнце',
+    sun: 'В климате Эмиратов это важнее, чем кажется: прямое солнце на свежих рубцах и в период отёка хирурги ограничивают дольше, чем всё остальное. Срок и способы защиты хирург называет на контрольном осмотре.',
+  },
 }
 
 const en: typeof ru = {
   meta: {
     title: 'Eldar Kamalov - rhinoplasty and septoplasty in Dubai',
     description:
-      'Eldar Kamalov - plastic surgeon, rhinoplasty specialist. PhD in Medicine, 30 years in practice. Sees patients at Dubai London Hospital, DHA licensed. Book a consultation.',
+      'Eldar Kamalov - Physician, Specialist in Otolaryngology. Nose surgery: rhinoplasty and septoplasty. PhD in Medicine, 30 years in practice. Sees patients at Dubai London Hospital, DHA registered. Book a consultation.',
   },
   nav: {
     links: [
@@ -185,13 +300,16 @@ const en: typeof ru = {
   service: {
     risksLabel: 'Risks',
   },
+  // ⚠️ Титул воспроизводит строку Registration Title сертификата DHA буквально.
+  // Пояснение - в русской версии выше.
   hero: {
     eyebrow: '[01] Sees patients at Dubai London Hospital',
     name: 'Eldar Kamalov',
-    specMain: 'plastic surgeon,',
-    specEm: 'rhinoplasty specialist',
-    creds: ['PhD in Medicine, 30 years in practice,', 'member of the European Rhinoplasty Society'],
-    photoAlt: 'Eldar Kamalov, plastic surgeon',
+    specMain: 'Physician - Specialist -',
+    specEm: 'Otolaryngology',
+    // Две строки, см. пояснение в русской версии.
+    creds: ['Rhinoplasty and septoplasty', 'PhD in Medicine, 30 years in practice'],
+    photoAlt: 'Eldar Kamalov, Physician - Specialist - Otolaryngology',
     scroll: 'Scroll ↓',
   },
   manifest: {
@@ -220,7 +338,7 @@ const en: typeof ru = {
       { year: '2016', text: 'Opened a clinic and named it after his father' },
       { year: '2017', text: 'Crystal Lotus award in the field of rhinoplasty' },
       { year: '2020', text: 'Specialist certificate in otorhinolaryngology' },
-      { year: '2021', text: 'Residency in plastic surgery, qualified as a plastic surgeon' },
+      { year: '2021', text: 'Completed a residency in plastic surgery' },
       { year: '2025', text: 'Registered with the Dubai Health Authority. Consultations and surgery at Dubai London Hospital' },
     ],
     docsLabel: '// Documents',
@@ -231,7 +349,7 @@ const en: typeof ru = {
       { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Specialist certificate, 2020' },
       { file: 'doc-course-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Professional development, 2020' },
       { file: 'doc-residency-2021.jpg', logo: 'media/logos/org-mgupp.png', title: 'Residency, 2021' },
-      { file: 'doc-letter-2024.jpg', logo: 'media/logos/org-letter.png', title: 'Letter of appreciation, 2024' },
+      // Letter of appreciation, 2024 - убрано, см. пояснение в русской версии выше.
     ],
     portraitAlt: 'Eldar Kamalov',
     photoAlt: 'Shamsutin Kamalov, ENT and plastic surgeon, archive photograph',
@@ -263,6 +381,63 @@ const en: typeof ru = {
     ],
     markCaption: 'Septum and the airway',
     risks: 'Septoplasty is a surgical operation. It is performed with anaesthesia, requires a recovery period and carries risks: swelling, dryness in the nose, bleeding, recurrence of the deviation. The surgeon goes through them at the consultation. The outcome depends on individual characteristics and cannot be the same for different people.',
+  },
+  treatment: {
+    label: '[07] How treatment works',
+    title: 'Six steps from enquiry to the final check-up.',
+    lead: 'The order is the same for rhinoplasty and septoplasty. The decision to operate is made only after an in-person examination - never from a photograph of the nose.',
+    stepWord: 'Step',
+    steps: [
+      {
+        title: 'Enquiry',
+        text: 'You leave a request on the site or write on WhatsApp. The clinic gets in touch and arranges a time.',
+      },
+      {
+        title: 'Consultation',
+        text: 'An in-person appointment at Dubai London Hospital. The surgeon examines the nose outside and inside, goes through the anatomy, explains which tasks the operation addresses and which it does not, and talks through the risks.',
+        photo: 'consulting-room.jpg',
+        photoAlt: 'Consulting room at Dubai London Hospital',
+      },
+      {
+        title: 'Tests and the plan',
+        text: 'Blood tests, imaging, a review by the anaesthetist. Based on the results the surgeon draws up the plan and agrees a date.',
+        photo: 'imaging.jpg',
+        photoAlt: 'CT imaging room at Dubai London Hospital',
+      },
+      {
+        title: 'Surgery',
+        text: 'Carried out at the hospital, under anaesthesia. How long it takes depends on the extent of the procedure and is discussed in advance.',
+        photo: 'operating-room.jpg',
+        photoAlt: 'Operating theatre at Dubai London Hospital',
+      },
+      {
+        title: 'The first days',
+        text: 'Observation on the ward, then removal of the splint and stitches at the times the surgeon sets as healing progresses.',
+        photo: 'ward.jpg',
+        photoAlt: 'Patient room at Dubai London Hospital',
+      },
+      {
+        title: 'Follow-up',
+        text: 'Scheduled check-ups. Between visits you can put questions to the clinic - to the same surgeon who operated.',
+      },
+    ],
+  },
+  recovery: {
+    label: '[08] Recovery',
+    title: 'How long it takes.',
+    lead: 'Recovery is part of the operation, not an appendix to it. Below are the usual timings. They depend on the extent of the procedure and on how the tissues heal, so they differ from one person to another.',
+    columns: { when: 'When', what: 'What happens' },
+    rows: [
+      { when: 'Days 1-2', what: 'Observation at the clinic. Swelling and nasal congestion are at their most noticeable' },
+      { when: '7-10 days', what: 'The splint comes off. Breathing through the nose gets easier, though swelling remains' },
+      { when: '2 weeks', what: 'The main swelling subsides. Most people return to work and to air travel around this point' },
+      { when: '1 month', what: 'Changes are no longer noticeable to others. Sport, pool and sea - once the surgeon allows it' },
+      { when: '6-12 months', what: 'The shape of the nose settles for good. Minor swelling resolves gradually' },
+    ],
+    noteLabel: 'What to keep in mind',
+    note: 'The timings above are a guide, not a promise. They depend on the extent of the operation, on individual tissue characteristics and on how closely instructions are followed. The surgeon gives you the timings for your own case at the consultation, after examining you.',
+    sunLabel: '// A note on the sun',
+    sun: 'In the climate of the Emirates this matters more than it might seem: surgeons restrict direct sun on fresh scars and during the swelling period for longer than almost anything else. The surgeon sets the period and the means of protection at your follow-up.',
   },
 }
 
