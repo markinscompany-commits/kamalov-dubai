@@ -35,10 +35,10 @@ const ru = {
     */
     links: [
       { label: 'О докторе', short: 'О докторе', href: '#doctor', service: false },
-      // ⚠️ Пункты услуг сняты вместе со скрытыми блоками (решение Марка, 01.08):
-      // ссылка на несуществующий якорь никуда не ведёт. Вернуть вместе с блоками.
-      // { label: 'Ринопластика', short: 'Ринопластика', href: '#rhinoplasty', service: true },
-      // { label: 'Септопластика', short: 'Септопластика', href: '#septoplasty', service: true },
+      // ⚠️ Блоки услуг сейчас скрыты, а пункты меню на месте (правка Марка):
+      // пока блоков нет, эти ссылки никуда не ведут - клик просто ничего не делает.
+      { label: 'Ринопластика', short: 'Ринопластика', href: '#rhinoplasty', service: true },
+      { label: 'Септопластика', short: 'Септопластика', href: '#septoplasty', service: true },
       { label: 'Контакты', short: 'Контакты', href: '#contacts', service: false },
     ],
     sections: 'Разделы страницы',
@@ -91,7 +91,7 @@ const ru = {
       { value: '30+', caption: 'лет в медицине' },
       { logo: 'media/logos/lotos.svg', wide: true, caption: 'премия «Хрустальный Лотос», 2017' },
       { logo: 'media/logos/soc-rhinoplasty.png', caption: 'член Европейского общества ринопластов' },
-      { logo: 'media/logos/soc-rspras.png', caption: 'член Общества пластических, реконструктивных и эстетических хирургов России' },
+      { logo: 'media/logos/soc-rspras.png', caption: 'член Общества РОПРЭХ' },
     ],
     // Хронология. Все годы сверены со сканами документов в assets-temp/docs
     fullName: 'Камалов Эльдар Шамсутинович',
@@ -110,13 +110,13 @@ const ru = {
     ],
     docsLabel: '// Документы',
     docs: [
-      { file: 'doc-dha-2025.jpg', logo: 'media/logos/org-dha.png', title: 'Регистрация DHA, Дубай' },
-      { file: 'doc-diploma-1994.jpg', title: 'Диплом врача, 1994' },
-      { file: 'doc-phd-2003.jpg', title: 'Кандидат медицинских наук, 2003' },
-      { file: 'doc-ent-2020.jpg', title: 'Сертификат специалиста, 2020' },
-      { file: 'doc-course-2020.jpg', title: 'Повышение квалификации, 2020' },
-      { file: 'doc-residency-2021.jpg', title: 'Ординатура, 2021' },
-      { file: 'doc-letter-2024.jpg', title: 'Благодарственное письмо, 2024' },
+      { file: 'doc-dha-2025.jpg', logo: 'media/logos/org-dha.svg', title: 'Регистрация DHA, Дубай' },
+      { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.png', title: 'Диплом врача, 1994' },
+      { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.png', title: 'Кандидат медицинских наук, 2003' },
+      { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Сертификат специалиста, 2020' },
+      { file: 'doc-course-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Повышение квалификации, 2020' },
+      { file: 'doc-residency-2021.jpg', logo: 'media/logos/org-mgupp.png', title: 'Ординатура, 2021' },
+      { file: 'doc-letter-2024.jpg', logo: 'media/logos/org-letter.png', title: 'Благодарственное письмо, 2024' },
     ],
     portraitAlt: 'Эльдар Камалов',
     photoAlt: 'Шамсутин Камалов, отоларинголог и пластический хирург, архивный снимок',
@@ -166,8 +166,8 @@ const en: typeof ru = {
   nav: {
     links: [
       { label: 'About the doctor', short: 'About', href: '#doctor', service: false },
-      // { label: 'Rhinoplasty', short: 'Rhinoplasty', href: '#rhinoplasty', service: true },
-      // { label: 'Septoplasty', short: 'Septoplasty', href: '#septoplasty', service: true },
+      { label: 'Rhinoplasty', short: 'Rhinoplasty', href: '#rhinoplasty', service: true },
+      { label: 'Septoplasty', short: 'Septoplasty', href: '#septoplasty', service: true },
       { label: 'Contacts', short: 'Contacts', href: '#contacts', service: false },
     ],
     sections: 'Page sections',
@@ -207,7 +207,7 @@ const en: typeof ru = {
       { value: '30+', caption: 'years in medicine' },
       { logo: 'media/logos/lotos.svg', wide: true, caption: 'Crystal Lotus award, 2017' },
       { logo: 'media/logos/soc-rhinoplasty.png', caption: 'member of the European Rhinoplasty Society' },
-      { logo: 'media/logos/soc-rspras.png', caption: 'member of the Russian Society of Plastic, Reconstructive and Aesthetic Surgeons' },
+      { logo: 'media/logos/soc-rspras.png', caption: 'member of RSPRAS' },
     ],
     fullName: 'Eldar Shamsutinovich Kamalov',
     timelineLabel: '// Path',
@@ -225,13 +225,13 @@ const en: typeof ru = {
     ],
     docsLabel: '// Documents',
     docs: [
-      { file: 'doc-dha-2025.jpg', logo: 'media/logos/org-dha.png', title: 'DHA registration, Dubai' },
-      { file: 'doc-diploma-1994.jpg', title: 'Medical degree, 1994' },
-      { file: 'doc-phd-2003.jpg', title: 'PhD in Medicine, 2003' },
-      { file: 'doc-ent-2020.jpg', title: 'Specialist certificate, 2020' },
-      { file: 'doc-course-2020.jpg', title: 'Professional development, 2020' },
-      { file: 'doc-residency-2021.jpg', title: 'Residency, 2021' },
-      { file: 'doc-letter-2024.jpg', title: 'Letter of appreciation, 2024' },
+      { file: 'doc-dha-2025.jpg', logo: 'media/logos/org-dha.svg', title: 'DHA registration, Dubai' },
+      { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.png', title: 'Medical degree, 1994' },
+      { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.png', title: 'PhD in Medicine, 2003' },
+      { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Specialist certificate, 2020' },
+      { file: 'doc-course-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Professional development, 2020' },
+      { file: 'doc-residency-2021.jpg', logo: 'media/logos/org-mgupp.png', title: 'Residency, 2021' },
+      { file: 'doc-letter-2024.jpg', logo: 'media/logos/org-letter.png', title: 'Letter of appreciation, 2024' },
     ],
     portraitAlt: 'Eldar Kamalov',
     photoAlt: 'Shamsutin Kamalov, ENT and plastic surgeon, archive photograph',

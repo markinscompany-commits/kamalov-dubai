@@ -95,7 +95,7 @@ const base = useRuntimeConfig().app.baseURL
       />
     </div>
 
-    <DocGrid :label="m.doctor.docsLabel" :items="m.doctor.docs" />
+    <DocGrid class="doctor__docs" :label="m.doctor.docsLabel" :items="m.doctor.docs" />
   </PageSection>
 </template>
 
@@ -167,6 +167,12 @@ const base = useRuntimeConfig().app.baseURL
   display: flex;
   flex-direction: column;
   gap: var(--s-5);
+}
+
+/* Документы отбиты от хронологии сильнее обычного: это другой по смыслу кусок,
+   а вплотную он читался как продолжение ленты годов */
+.doctor__docs {
+  margin-block-start: var(--s-10);
 }
 
 .doctor__part-label {

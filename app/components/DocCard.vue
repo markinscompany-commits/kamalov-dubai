@@ -82,7 +82,9 @@ const base = useRuntimeConfig().app.baseURL
 .doc__outline {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 3;
+  /* Тонкая линия, как у всей разметки: жирный контур спорит с гербом внутри
+     и выбивается из чертёжной графики сайта */
+  stroke-width: 1.4;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
   transition: stroke var(--dur-fast) var(--ease-out);

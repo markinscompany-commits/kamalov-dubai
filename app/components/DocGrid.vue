@@ -64,21 +64,34 @@ defineProps<Props>()
   padding: 0;
   list-style: none;
   display: flex;
-  gap: 0;
+  /* Отрицательный отступ: уголки соседних карточек ложатся друг на друга,
+     и граница между документами пропадает совсем */
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   scroll-snap-type: x proximity;
-  /* Место под полосу прокрутки, чтобы она не наезжала на подписи */
-  padding-block-end: var(--s-3);
-  /* Тонкая полоса в цвете разметки вместо системной */
-  scrollbar-width: thin;
-  scrollbar-color: var(--rule) transparent;
+  /*
+    Системная полоса прокрутки убрана: она серая, толстая и в чертёжную графику
+    не вписывается. Понять, что лента прокручивается, помогает обрезанная
+    карточка у правого края - этого достаточно.
+  */
+  scrollbar-width: none;
+}
+
+.docs__grid::-webkit-scrollbar {
+  display: none;
 }
 
 .docs__cell {
   flex: 0 0 var(--doc-w);
+  /* Наложение уголков: каждая следующая карточка заходит на предыдущую на пиксель */
+  margin-inline-start: -1px;
   min-inline-size: 0;
   scroll-snap-align: start;
+}
+
+/* У первой карточки наложения нет - иначе весь ряд уезжает от левого края */
+.docs__cell:first-child {
+  margin-inline-start: 0;
 }
 
 @media (max-width: 700px) {
