@@ -35,15 +35,17 @@ const base = useRuntimeConfig().app.baseURL
     <div class="laurel__mark">
       <img class="laurel__wreath" :src="`${base}media/laurel.svg`" alt="" aria-hidden="true" />
 
-      <img
-        v-if="logo"
-        class="laurel__logo"
-        :class="{ 'laurel__logo--wide': wide }"
-        :src="`${base}${logo}`"
-        alt=""
-        aria-hidden="true"
-      />
-      <span v-else class="laurel__value">{{ value }}</span>
+      <div class="laurel__inner">
+        <img
+          v-if="logo"
+          class="laurel__logo"
+          :class="{ 'laurel__logo--wide': wide }"
+          :src="`${base}${logo}`"
+          alt=""
+          aria-hidden="true"
+        />
+        <span v-else class="laurel__value">{{ value }}</span>
+      </div>
     </div>
 
     <figcaption class="laurel__caption">{{ caption }}</figcaption>
@@ -53,15 +55,16 @@ const base = useRuntimeConfig().app.baseURL
 <style scoped>
 .laurel {
   /*
-    Насколько контент поднят к проёму ветви. Считается от ВЫСОТЫ САМОГО ЗНАКА
-    (так работает translateY в процентах), а не от высоты коробки.
+    Насколько контент поднят к проёму ветви и выше. Считается от ВЫСОТЫ САМОГО
+    ЗНАКА (так работает translateY в процентах), а не от высоты коробки.
 
-    ⚠️ 45% - предел. Марк просил 60%, но при нём верх логотипов выходит за ветвь
-    и наезжает на абзац выше: у знака остаётся всего половина высоты запаса.
-    При 45% знак стоит вплотную к верхнему краю проёма и никуда не вылезает.
+    Знак намеренно выходит ЗА ветвь (решение Марка): над ветвью для этого
+    оставлен запас --mark-room, поэтому подъём ни на что не наезжает.
     Проверяется кадром в увеличении - tools/laurel-check.mjs.
   */
-  --mark-lift: 45%;
+  --mark-lift: 75%;
+  /* Запас над ветвью, в который поднимается знак. Считается от ширины знака */
+  --mark-room: 20%;
 
   /*
     Знак занимает всю свою колонку. Без этого фигура сжимается по длине подписи,
@@ -85,20 +88,28 @@ const base = useRuntimeConfig().app.baseURL
   inline-size: 100%;
   max-inline-size: 10.5rem;
   margin-inline: auto;
-  aspect-ratio: 147 / 95;
+  /* Коробка выше самой ветви: сверху добавлен запас под поднятый знак */
+  padding-block-start: var(--mark-room);
+}
+
+/* Ветвь идёт в потоке и держит собственную пропорцию сама */
+.laurel__wreath {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+}
+
+/* Слой знака лежит ровно поверх ветви, запас сверху в него не входит:
+   поэтому «центр» - это центр ветви, а не центр коробки с запасом */
+.laurel__inner {
+  position: absolute;
+  inset-block: var(--mark-room) 0;
+  inset-inline: 0;
   display: grid;
   place-items: center;
 }
 
-.laurel__wreath {
-  position: absolute;
-  inset: 0;
-  inline-size: 100%;
-  block-size: 100%;
-}
-
 .laurel__value {
-  position: relative;
   transform: translateY(calc(-1 * var(--mark-lift)));
   font-family: var(--font-display);
   font-weight: 300;
@@ -114,7 +125,6 @@ const base = useRuntimeConfig().app.baseURL
   разные пропорции, и без второго ограничения квадратный герб вылезает на листья.
 */
 .laurel__logo {
-  position: relative;
   transform: translateY(calc(-1 * var(--mark-lift)));
   inline-size: auto;
   block-size: auto;

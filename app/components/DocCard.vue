@@ -21,6 +21,8 @@ interface Props {
   file: string
   /** Герб организации, путь от public/ */
   logo?: string
+  /** Логотип вытянутый по горизонтали - размер считается по другим правилам */
+  logoWide?: boolean
   title: string
 }
 
@@ -39,7 +41,14 @@ const base = useRuntimeConfig().app.baseURL
         <path class="doc__outline" d="M68 4 V32 H96" />
       </svg>
 
-      <img v-if="logo" class="doc__logo" :src="`${base}${logo}`" alt="" aria-hidden="true" />
+      <img
+        v-if="logo"
+        class="doc__logo"
+        :class="{ 'doc__logo--wide': logoWide }"
+        :src="`${base}${logo}`"
+        alt=""
+        aria-hidden="true"
+      />
     </span>
 
     <span class="doc__title">{{ title }}</span>
@@ -84,21 +93,34 @@ const base = useRuntimeConfig().app.baseURL
   stroke: var(--ink);
   /* Тонкая линия, как у всей разметки: жирный контур спорит с гербом внутри
      и выбивается из чертёжной графики сайта */
-  stroke-width: 1.4;
+  stroke-width: 1;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
   transition: stroke var(--dur-fast) var(--ease-out);
 }
 
-/* Герб лежит внутри листа, по центру. Ограничен и по ширине, и по высоте:
-   у гербов разные пропорции, без второго предела широкий вылезает за лист */
+/*
+  Герб лежит внутри листа и опущен чуть ниже середины (правка Марка): у листа
+  сверху загнутый угол, и по геометрическому центру герб визуально «всплывал».
+  Ограничен и по ширине, и по высоте - у гербов разные пропорции, без второго
+  предела широкий вылезает за лист.
+*/
 .doc__logo {
   position: absolute;
-  max-inline-size: 72%;
-  max-block-size: 48%;
+  max-inline-size: 62%;
+  max-block-size: 62%;
   inline-size: auto;
   block-size: auto;
   object-fit: contain;
+  transform: translateY(8%);
+}
+
+/* Широкий логотип (DHA) остаётся в прежнем размере и по центру: он вытянутый,
+   и по общим правилам превратился бы в узкую полосу через весь лист */
+.doc__logo--wide {
+  max-inline-size: 72%;
+  max-block-size: 48%;
+  transform: none;
 }
 
 .doc:hover .doc__outline,

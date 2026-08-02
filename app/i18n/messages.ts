@@ -89,7 +89,7 @@ const ru = {
     // Цифры в лавровых ветвях. Только то, что подтверждено документом
     stats: [
       { value: '30+', caption: 'лет в медицине' },
-      { logo: 'media/logos/lotos.svg', wide: true, caption: 'премия «Хрустальный Лотос», 2017' },
+      { logo: 'media/logos/lotos.svg', wide: true, caption: 'лауреат премии «Хрустальный Лотос», 2017' },
       { logo: 'media/logos/soc-rhinoplasty.png', caption: 'член Европейского общества ринопластов' },
       { logo: 'media/logos/soc-rspras.png', caption: 'член Общества РОПРЭХ' },
     ],
@@ -110,7 +110,7 @@ const ru = {
     ],
     docsLabel: '// Документы',
     docs: [
-      { file: 'doc-dha-2025.jpg', logo: 'media/logos/org-dha.svg', title: 'Регистрация DHA, Дубай' },
+      { file: 'doc-dha-2025.jpg', logo: 'media/logos/org-dha.svg', logoWide: true, title: 'Регистрация DHA, Дубай' },
       { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.png', title: 'Диплом врача, 1994' },
       { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.png', title: 'Кандидат медицинских наук, 2003' },
       { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Сертификат специалиста, 2020' },
@@ -205,7 +205,7 @@ const en: typeof ru = {
     lead: 'Eldar Kamalov was born in Makhachkala, into the family of Shamsutin Kamalov, an ENT and plastic surgeon. He assisted his father while still a student - that is where both the speciality and the school of thought come from. In 2016 he opened a clinic and named it after his father. Today he operates in Dubai.',
     stats: [
       { value: '30+', caption: 'years in medicine' },
-      { logo: 'media/logos/lotos.svg', wide: true, caption: 'Crystal Lotus award, 2017' },
+      { logo: 'media/logos/lotos.svg', wide: true, caption: 'Crystal Lotus award laureate, 2017' },
       { logo: 'media/logos/soc-rhinoplasty.png', caption: 'member of the European Rhinoplasty Society' },
       { logo: 'media/logos/soc-rspras.png', caption: 'member of RSPRAS' },
     ],
@@ -225,7 +225,7 @@ const en: typeof ru = {
     ],
     docsLabel: '// Documents',
     docs: [
-      { file: 'doc-dha-2025.jpg', logo: 'media/logos/org-dha.svg', title: 'DHA registration, Dubai' },
+      { file: 'doc-dha-2025.jpg', logo: 'media/logos/org-dha.svg', logoWide: true, title: 'DHA registration, Dubai' },
       { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.png', title: 'Medical degree, 1994' },
       { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.png', title: 'PhD in Medicine, 2003' },
       { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Specialist certificate, 2020' },

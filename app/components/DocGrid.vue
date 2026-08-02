@@ -13,6 +13,7 @@
 interface Doc {
   file: string
   logo?: string
+  logoWide?: boolean
   title: string
 }
 
@@ -31,7 +32,12 @@ defineProps<Props>()
 
     <ul class="docs__grid">
       <li v-for="doc in items" :key="doc.file" class="docs__cell">
-        <DocCard :file="doc.file" :logo="doc.logo" :title="doc.title" />
+        <DocCard
+          :file="doc.file"
+          :logo="doc.logo"
+          :logo-wide="doc.logoWide"
+          :title="doc.title"
+        />
       </li>
     </ul>
   </div>
