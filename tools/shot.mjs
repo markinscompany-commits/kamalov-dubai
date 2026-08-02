@@ -40,10 +40,24 @@ for (const vp of VIEWPORTS) {
 
   // кто шире экрана
   const overflow = await page.evaluate((limit) => {
+    /*
+      Элемент внутри горизонтальной ленты выходить за экран ИМЕЕТ ПРАВО: он
+      прокручивается внутри своего контейнера, а не растягивает страницу.
+      Без этой проверки лента документов даёт ложную тревогу на каждом прогоне.
+    */
+    const inScroller = (el) => {
+      for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+        const ox = getComputedStyle(p).overflowX
+        if (ox === 'auto' || ox === 'scroll') return true
+      }
+      return false
+    }
+
     const bad = []
     for (const el of document.querySelectorAll('body *')) {
       const r = el.getBoundingClientRect()
       if (r.width === 0) continue
+      if (inScroller(el)) continue
       if (r.right > limit + 1 || r.left < -1) {
         bad.push({
           tag: el.tagName.toLowerCase(),
