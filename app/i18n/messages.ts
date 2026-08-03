@@ -211,79 +211,67 @@ const ru = {
     принято только это название, «Персидский» для местной аудитории - раздражитель.
     По-русски оставлен «Персидский залив» - русскоязычные жители иначе не говорят.
   */
+  /*
+    ⚠️ Правило блока (правка Марка 03.08): не повторять ни соседние блоки, ни
+    самого себя. Лид НЕ начинается с «Эльдар Камалов» - так начинается «О докторе»
+    прямо выше. Печати НЕ дублируют заголовок: печать «24/7 круглосуточный
+    стационар» убрана, потому что это дословно заголовок.
+  */
   clinic: {
     label: '[06] Где принимает',
     title: 'Стационар с круглосуточным наблюдением.',
-    lead: 'Эльдар Камалов консультирует и оперирует в Dubai London Hospital - частном госпитале на первой линии Джумейры, в двух километрах от Бурдж-аль-Араба. Консультация, обследование, операция и первые дни восстановления проходят в одном здании - с профильным ЛОР-отделением и своими палатами.',
+    lead: 'Приём, обследование и операция проходят в Dubai London Hospital - частном госпитале на первой линии Джумейры, в двух километрах от Бурдж-аль-Араба. Операционные и палаты здесь же: после операции пациент остаётся в том же здании, переезды между клиниками не нужны.',
     /*
-      «Печати» вместо сухого списка фактов (правка Марка 03.08). Значение + подпись,
-      пунктирное кольцо рифмуется с кольцом-прицелом на карте. size задаёт кегль:
-      длинное значение в кольце набирается мельче.
+      «Печати»: значение + подпись, пунктирное кольцо рифмуется с кольцом-прицелом
+      на карте. size задаёт кегль: длинное значение в кольце набирается мельче.
     */
     stamps: [
-      { value: '24/7', size: 'l', caption: 'стационар с круглосуточным наблюдением' },
-      { value: 'DHA', size: 'l', caption: 'лицензия Департамента здравоохранения Дубая' },
+      { value: 'DHA', size: 'l', caption: 'госпиталь лицензирован Департаментом здравоохранения Дубая' },
       { value: 'ACHSI', size: 'm', caption: 'международная аккредитация госпиталей' },
+      // Не «оториноларингологическое»: слово шире мобильной колонки и рвёт сетку
+      { value: 'ЛОР', size: 'l', caption: 'профильное отделение болезней уха, горла и носа' },
       { value: 'RU · EN', size: 'm', caption: 'приём на русском и английском' },
     ],
     map: {
-      alt: 'Карта побережья Джумейры: Dubai London Hospital стоит на Jumeirah Beach Road в районе Umm Suqeim 2, в двух километрах северо-восточнее Бурдж-аль-Араба',
+      alt: 'Карта Дубая от Пальмы Джумейра до района Umm Suqeim: Dubai London Hospital стоит на Jumeirah Beach Road, в двух километрах северо-восточнее Бурдж-аль-Араба',
       sea: 'Персидский залив',
       road: 'Jumeirah Beach Road',
       hospital: 'Dubai London Hospital',
       area: 'Umm Suqeim 2',
       coords: '25.15° N · 55.20° E',
       burj: 'Бурдж-аль-Араб',
-      scale: '1 км',
+      palm: 'Пальма Джумейра',
+      scale: '5 км',
     },
     address: '760, Jumeirah Beach Road · Umm Suqeim 2 · Дубай',
-    route: {
-      label: 'Построить маршрут',
-      // Ключ href типограф не трогает - это адрес, а не текст
-      href: 'https://www.google.com/maps/dir/?api=1&destination=Dubai+London+Hospital,+Jumeirah+Beach+Road,+Dubai',
-    },
     /*
-      Галерея: клиника с разных сторон, кадры открываются на весь экран (PhotoViewer).
-      Порядок продуман: вход → ресепшен → палата → кабинет → диагностика.
+      Галерея: три кадра - вход, кабинет приёма, палата (решение Марка:
+      ресепшен и томограф пользователю ничего не говорят). Подписи видны под
+      кадрами, поэтому хранятся чистым текстом - «//» добавляет просмотрщик.
     */
     gallery: [
       {
         file: 'clinic/facade.jpg',
         w: 864,
         h: 452,
-        caption: '// Вход с Jumeirah Beach Road',
+        caption: 'Вход с Jumeirah Beach Road',
         alt: 'Фасад Dubai London Hospital со стороны Jumeirah Beach Road',
-      },
-      {
-        file: 'clinic/reception.jpg',
-        w: 552,
-        h: 800,
-        caption: '// Ресепшен амбулаторного отделения',
-        alt: 'Ресепшен амбулаторного отделения Dubai London Hospital',
-      },
-      {
-        file: 'clinic/ward-view.jpg',
-        w: 1200,
-        h: 800,
-        caption: '// Одноместная палата стационара',
-        alt: 'Одноместная палата стационара Dubai London Hospital',
       },
       {
         file: 'clinic/consulting.jpg',
         w: 1200,
         h: 800,
-        caption: '// Кабинет приёма',
+        caption: 'Кабинет приёма',
         alt: 'Кабинет приёма в Dubai London Hospital',
       },
       {
-        file: 'clinic/imaging-view.jpg',
+        file: 'clinic/ward-view.jpg',
         w: 1200,
         h: 800,
-        caption: '// Кабинет компьютерной томографии',
-        alt: 'Кабинет компьютерной томографии в Dubai London Hospital',
+        caption: 'Одноместная палата стационара',
+        alt: 'Одноместная палата стационара Dubai London Hospital',
       },
     ],
-    galleryHint: '// Кадры открываются на весь экран',
   },
   /* Просмотрщик фотографий - подписи кнопок. Общие: пригодятся и галерее «до/после» */
   viewer: {
@@ -492,66 +480,48 @@ const en: typeof ru = {
   clinic: {
     label: '[06] Where he sees patients',
     title: 'An inpatient hospital with round-the-clock care.',
-    lead: 'Eldar Kamalov consults and operates at Dubai London Hospital - a private hospital on the Jumeirah beachfront, two kilometres from the Burj Al Arab. The consultation, tests, surgery and the first days of recovery all happen in one building - with a dedicated ENT department and its own wards.',
+    lead: 'Consultations, tests and surgery all take place at Dubai London Hospital - a private hospital on the Jumeirah beachfront, two kilometres from the Burj Al Arab. The operating theatres and wards are in the same building: after surgery there are no transfers between clinics.',
     stamps: [
-      { value: '24/7', size: 'l', caption: 'inpatient care around the clock' },
-      { value: 'DHA', size: 'l', caption: 'licensed by the Dubai Health Authority' },
+      { value: 'DHA', size: 'l', caption: 'the hospital is licensed by the Dubai Health Authority' },
       { value: 'ACHSI', size: 'm', caption: 'international hospital accreditation' },
+      { value: 'ENT', size: 'l', caption: 'a dedicated ear, nose and throat department' },
       { value: 'RU · EN', size: 'm', caption: 'consultations in Russian and English' },
     ],
     map: {
-      alt: 'Map of the Jumeirah coast: Dubai London Hospital stands on Jumeirah Beach Road in Umm Suqeim 2, two kilometres north-east of the Burj Al Arab',
+      alt: 'Map of Dubai from Palm Jumeirah to Umm Suqeim: Dubai London Hospital stands on Jumeirah Beach Road, two kilometres north-east of the Burj Al Arab',
       sea: 'Arabian Gulf',
       road: 'Jumeirah Beach Road',
       hospital: 'Dubai London Hospital',
       area: 'Umm Suqeim 2',
       coords: '25.15° N · 55.20° E',
       burj: 'Burj Al Arab',
-      scale: '1 km',
+      palm: 'Palm Jumeirah',
+      scale: '5 km',
     },
     address: '760, Jumeirah Beach Road · Umm Suqeim 2 · Dubai',
-    route: {
-      label: 'Get directions',
-      href: 'https://www.google.com/maps/dir/?api=1&destination=Dubai+London+Hospital,+Jumeirah+Beach+Road,+Dubai',
-    },
     gallery: [
       {
         file: 'clinic/facade.jpg',
         w: 864,
         h: 452,
-        caption: '// The entrance from Jumeirah Beach Road',
+        caption: 'The entrance from Jumeirah Beach Road',
         alt: 'The facade of Dubai London Hospital seen from Jumeirah Beach Road',
-      },
-      {
-        file: 'clinic/reception.jpg',
-        w: 552,
-        h: 800,
-        caption: '// Outpatient reception',
-        alt: 'The outpatient reception at Dubai London Hospital',
-      },
-      {
-        file: 'clinic/ward-view.jpg',
-        w: 1200,
-        h: 800,
-        caption: '// A single inpatient room',
-        alt: 'A single inpatient room at Dubai London Hospital',
       },
       {
         file: 'clinic/consulting.jpg',
         w: 1200,
         h: 800,
-        caption: '// A consulting room',
+        caption: 'A consulting room',
         alt: 'A consulting room at Dubai London Hospital',
       },
       {
-        file: 'clinic/imaging-view.jpg',
+        file: 'clinic/ward-view.jpg',
         w: 1200,
         h: 800,
-        caption: '// The CT imaging room',
-        alt: 'The CT imaging room at Dubai London Hospital',
+        caption: 'A single inpatient room',
+        alt: 'A single inpatient room at Dubai London Hospital',
       },
     ],
-    galleryHint: '// Photos open full screen',
   },
   viewer: {
     close: 'Close',

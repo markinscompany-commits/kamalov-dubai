@@ -1,24 +1,26 @@
 <!--
-  Блок 06 «Где принимает» - Dubai London Hospital. Версия 2 по правкам Марка 03.08.
+  Блок 06 «Где принимает» - Dubai London Hospital. Версия 3 по правкам Марка 03.08.
 
-  Что изменилось против первой сборки (она была «сухая», как ранние версии
-  «О докторе»):
-  · фотографии ушли в боковую колонку слева, как в «О докторе», и стали галереей
-    из пяти кадров - каждый открывается на весь экран с зумом (PhotoViewer);
-  · сухой список фактов стал «печатями»: значение в пунктирном кольце + подпись.
-    Кольцо рифмуется с кольцом-прицелом на карте;
-  · карта перерисована по настоящей географии OpenStreetMap, под ней адрес и
-    кнопка «Построить маршрут» (внешняя ссылка на Google Maps - сама страница
-    чужих доменов не грузит);
-  · лид растянут до общей ширины текста (62ch), заголовок сменён.
+  Что здесь и почему:
+  · галерея слева - ТРИ кадра (фасад, кабинет приёма, палата), друг под другом,
+    целиком и без обрезки, у каждого подпись. Ресепшен и томограф убраны
+    (решение Марка: пользователю они ничего не говорят). Кадр открывается на
+    весь экран (PhotoViewer); о клике говорят уголки и значок разворота при
+    наведении - отдельного текста-подсказки нет;
+  · «печати» - DHA, ACHSI, ЛОР, RU·EN. Печати 24/7 нет: она дословно
+    повторяла заголовок;
+  · карта по кадру со скриншота Марка - с Пальмой Джумейра, обзорный масштаб.
+    Под ней только адрес: кнопки «Построить маршрут» нет (решение Марка -
+    не уводить трафик с посадочной);
+  · лид НЕ начинается с «Эльдар Камалов» - так начинается блок «О докторе»
+    прямо над этим, и повтор бросается в глаза.
 
-  ⚠️ У секции нет обычной разметки CrossRules (no-rules): разметкой блока работает
-  карта - узел с кольцом на месте госпиталя. Лучи спорили бы с линиями улиц.
+  ⚠️ У секции нет обычной разметки CrossRules (no-rules): разметкой блока
+  работает карта - синий узел на месте госпиталя.
 
   Фотографии - из открытой галереи Dubai London Hospital (решение Марка 02.08,
-  клиника согласовывает постфактум). Кадрирование и ретушь намеренные:
-  без рекламных баннеров, без красных вывесок Emergency, без портретов
-  правителей ОАЭ. Исходники в assets-temp/dlh-selected.
+  клиника согласовывает постфактум). Кадрирование намеренное: без рекламных
+  баннеров и красных вывесок Emergency. Исходники в assets-temp/dlh-selected.
 -->
 <script setup lang="ts">
 const { m } = useLocale()
@@ -35,17 +37,14 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
 
 <template>
   <PageSection id="clinic" :label="m.clinic.label" tone="deep" no-rules>
-    <!-- Галерея: клиника с разных сторон. Первый кадр крупно, остальные парами.
-         На телефоне превращается в горизонтальную ленту со снапом -->
+    <!-- Галерея: кадры целиком, с подписями. На телефоне - горизонтальная лента -->
     <template #side>
       <div class="clinic__gallery" data-mobile-order="2">
-        <div class="clinic__strip">
+        <figure v-for="(photo, i) in m.clinic.gallery" :key="photo.file" class="clinic__figure">
           <button
-            v-for="(photo, i) in m.clinic.gallery"
-            :key="photo.file"
             type="button"
             class="clinic__shot brackets"
-            :class="{ 'clinic__shot--lead': i === 0 }"
+            :aria-label="photo.caption"
             @click="viewerIndex = i"
           >
             <span class="clinic__shot-frame">
@@ -56,11 +55,16 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
                 :height="photo.h"
                 loading="lazy"
               />
+              <!-- Значок разворота: подсказка «открывается на весь экран» без слов -->
+              <span class="clinic__expand" aria-hidden="true">
+                <svg viewBox="0 0 16 16">
+                  <path d="M9.5 2 H14 V6.5 M14 2 L9.5 6.5 M6.5 14 H2 V9.5 M2 14 L6.5 9.5" />
+                </svg>
+              </span>
             </span>
           </button>
-        </div>
-
-        <p class="mono clinic__hint">{{ m.clinic.galleryHint }}</p>
+          <figcaption class="clinic__shot-caption">{{ photo.caption }}</figcaption>
+        </figure>
       </div>
     </template>
 
@@ -68,8 +72,8 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
 
     <p class="clinic__lead" data-mobile-order="3">{{ m.clinic.lead }}</p>
 
-    <!-- Печати: значение в пунктирном кольце + подпись. Не иконки и не галочки -
-         тот же язык, что кольцо-прицел на карте -->
+    <!-- Печати: значение в пунктирном кольце + подпись. Тот же язык, что
+         кольцо-прицел на карте -->
     <ul ref="stampsEl" class="clinic__stamps" :class="{ 'is-live': stampsLive }">
       <li
         v-for="(stamp, i) in m.clinic.stamps"
@@ -89,12 +93,7 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
 
     <figure class="clinic__mapfig">
       <ClinicMap :labels="m.clinic.map" />
-      <figcaption class="clinic__mapline">
-        <span class="mono clinic__address">{{ m.clinic.address }}</span>
-        <MarkAction variant="ghost" :href="m.clinic.route.href" target="_blank" rel="noopener">
-          {{ m.clinic.route.label }} ↗
-        </MarkAction>
-      </figcaption>
+      <figcaption class="mono clinic__address">{{ m.clinic.address }}</figcaption>
     </figure>
 
     <PhotoViewer v-model:index="viewerIndex" :items="m.clinic.gallery" />
@@ -107,12 +106,13 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
 .clinic__gallery {
   display: flex;
   flex-direction: column;
-  gap: var(--s-3);
+  gap: var(--s-6);
 }
 
-.clinic__strip {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.clinic__figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
   gap: var(--s-3);
 }
 
@@ -125,38 +125,66 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
   color: var(--ink);
 }
 
-.clinic__shot--lead {
-  grid-column: 1 / -1;
-}
-
 /* Кадр обрезается внутренней рамкой, а не кнопкой: у кнопки живут уголки,
    и overflow на ней срезал бы их */
 .clinic__shot-frame {
+  position: relative;
   display: block;
   overflow: hidden;
 }
 
+/* Кадры целиком, пропорции родные - без обрезки (правка Марка) */
 .clinic__shot img {
   display: block;
   inline-size: 100%;
-  block-size: 100%;
-  object-fit: cover;
-  aspect-ratio: 4 / 3;
+  block-size: auto;
   background: var(--paper-raised);
   transition: transform var(--dur-base) var(--ease-out);
 }
 
-.clinic__shot--lead img {
-  aspect-ratio: 16 / 10;
-}
-
 .clinic__shot:hover img,
 .clinic__shot:focus-visible img {
-  transform: scale(1.045);
+  transform: scale(1.035);
 }
 
-.clinic__hint {
-  margin: var(--s-2) 0 0;
+/* Значок разворота: проявляется при наведении; там, где наведения нет
+   (телефон), виден всегда */
+.clinic__expand {
+  position: absolute;
+  inset-block-end: var(--s-2);
+  inset-inline-end: var(--s-2);
+  display: grid;
+  place-items: center;
+  inline-size: 1.9rem;
+  block-size: 1.9rem;
+  background: color-mix(in srgb, var(--ink) 55%, transparent);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.clinic__expand svg {
+  inline-size: 0.85rem;
+  block-size: 0.85rem;
+  stroke: var(--paper);
+  stroke-width: 1.2;
+  fill: none;
+}
+
+.clinic__shot:hover .clinic__expand,
+.clinic__shot:focus-visible .clinic__expand {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .clinic__expand {
+    opacity: 0.85;
+  }
+}
+
+.clinic__shot-caption {
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  color: var(--ink-soft);
 }
 
 /* --- Текст --- */
@@ -228,11 +256,11 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
   font-size: var(--fs-small);
   line-height: 1.45;
   color: var(--ink-soft);
-  max-inline-size: 13rem;
+  /* Не шире своей колонки: на телефоне 13rem вылезали на соседний столбец */
+  max-inline-size: min(13rem, 100%);
 }
 
-/* Появление печатей: по очереди, кольцо доворачивается на место.
-   Стирание и повторное появление - useRedrawOnReturn, как у всей разметки */
+/* Появление печатей: по очереди, кольцо доворачивается на место */
 .clinic__stamp {
   opacity: 0;
 }
@@ -267,56 +295,54 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
 
 /* --- Карта --- */
 
+/* Не на всю ширину: при полной ширине колонки карта вырастала почти в экран
+   высотой (правка Марка - «вдвое ниже»). 53rem при пропорции кадра 1.6:1
+   дают ~520px высоты */
 .clinic__mapfig {
   margin: var(--s-4) 0 0;
+  max-inline-size: min(100%, 53rem);
+  inline-size: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--s-5);
+  gap: var(--s-4);
 }
 
-.clinic__mapline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: var(--s-4) var(--s-6);
+.clinic__address {
+  margin: 0;
 }
 
 @media (max-width: 900px) {
-  /* Лента вместо стопки: пять кадров стопкой заняли бы пол-экрана прокрутки.
-     Видимый краешек следующего кадра подсказывает, что лента листается */
-  .clinic__strip {
-    display: flex;
+  /* Лента вместо стопки: три кадра стопкой заняли бы пол-экрана прокрутки.
+     Видимый краешек следующего кадра подсказывает, что лента листается.
+     В ленте кадры выровнены под одну пропорцию, иначе высота ряда прыгает */
+  .clinic__gallery {
+    flex-direction: row;
     overflow-x: auto;
     overscroll-behavior-inline: contain;
     scroll-snap-type: x proximity;
     scrollbar-width: none;
+    gap: var(--s-3);
     margin-inline: calc(-1 * var(--page-pad));
     padding-inline: var(--page-pad);
   }
 
-  .clinic__strip::-webkit-scrollbar {
+  .clinic__gallery::-webkit-scrollbar {
     display: none;
   }
 
-  .clinic__shot {
+  .clinic__figure {
     flex: 0 0 76%;
     scroll-snap-align: start;
   }
 
-  .clinic__shot img,
-  .clinic__shot--lead img {
+  .clinic__shot img {
     aspect-ratio: 16 / 10;
+    object-fit: cover;
   }
 
   .clinic__stamps {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--s-6) var(--s-4);
-  }
-
-  .clinic__mapline {
-    flex-direction: column;
-    align-items: start;
   }
 }
 </style>

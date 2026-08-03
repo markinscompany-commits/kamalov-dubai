@@ -225,7 +225,9 @@ const imgStyle = computed(() => ({
         <div class="viewer__backdrop" @click="close" />
 
         <header class="viewer__top">
-          <p class="mono viewer__caption">{{ current?.caption }}</p>
+          <!-- Префикс «//» - язык пометок на полях; в данных подписи хранятся
+               чистым текстом, потому что в галерее они видны как обычные -->
+          <p class="mono viewer__caption">{{ current ? `// ${current.caption}` : '' }}</p>
           <div class="viewer__side">
             <span class="mono viewer__count">{{ counter }}</span>
             <button ref="closeBtn" class="viewer__btn" :aria-label="m.viewer.close" @click="close">
