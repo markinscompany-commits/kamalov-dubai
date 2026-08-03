@@ -56,9 +56,9 @@ const live = useRedrawOnReturn(root, 0.25)
 
 const H = HOSPITAL
 const B = BURJ
-/* Полоса масштаба: 5 км, на воде в левом нижнем углу */
-const scaleX0 = 55
-const scaleY = VB.h - 36
+/* Полоса масштаба: 5 км, на воде в левом нижнем углу, левее Марины */
+const scaleX0 = 60
+const scaleY = VB.h - 56
 const scaleLen = KM * 5
 </script>
 
@@ -80,13 +80,13 @@ const scaleLen = KM * 5
         <path class="map__water" :d="water" />
         <path v-for="(d, i) in islands" :key="`i${i}`" class="map__island" :d="d" />
 
-        <text class="map__t map__t--sea" x="200" y="128">{{ labels.sea }}</text>
-        <text class="map__t map__t--sea map__t--palm" x="335" y="298">{{ labels.palm }}</text>
+        <text class="map__t map__t--sea" x="235" y="112">{{ labels.sea }}</text>
+        <text class="map__t map__t--sea map__t--palm" x="392" y="302">{{ labels.palm }}</text>
 
         <!-- Север и честный масштаб -->
         <g class="map__hairgroup">
-          <path class="map__hair" d="M 58 74 L 58 44 M 52 52 L 58 44 L 64 52" />
-          <text class="map__t map__t--soft" x="58" y="92" text-anchor="middle">N</text>
+          <path class="map__hair" d="M 70 76 L 70 46 M 64 54 L 70 46 L 76 54" />
+          <text class="map__t map__t--soft" x="70" y="94" text-anchor="middle">N</text>
           <path
             class="map__hair"
             :d="`M ${scaleX0} ${scaleY - 4} V ${scaleY + 4} M ${scaleX0} ${scaleY} H ${scaleX0 + scaleLen} M ${scaleX0 + scaleLen} ${scaleY - 4} V ${scaleY + 4}`"
@@ -115,7 +115,7 @@ const scaleLen = KM * 5
       <!-- ⚠️ Смещение подобрано по кадру: начало цепи D94 лежит за нижней рамкой
            (дорога уходит к Марине), маленькие проценты невидимы -->
       <text class="map__t map__t--road" dy="-7">
-        <textPath href="#clinic-road" startOffset="56%">{{ labels.road }}</textPath>
+        <textPath href="#clinic-road" startOffset="47%">{{ labels.road }}</textPath>
       </text>
 
       <!-- Бурдж-аль-Араб: контур паруса на своём острове -->
@@ -124,7 +124,7 @@ const scaleLen = KM * 5
           class="map__hair"
           :d="`M ${B.x} ${B.y - 3} L ${B.x} ${B.y - 27} M ${B.x} ${B.y - 25} Q ${B.x - 13} ${B.y - 15} ${B.x - 14} ${B.y - 3} L ${B.x} ${B.y - 3}`"
         />
-        <text class="map__t map__t--soft map__t--burj" :x="B.x - 20" :y="B.y + 12" text-anchor="end">
+        <text class="map__t map__t--soft map__t--burj" :x="B.x - 18" :y="B.y + 16" text-anchor="end">
           {{ labels.burj }}
         </text>
       </g>
@@ -229,16 +229,21 @@ const scaleLen = KM * 5
   vector-effect: non-scaling-stroke;
 }
 
-/* --- Узел: фирменный синий, толще волосяных линий --- */
+/* --- Узел: красный маркер (правка Марка) - конвенция карт, точка находится
+       мгновенно. Терракотовый оттенок, чтобы не спорил с тёплой палитрой --- */
+
+.map {
+  --map-marker: #A93C33;
+}
 
 .map__cross {
-  stroke: var(--blue);
+  stroke: var(--map-marker);
   stroke-width: 1.5px;
   vector-effect: non-scaling-stroke;
 }
 
 .map__ring {
-  stroke: var(--blue);
+  stroke: var(--map-marker);
   stroke-width: 1.5px;
   vector-effect: non-scaling-stroke;
   stroke-dasharray: var(--dash-on) var(--dash-off);

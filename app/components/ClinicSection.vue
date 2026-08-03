@@ -1,26 +1,24 @@
 <!--
-  Блок 06 «Где принимает» - Dubai London Hospital. Версия 3 по правкам Марка 03.08.
+  Блок 06 «Где принимает» - Dubai London Hospital. Версия 4 по правкам Марка 04.08.
 
-  Что здесь и почему:
-  · галерея слева - ТРИ кадра (фасад, кабинет приёма, палата), друг под другом,
-    целиком и без обрезки, у каждого подпись. Ресепшен и томограф убраны
-    (решение Марка: пользователю они ничего не говорят). Кадр открывается на
-    весь экран (PhotoViewer); о клике говорят уголки и значок разворота при
-    наведении - отдельного текста-подсказки нет;
-  · «печати» - DHA, ACHSI, ЛОР, RU·EN. Печати 24/7 нет: она дословно
-    повторяла заголовок;
-  · карта по кадру со скриншота Марка - с Пальмой Джумейра, обзорный масштаб.
-    Под ней только адрес: кнопки «Построить маршрут» нет (решение Марка -
-    не уводить трафик с посадочной);
-  · лид НЕ начинается с «Эльдар Камалов» - так начинается блок «О докторе»
-    прямо над этим, и повтор бросается в глаза.
+  Структура:
+  · слева в боковой колонке ОДИН кадр - фасад с вывеской;
+  · кабинет приёма и палата - парой в ряд после лида (и на телефоне тоже парой);
+  · печати: значок аккредитации ACHS (официальный логотип, как логотипы обществ
+    в «О докторе»), ЛОР с иконкой профиля, флаги языков приёма. Печати DHA нет
+    (решение Марка - лицензия и так раскрыта в блоке о враче);
+  · разметка CrossRules вернулась - та же точка, что у «О докторе» (0.207);
+  · карта во всю ширину колонки до правого края, над ней mono-заголовок
+    «// Расположение госпиталя», под ней адрес. Маркер госпиталя - красный.
 
-  ⚠️ У секции нет обычной разметки CrossRules (no-rules): разметкой блока
-  работает карта - синий узел на месте госпиталя.
+  Все кадры открываются на весь экран (PhotoViewer): о клике говорят уголки
+  и значок разворота, отдельного текста-подсказки нет.
+
+  ⚠️ Правило блока: не повторять ни соседние блоки, ни самого себя - ни в
+  текстах, ни в фактах (правка Марка 03.08).
 
   Фотографии - из открытой галереи Dubai London Hospital (решение Марка 02.08,
-  клиника согласовывает постфактум). Кадрирование намеренное: без рекламных
-  баннеров и красных вывесок Emergency. Исходники в assets-temp/dlh-selected.
+  клиника согласовывает постфактум). Исходники в assets-temp/dlh-selected.
 -->
 <script setup lang="ts">
 const { m } = useLocale()
@@ -36,62 +34,140 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
 </script>
 
 <template>
-  <PageSection id="clinic" :label="m.clinic.label" tone="deep" no-rules>
-    <!-- Галерея: кадры целиком, с подписями. На телефоне - горизонтальная лента -->
+  <!-- Вертикаль разметки в коридоре между колонками - та же точка, что у
+       «О докторе»: сбоку лежит фотография, на обычном месте линия шла бы по ней -->
+  <PageSection
+    id="clinic"
+    :label="m.clinic.label"
+    tone="deep"
+    cross-y="5.5rem"
+    :cross-fraction="0.207"
+  >
+    <!-- Слева только фасад: остальные кадры ушли парой под лид -->
     <template #side>
-      <div class="clinic__gallery" data-mobile-order="2">
-        <figure v-for="(photo, i) in m.clinic.gallery" :key="photo.file" class="clinic__figure">
-          <button
-            type="button"
-            class="clinic__shot brackets"
-            :aria-label="photo.caption"
-            @click="viewerIndex = i"
-          >
-            <span class="clinic__shot-frame">
-              <img
-                :src="`${base}media/${photo.file}`"
-                :alt="photo.alt"
-                :width="photo.w"
-                :height="photo.h"
-                loading="lazy"
-              />
-              <!-- Значок разворота: подсказка «открывается на весь экран» без слов -->
-              <span class="clinic__expand" aria-hidden="true">
-                <svg viewBox="0 0 16 16">
-                  <path d="M9.5 2 H14 V6.5 M14 2 L9.5 6.5 M6.5 14 H2 V9.5 M2 14 L6.5 9.5" />
-                </svg>
-              </span>
+      <figure class="clinic__figure" data-mobile-order="2">
+        <button
+          type="button"
+          class="clinic__shot brackets"
+          :aria-label="m.clinic.gallery[0].caption"
+          @click="viewerIndex = 0"
+        >
+          <span class="clinic__shot-frame">
+            <img
+              :src="`${base}media/${m.clinic.gallery[0].file}`"
+              :alt="m.clinic.gallery[0].alt"
+              :width="m.clinic.gallery[0].w"
+              :height="m.clinic.gallery[0].h"
+              loading="lazy"
+            />
+            <span class="clinic__expand" aria-hidden="true">
+              <svg viewBox="0 0 16 16">
+                <path d="M9.5 2 H14 V6.5 M14 2 L9.5 6.5 M6.5 14 H2 V9.5 M2 14 L6.5 9.5" />
+              </svg>
             </span>
-          </button>
-          <figcaption class="clinic__shot-caption">{{ photo.caption }}</figcaption>
-        </figure>
-      </div>
+          </span>
+        </button>
+        <figcaption class="clinic__shot-caption">{{ m.clinic.gallery[0].caption }}</figcaption>
+      </figure>
     </template>
 
     <SectionTitle :text="m.clinic.title" data-mobile-order="1" />
 
     <p class="clinic__lead" data-mobile-order="3">{{ m.clinic.lead }}</p>
 
-    <!-- Печати: значение в пунктирном кольце + подпись. Тот же язык, что
-         кольцо-прицел на карте -->
+    <!-- Кабинет приёма и палата - парой, на телефоне тоже в ряд -->
+    <div class="clinic__pair" data-mobile-order="4">
+      <figure v-for="i in [1, 2]" :key="m.clinic.gallery[i].file" class="clinic__figure">
+        <button
+          type="button"
+          class="clinic__shot brackets"
+          :aria-label="m.clinic.gallery[i].caption"
+          @click="viewerIndex = i"
+        >
+          <span class="clinic__shot-frame">
+            <img
+              :src="`${base}media/${m.clinic.gallery[i].file}`"
+              :alt="m.clinic.gallery[i].alt"
+              :width="m.clinic.gallery[i].w"
+              :height="m.clinic.gallery[i].h"
+              loading="lazy"
+            />
+            <span class="clinic__expand" aria-hidden="true">
+              <svg viewBox="0 0 16 16">
+                <path d="M9.5 2 H14 V6.5 M14 2 L9.5 6.5 M6.5 14 H2 V9.5 M2 14 L6.5 9.5" />
+              </svg>
+            </span>
+          </span>
+        </button>
+        <figcaption class="clinic__shot-caption">{{ m.clinic.gallery[i].caption }}</figcaption>
+      </figure>
+    </div>
+
+    <!-- Печати: аккредитация значком, ЛОР иконкой, языки флагами.
+         Пунктирное кольцо - язык разметки, как кольцо маркера на карте -->
     <ul ref="stampsEl" class="clinic__stamps" :class="{ 'is-live': stampsLive }">
-      <li
-        v-for="(stamp, i) in m.clinic.stamps"
-        :key="stamp.value"
-        class="clinic__stamp"
-        :style="{ '--i': i }"
-      >
-        <span class="clinic__badge" :class="`clinic__badge--${stamp.size}`">
+      <li class="clinic__stamp" :style="{ '--i': 0 }">
+        <span class="clinic__badge">
           <svg class="clinic__ring" viewBox="0 0 120 120" aria-hidden="true">
             <circle cx="60" cy="60" r="59" />
           </svg>
-          <span class="clinic__value">{{ stamp.value }}</span>
+          <img
+            class="clinic__badge-logo"
+            :src="`${base}media/logos/achsi.png`"
+            :alt="m.clinic.stamps[0].imgAlt"
+            width="320"
+            height="320"
+            loading="lazy"
+          />
         </span>
-        <span class="clinic__caption">{{ stamp.caption }}</span>
+        <span class="clinic__caption">{{ m.clinic.stamps[0].caption }}</span>
+      </li>
+
+      <li class="clinic__stamp" :style="{ '--i': 1 }">
+        <span class="clinic__badge">
+          <svg class="clinic__ring" viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="59" />
+          </svg>
+          <!-- Профиль с разметкой - тот же образ, что ProfileMark в услугах -->
+          <svg class="clinic__badge-icon" viewBox="0 0 48 48" aria-hidden="true">
+            <path
+              class="clinic__icon-line"
+              d="M31 7 C27.5 10 26.6 13 27.2 16 C27.8 19 26 21.5 23 24.4 C21.4 26 21.9 27.4 24.3 27.9 C23.4 29.3 23.8 30.7 25.7 31.2 C25.2 32.7 25.7 34.2 27.6 34.7 C29.5 35.2 30.8 36.6 30.3 40"
+            />
+            <path class="clinic__icon-dash" d="M14 15 L23 18" />
+            <path class="clinic__icon-dash" d="M13 22 L21 23.4" />
+          </svg>
+        </span>
+        <span class="clinic__caption">{{ m.clinic.stamps[1].caption }}</span>
+      </li>
+
+      <li class="clinic__stamp" :style="{ '--i': 2 }">
+        <span class="clinic__badge">
+          <svg class="clinic__ring" viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="59" />
+          </svg>
+          <!-- Флаги языков приёма: русский и английский. Цвета чуть приглушены
+               под палитру, пара со сдвигом - как кадры в журнальной перекладке -->
+          <span class="clinic__flags" aria-hidden="true">
+            <svg class="clinic__flag clinic__flag--ru" viewBox="0 0 30 20">
+              <rect width="30" height="20" fill="#F2F0EA" />
+              <rect y="6.67" width="30" height="6.66" fill="#33527C" />
+              <rect y="13.33" width="30" height="6.67" fill="#A8423C" />
+            </svg>
+            <svg class="clinic__flag clinic__flag--en" viewBox="0 0 30 20">
+              <rect width="30" height="20" fill="#33527C" />
+              <path d="M0 0 L30 20 M30 0 L0 20" stroke="#F2F0EA" stroke-width="3.6" />
+              <path d="M15 0 V20 M0 10 H30" stroke="#F2F0EA" stroke-width="6" />
+              <path d="M15 0 V20 M0 10 H30" stroke="#A8423C" stroke-width="3" />
+            </svg>
+          </span>
+        </span>
+        <span class="clinic__caption">{{ m.clinic.stamps[2].caption }}</span>
       </li>
     </ul>
 
     <figure class="clinic__mapfig">
+      <p class="mono clinic__map-label">{{ m.clinic.mapLabel }}</p>
       <ClinicMap :labels="m.clinic.map" />
       <figcaption class="mono clinic__address">{{ m.clinic.address }}</figcaption>
     </figure>
@@ -101,19 +177,20 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
 </template>
 
 <style scoped>
-/* --- Галерея --- */
-
-.clinic__gallery {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-6);
-}
+/* --- Кадры --- */
 
 .clinic__figure {
   margin: 0;
   display: flex;
   flex-direction: column;
   gap: var(--s-3);
+}
+
+.clinic__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-6);
+  max-inline-size: 62ch;
 }
 
 .clinic__shot {
@@ -133,13 +210,19 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
   overflow: hidden;
 }
 
-/* Кадры целиком, пропорции родные - без обрезки (правка Марка) */
+/* Кадры целиком, пропорции родные - без обрезки */
 .clinic__shot img {
   display: block;
   inline-size: 100%;
   block-size: auto;
   background: var(--paper-raised);
   transition: transform var(--dur-base) var(--ease-out);
+}
+
+/* Пара под лидом: кадры разной пропорции ровняем по высоте ряда */
+.clinic__pair .clinic__shot img {
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
 }
 
 .clinic__shot:hover img,
@@ -202,9 +285,10 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
   padding: 0;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
   gap: var(--s-8) var(--s-6);
   padding-block: var(--s-6);
+  max-inline-size: 62ch;
 }
 
 .clinic__stamp {
@@ -238,18 +322,53 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
   stroke-dasharray: var(--dash-on) var(--dash-off);
 }
 
-/* Значение - антиква, как цифры в лавровых ветвях «О докторе» */
-.clinic__value {
-  font-family: var(--font-display);
-  font-weight: 300;
-  font-size: 1.9rem;
-  letter-spacing: 0.02em;
-  color: var(--ink);
+.clinic__badge-logo {
+  inline-size: 46%;
+  block-size: auto;
 }
 
-.clinic__badge--m .clinic__value {
-  font-size: 1.3rem;
-  letter-spacing: 0.05em;
+.clinic__badge-icon {
+  inline-size: 58%;
+  block-size: 58%;
+}
+
+.clinic__icon-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+}
+
+/* Штрихи разметки у переносицы - пунктир того же шага, что весь сайт */
+.clinic__icon-dash {
+  fill: none;
+  stroke: var(--ink-faint);
+  stroke-width: 1.1;
+  stroke-dasharray: 3 4;
+}
+
+.clinic__flags {
+  position: relative;
+  inline-size: 52%;
+  aspect-ratio: 30 / 26;
+}
+
+.clinic__flag {
+  position: absolute;
+  inline-size: 78%;
+  block-size: auto;
+  outline: 1px solid var(--rule-faint);
+}
+
+.clinic__flag--ru {
+  inset-block-start: 0;
+  inset-inline-start: 0;
+}
+
+/* Английский флаг ниже и правее - пара со сдвигом, а не таблица */
+.clinic__flag--en {
+  inset-block-end: 0;
+  inset-inline-end: 0;
 }
 
 .clinic__caption {
@@ -293,56 +412,37 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
   }
 }
 
-/* --- Карта --- */
+/* --- Карта: во всю ширину колонки, до правого края сайта --- */
 
-/* Не на всю ширину: при полной ширине колонки карта вырастала почти в экран
-   высотой (правка Марка - «вдвое ниже»). 53rem при пропорции кадра 1.6:1
-   дают ~520px высоты */
 .clinic__mapfig {
-  margin: var(--s-4) 0 0;
-  max-inline-size: min(100%, 53rem);
+  margin: var(--s-6) 0 0;
   inline-size: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--s-4);
+  gap: var(--s-5);
 }
 
+.clinic__map-label,
 .clinic__address {
   margin: 0;
 }
 
 @media (max-width: 900px) {
-  /* Лента вместо стопки: три кадра стопкой заняли бы пол-экрана прокрутки.
-     Видимый краешек следующего кадра подсказывает, что лента листается.
-     В ленте кадры выровнены под одну пропорцию, иначе высота ряда прыгает */
-  .clinic__gallery {
-    flex-direction: row;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scroll-snap-type: x proximity;
-    scrollbar-width: none;
-    gap: var(--s-3);
-    margin-inline: calc(-1 * var(--page-pad));
-    padding-inline: var(--page-pad);
-  }
-
-  .clinic__gallery::-webkit-scrollbar {
-    display: none;
-  }
-
-  .clinic__figure {
-    flex: 0 0 76%;
-    scroll-snap-align: start;
-  }
-
-  .clinic__shot img {
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
+  .clinic__pair {
+    gap: var(--s-4);
+    max-inline-size: 100%;
   }
 
   .clinic__stamps {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--s-6) var(--s-4);
+    max-inline-size: 100%;
+  }
+
+  /* Подписи пары мельче: в половину ширины экрана длинная подпись
+     перевешивает кадр - как у снимков в «О докторе» */
+  .clinic__pair .clinic__shot-caption {
+    font-size: 0.8125rem;
   }
 }
 </style>

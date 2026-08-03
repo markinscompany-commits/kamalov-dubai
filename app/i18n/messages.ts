@@ -219,19 +219,25 @@ const ru = {
   */
   clinic: {
     label: '[06] Где принимает',
-    title: 'Стационар с круглосуточным наблюдением.',
+    // Без точки на конце - правка Марка 04.08
+    title: 'Стационар с круглосуточным наблюдением',
     lead: 'Приём, обследование и операция проходят в Dubai London Hospital - частном госпитале на первой линии Джумейры, в двух километрах от Бурдж-аль-Араба. Операционные и палаты здесь же: после операции пациент остаётся в том же здании, переезды между клиниками не нужны.',
     /*
-      «Печати»: значение + подпись, пунктирное кольцо рифмуется с кольцом-прицелом
-      на карте. size задаёт кегль: длинное значение в кольце набирается мельче.
+      «Печати»: пунктирное кольцо + знак + подпись. Знаки вместо текста (правка
+      Марка 04.08): логотип аккредитатора, иконка профиля для ЛОР, флаги языков.
+      Печати DHA нет - лицензия уже раскрыта в блоке о враче. Сами знаки собраны
+      в ClinicSection.vue, здесь только подписи.
     */
     stamps: [
-      { value: 'DHA', size: 'l', caption: 'госпиталь лицензирован Департаментом здравоохранения Дубая' },
-      { value: 'ACHSI', size: 'm', caption: 'международная аккредитация госпиталей' },
+      {
+        imgAlt: 'Знак Австралийского совета по стандартам здравоохранения (ACHS)',
+        caption: 'международная аккредитация госпиталей ACHSI',
+      },
       // Не «оториноларингологическое»: слово шире мобильной колонки и рвёт сетку
-      { value: 'ЛОР', size: 'l', caption: 'профильное отделение болезней уха, горла и носа' },
-      { value: 'RU · EN', size: 'm', caption: 'приём на русском и английском' },
+      { caption: 'профильное отделение болезней уха, горла и носа' },
+      { caption: 'приём на русском и английском' },
     ],
+    mapLabel: '// Расположение госпиталя',
     map: {
       alt: 'Карта Дубая от Пальмы Джумейра до района Umm Suqeim: Dubai London Hospital стоит на Jumeirah Beach Road, в двух километрах северо-восточнее Бурдж-аль-Араба',
       sea: 'Персидский залив',
@@ -479,14 +485,17 @@ const en: typeof ru = {
   // Arabian Gulf, не Persian Gulf - местная норма, см. пояснение в русской версии
   clinic: {
     label: '[06] Where he sees patients',
-    title: 'An inpatient hospital with round-the-clock care.',
+    title: 'An inpatient hospital with round-the-clock care',
     lead: 'Consultations, tests and surgery all take place at Dubai London Hospital - a private hospital on the Jumeirah beachfront, two kilometres from the Burj Al Arab. The operating theatres and wards are in the same building: after surgery there are no transfers between clinics.',
     stamps: [
-      { value: 'DHA', size: 'l', caption: 'the hospital is licensed by the Dubai Health Authority' },
-      { value: 'ACHSI', size: 'm', caption: 'international hospital accreditation' },
-      { value: 'ENT', size: 'l', caption: 'a dedicated ear, nose and throat department' },
-      { value: 'RU · EN', size: 'm', caption: 'consultations in Russian and English' },
+      {
+        imgAlt: 'The mark of the Australian Council on Healthcare Standards (ACHS)',
+        caption: 'ACHSI international hospital accreditation',
+      },
+      { caption: 'a dedicated ear, nose and throat department' },
+      { caption: 'consultations in Russian and English' },
     ],
+    mapLabel: '// Where the hospital is',
     map: {
       alt: 'Map of Dubai from Palm Jumeirah to Umm Suqeim: Dubai London Hospital stands on Jumeirah Beach Road, two kilometres north-east of the Burj Al Arab',
       sea: 'Arabian Gulf',
