@@ -257,8 +257,8 @@ const ru = {
     gallery: [
       {
         file: 'clinic/facade.jpg',
-        w: 402,
-        h: 575,
+        w: 864,
+        h: 452,
         caption: 'Вход в госпиталь с Jumeirah Beach Road',
         alt: 'Фасад Dubai London Hospital со стороны Jumeirah Beach Road',
       },
@@ -509,8 +509,8 @@ const en: typeof ru = {
     gallery: [
       {
         file: 'clinic/facade.jpg',
-        w: 402,
-        h: 575,
+        w: 864,
+        h: 452,
         caption: 'The hospital entrance from Jumeirah Beach Road',
         alt: 'The facade of Dubai London Hospital seen from Jumeirah Beach Road',
       },

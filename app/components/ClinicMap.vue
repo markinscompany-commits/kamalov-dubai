@@ -48,11 +48,21 @@ interface MapLabels {
   scale: string
 }
 
-defineProps<{ labels: MapLabels }>()
+const props = defineProps<{ labels: MapLabels }>()
 
 const root = ref<HTMLElement | null>(null)
 // Рисуется при появлении, стирается при уходе - общий приём разметки сайта
 const live = useRedrawOnReturn(root, 0.25)
+
+/*
+  Имя госпиталя для телефона - двумя строками: одной строкой оно на части
+  устройств вылезало за обрезанный край карты (правка Марка).
+  «Dubai London Hospital» → «Dubai London» + «Hospital».
+*/
+const nameParts = computed(() => {
+  const words = props.labels.hospital.split(' ')
+  return [words.slice(0, -1).join(' '), words[words.length - 1] ?? '']
+})
 
 const H = HOSPITAL
 const B = BURJ
@@ -147,11 +157,13 @@ const scaleLen = KM * 5
         <text class="map__t map__t--name" :x="H.x + 34" :y="H.y - 2">{{ labels.hospital }}</text>
         <text class="map__t map__t--soft" :x="H.x + 34" :y="H.y + 20">{{ labels.area }}</text>
       </g>
-      <!-- ⚠️ Центр подписи сдвинут левее узла: узел стоит у правой кромки
-           мобильного окна карты, и подпись по центру узла резалась краем -->
+      <!-- ⚠️ Узел стоит у правой кромки мобильного окна карты (обрезка на 880),
+           поэтому имя разбито на две строки и центровано левее узла - одной
+           строкой оно вылезало за край -->
       <g class="map__label map__label--narrow" aria-hidden="true">
-        <text class="map__t map__t--name" :x="H.x - 55" :y="H.y + 66" text-anchor="middle">{{ labels.hospital }}</text>
-        <text class="map__t map__t--soft" :x="H.x - 55" :y="H.y + 94" text-anchor="middle">{{ labels.area }}</text>
+        <text class="map__t map__t--name" :x="H.x - 60" :y="H.y + 64" text-anchor="middle">{{ nameParts[0] }}</text>
+        <text class="map__t map__t--name" :x="H.x - 60" :y="H.y + 92" text-anchor="middle">{{ nameParts[1] }}</text>
+        <text class="map__t map__t--soft" :x="H.x - 60" :y="H.y + 120" text-anchor="middle">{{ labels.area }}</text>
       </g>
     </svg>
   </div>
