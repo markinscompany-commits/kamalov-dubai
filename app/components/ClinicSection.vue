@@ -31,6 +31,39 @@ const viewerIndex = ref<number | null>(null)
 const stampsEl = ref<HTMLElement | null>(null)
 // Печати проявляются по очереди и, как вся разметка, рисуются заново при возврате
 const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
+
+/*
+  Дымки мобильной ленты пары кадров - тот же механизм, что у ленты документов:
+  левая горит, только если что-то уже ушло за левый край, правая - пока справа
+  есть неувиденное. На десктопе пара не прокручивается, и дымки не загораются.
+*/
+const pairEl = ref<HTMLElement | null>(null)
+const fadeStart = ref(false)
+const fadeEnd = ref(false)
+
+/** Порог в пикселях: на дробных значениях прокрутки дымка иначе мигает у края */
+const EDGE = 2
+
+function updateFades() {
+  const el = pairEl.value
+  if (!el) return
+  fadeStart.value = el.scrollLeft > EDGE
+  fadeEnd.value = el.scrollLeft + el.clientWidth < el.scrollWidth - EDGE
+}
+
+let pairObserver: ResizeObserver | null = null
+
+onMounted(() => {
+  updateFades()
+  pairEl.value?.addEventListener('scroll', updateFades, { passive: true })
+  pairObserver = new ResizeObserver(updateFades)
+  if (pairEl.value) pairObserver.observe(pairEl.value)
+})
+
+onBeforeUnmount(() => {
+  pairEl.value?.removeEventListener('scroll', updateFades)
+  pairObserver?.disconnect()
+})
 </script>
 
 <template>
@@ -73,38 +106,44 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
 
     <SectionTitle :text="m.clinic.title" data-mobile-order="1" />
 
-    <p class="clinic__lead" data-mobile-order="3">{{ m.clinic.lead }}</p>
-
-    <!-- Кабинет приёма и палата - парой, на телефоне тоже в ряд -->
-    <div class="clinic__pair" data-mobile-order="4">
-      <figure v-for="i in [1, 2]" :key="m.clinic.gallery[i].file" class="clinic__figure">
-        <button
-          type="button"
-          class="clinic__shot brackets"
-          :aria-label="m.clinic.gallery[i].caption"
-          @click="viewerIndex = i"
-        >
-          <span class="clinic__shot-frame">
-            <img
-              :src="`${base}media/${m.clinic.gallery[i].file}`"
-              :alt="m.clinic.gallery[i].alt"
-              :width="m.clinic.gallery[i].w"
-              :height="m.clinic.gallery[i].h"
-              loading="lazy"
-            />
-            <span class="clinic__expand" aria-hidden="true">
-              <svg viewBox="0 0 16 16">
-                <path d="M9.5 2 H14 V6.5 M14 2 L9.5 6.5 M6.5 14 H2 V9.5 M2 14 L6.5 9.5" />
-              </svg>
+    <!-- Пара кадров стоит ВЫШЕ лида (правка Марка, только ПК) - на телефоне
+         порядок прежний: заголовок → фасад → лид → пара. Обёртка нужна дымкам -->
+    <div class="clinic__pairwrap" data-mobile-order="4">
+      <div ref="pairEl" class="clinic__pair">
+        <figure v-for="i in [1, 2]" :key="m.clinic.gallery[i].file" class="clinic__figure">
+          <button
+            type="button"
+            class="clinic__shot brackets"
+            :aria-label="m.clinic.gallery[i].caption"
+            @click="viewerIndex = i"
+          >
+            <span class="clinic__shot-frame">
+              <img
+                :src="`${base}media/${m.clinic.gallery[i].file}`"
+                :alt="m.clinic.gallery[i].alt"
+                :width="m.clinic.gallery[i].w"
+                :height="m.clinic.gallery[i].h"
+                loading="lazy"
+              />
+              <span class="clinic__expand" aria-hidden="true">
+                <svg viewBox="0 0 16 16">
+                  <path d="M9.5 2 H14 V6.5 M14 2 L9.5 6.5 M6.5 14 H2 V9.5 M2 14 L6.5 9.5" />
+                </svg>
+              </span>
             </span>
-          </span>
-        </button>
-        <figcaption class="clinic__shot-caption">{{ m.clinic.gallery[i].caption }}</figcaption>
-      </figure>
+          </button>
+          <figcaption class="clinic__shot-caption">{{ m.clinic.gallery[i].caption }}</figcaption>
+        </figure>
+      </div>
+
+      <span class="clinic__fade clinic__fade--start" :class="{ 'is-on': fadeStart }" aria-hidden="true" />
+      <span class="clinic__fade clinic__fade--end" :class="{ 'is-on': fadeEnd }" aria-hidden="true" />
     </div>
 
-    <!-- Печати: аккредитация значком, ЛОР иконкой, языки флагами.
-         Пунктирное кольцо - язык разметки, как кольцо маркера на карте -->
+    <p class="clinic__lead" data-mobile-order="3">{{ m.clinic.lead }}</p>
+
+    <!-- Печати: аккредитация значком, языки флагами. Пунктирное кольцо - язык
+         разметки, как кольцо маркера на карте. Печати ЛОР нет: факт живёт в лиде -->
     <ul ref="stampsEl" class="clinic__stamps" :class="{ 'is-live': stampsLive }">
       <li class="clinic__stamp" :style="{ '--i': 0 }">
         <span class="clinic__badge">
@@ -128,24 +167,6 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
           <svg class="clinic__ring" viewBox="0 0 120 120" aria-hidden="true">
             <circle cx="60" cy="60" r="59" />
           </svg>
-          <!-- Профиль с разметкой - тот же образ, что ProfileMark в услугах -->
-          <svg class="clinic__badge-icon" viewBox="0 0 48 48" aria-hidden="true">
-            <path
-              class="clinic__icon-line"
-              d="M31 7 C27.5 10 26.6 13 27.2 16 C27.8 19 26 21.5 23 24.4 C21.4 26 21.9 27.4 24.3 27.9 C23.4 29.3 23.8 30.7 25.7 31.2 C25.2 32.7 25.7 34.2 27.6 34.7 C29.5 35.2 30.8 36.6 30.3 40"
-            />
-            <path class="clinic__icon-dash" d="M14 15 L23 18" />
-            <path class="clinic__icon-dash" d="M13 22 L21 23.4" />
-          </svg>
-        </span>
-        <span class="clinic__caption">{{ m.clinic.stamps[1].caption }}</span>
-      </li>
-
-      <li class="clinic__stamp" :style="{ '--i': 2 }">
-        <span class="clinic__badge">
-          <svg class="clinic__ring" viewBox="0 0 120 120" aria-hidden="true">
-            <circle cx="60" cy="60" r="59" />
-          </svg>
           <!-- Флаги языков приёма: русский и английский. Цвета чуть приглушены
                под палитру, пара со сдвигом - как кадры в журнальной перекладке -->
           <span class="clinic__flags" aria-hidden="true">
@@ -162,7 +183,7 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
             </svg>
           </span>
         </span>
-        <span class="clinic__caption">{{ m.clinic.stamps[2].caption }}</span>
+        <span class="clinic__caption">{{ m.clinic.stamps[1].caption }}</span>
       </li>
     </ul>
 
@@ -186,11 +207,41 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
   gap: var(--s-3);
 }
 
+/* Пара кадров - во всю ширину колонки, до правого края, как карта */
+.clinic__pairwrap {
+  position: relative;
+  min-inline-size: 0;
+}
+
 .clinic__pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--s-6);
-  max-inline-size: 62ch;
+}
+
+/* Дымки мобильной ленты; на десктопе пара не листается - выключены совсем */
+.clinic__fade {
+  display: none;
+  position: absolute;
+  inset-block: 0;
+  inline-size: 2.75rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.clinic__fade.is-on {
+  opacity: 1;
+}
+
+.clinic__fade--start {
+  inset-inline-start: 0;
+  background: linear-gradient(to right, var(--paper-deep), transparent);
+}
+
+.clinic__fade--end {
+  inset-inline-end: 0;
+  background: linear-gradient(to left, var(--paper-deep), transparent);
 }
 
 .clinic__shot {
@@ -327,26 +378,6 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
   block-size: auto;
 }
 
-.clinic__badge-icon {
-  inline-size: 58%;
-  block-size: 58%;
-}
-
-.clinic__icon-line {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 1.3;
-  stroke-linecap: round;
-}
-
-/* Штрихи разметки у переносицы - пунктир того же шага, что весь сайт */
-.clinic__icon-dash {
-  fill: none;
-  stroke: var(--ink-faint);
-  stroke-width: 1.1;
-  stroke-dasharray: 3 4;
-}
-
 .clinic__flags {
   position: relative;
   inline-size: 52%;
@@ -428,9 +459,40 @@ const stampsLive = useRedrawOnReturn(stampsEl, 0.35)
 }
 
 @media (max-width: 900px) {
+  /* Пара на телефоне - лента с горизонтальной прокруткой и дымками по краям,
+     как лента документов. Кадры выше: 4:3 вместо 3:2 (правка Марка) */
+  .clinic__pairwrap {
+    margin-inline: calc(-1 * var(--page-pad));
+  }
+
   .clinic__pair {
-    gap: var(--s-4);
-    max-inline-size: 100%;
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    /* Без этого снап прижимает кадр к краю экрана, игнорируя внутренний отступ,
+       и подпись первого кадра срезается за левой кромкой */
+    scroll-padding-inline: var(--page-pad);
+    scrollbar-width: none;
+    gap: var(--s-3);
+    padding-inline: var(--page-pad);
+  }
+
+  .clinic__pair::-webkit-scrollbar {
+    display: none;
+  }
+
+  .clinic__pair .clinic__figure {
+    flex: 0 0 82%;
+    scroll-snap-align: start;
+  }
+
+  .clinic__pair .clinic__shot img {
+    aspect-ratio: 4 / 3;
+  }
+
+  .clinic__fade {
+    display: block;
   }
 
   .clinic__stamps {

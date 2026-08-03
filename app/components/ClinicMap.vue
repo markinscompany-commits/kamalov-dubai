@@ -10,8 +10,8 @@
   КОНТРАСТ (правка Марка: «карта тусклая, точку не найти»):
   · карта лежит на подложке светлее фона секции - читается как отдельный лист;
   · вода заметно темнее суши;
-  · узел госпиталя - фирменный синий, толще волосяных линий: точка на карте -
-    главный ответ блока, она должна находиться за долю секунды.
+  · узел госпиталя - красный маркер (конвенция карт) с красной подписью,
+    заметно крупнее волосяных линий: точка находится за долю секунды.
 
   ДВИЖЕНИЕ: слои проявляются по очереди (вода → дороги → наша дорога
   прочерчивается → узел → подписи). Блок ушёл с экрана - рисуется заново
@@ -67,6 +67,7 @@ const scaleLen = KM * 5
     <svg
       class="map__svg"
       :viewBox="`0 0 ${VB.w} ${VB.h}`"
+      preserveAspectRatio="xMinYMin slice"
       role="img"
       :aria-label="labels.alt"
       fill="none"
@@ -129,25 +130,28 @@ const scaleLen = KM * 5
         </text>
       </g>
 
-      <!-- Узел госпиталя: фирменный синий крест с пунктирным кольцом.
-           Точка - главный ответ блока, поэтому цвет действия, а не разметки -->
+      <!-- Узел госпиталя: красный маркер с пунктирным кольцом, заметно крупнее
+           волосяных линий. Точка - главный ответ блока. Размер на телефоне свой -->
       <g class="map__node map__node--wide">
-        <circle class="map__ring" :cx="H.x" :cy="H.y" r="16" />
-        <path class="map__cross" :d="`M ${H.x} ${H.y - 12} V ${H.y + 12} M ${H.x - 12} ${H.y} H ${H.x + 12}`" />
+        <circle class="map__ring" :cx="H.x" :cy="H.y" r="22" />
+        <path class="map__cross" :d="`M ${H.x} ${H.y - 16} V ${H.y + 16} M ${H.x - 16} ${H.y} H ${H.x + 16}`" />
       </g>
       <g class="map__node map__node--narrow" aria-hidden="true">
-        <circle class="map__ring map__ring--narrow" :cx="H.x" :cy="H.y" r="32" />
-        <path class="map__cross" :d="`M ${H.x} ${H.y - 23} V ${H.y + 23} M ${H.x - 23} ${H.y} H ${H.x + 23}`" />
+        <circle class="map__ring map__ring--narrow" :cx="H.x" :cy="H.y" r="34" />
+        <path class="map__cross" :d="`M ${H.x} ${H.y - 25} V ${H.y + 25} M ${H.x - 25} ${H.y} H ${H.x + 25}`" />
       </g>
 
-      <!-- Подпись узла: на широких экранах справа, на телефоне под узлом -->
+      <!-- Подпись узла: имя тем же красным, что маркер (правка Марка).
+           На широких экранах справа от кольца, на телефоне под узлом -->
       <g class="map__label map__label--wide">
-        <text class="map__t map__t--name" :x="H.x + 28" :y="H.y - 2">{{ labels.hospital }}</text>
-        <text class="map__t map__t--soft" :x="H.x + 28" :y="H.y + 18">{{ labels.area }}</text>
+        <text class="map__t map__t--name" :x="H.x + 34" :y="H.y - 2">{{ labels.hospital }}</text>
+        <text class="map__t map__t--soft" :x="H.x + 34" :y="H.y + 20">{{ labels.area }}</text>
       </g>
+      <!-- ⚠️ Центр подписи сдвинут левее узла: узел стоит у правой кромки
+           мобильного окна карты, и подпись по центру узла резалась краем -->
       <g class="map__label map__label--narrow" aria-hidden="true">
-        <text class="map__t map__t--name" :x="H.x" :y="H.y + 62" text-anchor="middle">{{ labels.hospital }}</text>
-        <text class="map__t map__t--soft" :x="H.x" :y="H.y + 88" text-anchor="middle">{{ labels.area }}</text>
+        <text class="map__t map__t--name" :x="H.x - 55" :y="H.y + 66" text-anchor="middle">{{ labels.hospital }}</text>
+        <text class="map__t map__t--soft" :x="H.x - 55" :y="H.y + 94" text-anchor="middle">{{ labels.area }}</text>
       </g>
     </svg>
   </div>
@@ -156,12 +160,21 @@ const scaleLen = KM * 5
 <style scoped>
 .map {
   inline-size: 100%;
+  /*
+    Пропорция видимого окна карты. На десктопе равна viewBox (1200x576 - ничего
+    не режется), на телефоне окно уже - preserveAspectRatio="xMinYMin slice"
+    обрезает КАРТУ СПРАВА (правка Марка: на узком экране правая пустая часть
+    только сжимала важное). ⚠️ При перегенерации данных с другим кадром
+    поправить числа и здесь.
+  */
+  aspect-ratio: calc(1200 / 576);
+  overflow: hidden;
 }
 
 .map__svg {
   display: block;
   inline-size: 100%;
-  block-size: auto;
+  block-size: 100%;
 }
 
 /* --- Лист, вода, суша --- */
@@ -276,13 +289,13 @@ const scaleLen = KM * 5
 }
 
 .map__t--name {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
-  fill: var(--ink);
+  fill: var(--map-marker);
 }
 
 .map__t--soft {
-  font-size: 9.5px;
+  font-size: 11px;
 }
 
 .map__t--road {
@@ -379,6 +392,11 @@ const scaleLen = KM * 5
   масштабе они нечитаемы и налезают на соседей; Бурдж остаётся контуром.
 */
 @media (max-width: 700px) {
+  /* Окно уже, правая часть кадра (пустой Al Quoz) обрезается - важное крупнее */
+  .map {
+    aspect-ratio: calc(880 / 576);
+  }
+
   .map__accent {
     stroke-dasharray: 11 16;
   }

@@ -221,20 +221,19 @@ const ru = {
     label: '[06] Где принимает',
     // Без точки на конце - правка Марка 04.08
     title: 'Стационар с круглосуточным наблюдением',
-    lead: 'Приём, обследование и операция проходят в Dubai London Hospital - частном госпитале на первой линии Джумейры, в двух километрах от Бурдж-аль-Араба. Операционные и палаты здесь же: после операции пациент остаётся в том же здании, переезды между клиниками не нужны.',
+    // ЛОР-отделение живёт в лиде, а не отдельной печатью (правка Марка 04.08)
+    lead: 'Приём, обследование и операция проходят в Dubai London Hospital - частном госпитале на первой линии Джумейры, в двух километрах от Бурдж-аль-Араба. Профильное ЛОР-отделение, операционные и палаты - в одном здании: после операции пациент остаётся здесь же, без переездов между клиниками.',
     /*
       «Печати»: пунктирное кольцо + знак + подпись. Знаки вместо текста (правка
-      Марка 04.08): логотип аккредитатора, иконка профиля для ЛОР, флаги языков.
-      Печати DHA нет - лицензия уже раскрыта в блоке о враче. Сами знаки собраны
-      в ClinicSection.vue, здесь только подписи.
+      Марка 04.08): логотип аккредитатора и флаги языков. Печати DHA нет -
+      лицензия уже раскрыта в блоке о враче. Сами знаки собраны в
+      ClinicSection.vue, здесь только подписи.
     */
     stamps: [
       {
         imgAlt: 'Знак Австралийского совета по стандартам здравоохранения (ACHS)',
         caption: 'международная аккредитация госпиталей ACHSI',
       },
-      // Не «оториноларингологическое»: слово шире мобильной колонки и рвёт сетку
-      { caption: 'профильное отделение болезней уха, горла и носа' },
       { caption: 'приём на русском и английском' },
     ],
     mapLabel: '// Расположение госпиталя',
@@ -258,9 +257,9 @@ const ru = {
     gallery: [
       {
         file: 'clinic/facade.jpg',
-        w: 864,
-        h: 452,
-        caption: 'Вход с Jumeirah Beach Road',
+        w: 402,
+        h: 575,
+        caption: 'Вход в госпиталь с Jumeirah Beach Road',
         alt: 'Фасад Dubai London Hospital со стороны Jumeirah Beach Road',
       },
       {
@@ -486,13 +485,12 @@ const en: typeof ru = {
   clinic: {
     label: '[06] Where he sees patients',
     title: 'An inpatient hospital with round-the-clock care',
-    lead: 'Consultations, tests and surgery all take place at Dubai London Hospital - a private hospital on the Jumeirah beachfront, two kilometres from the Burj Al Arab. The operating theatres and wards are in the same building: after surgery there are no transfers between clinics.',
+    lead: 'Consultations, tests and surgery all take place at Dubai London Hospital - a private hospital on the Jumeirah beachfront, two kilometres from the Burj Al Arab. A dedicated ENT department, the operating theatres and wards are under one roof: after surgery the patient stays in the same building, with no transfers between clinics.',
     stamps: [
       {
         imgAlt: 'The mark of the Australian Council on Healthcare Standards (ACHS)',
         caption: 'ACHSI international hospital accreditation',
       },
-      { caption: 'a dedicated ear, nose and throat department' },
       { caption: 'consultations in Russian and English' },
     ],
     mapLabel: '// Where the hospital is',
@@ -511,9 +509,9 @@ const en: typeof ru = {
     gallery: [
       {
         file: 'clinic/facade.jpg',
-        w: 864,
-        h: 452,
-        caption: 'The entrance from Jumeirah Beach Road',
+        w: 402,
+        h: 575,
+        caption: 'The hospital entrance from Jumeirah Beach Road',
         alt: 'The facade of Dubai London Hospital seen from Jumeirah Beach Road',
       },
       {
