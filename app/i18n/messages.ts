@@ -213,15 +213,18 @@ const ru = {
   */
   clinic: {
     label: '[06] Где принимает',
-    title: 'Стационар, а не кабинет.',
-    lead: 'Эльдар Камалов консультирует и оперирует в Dubai London Hospital - частном госпитале на берегу Джумейры. Консультация, операция и первые дни восстановления проходят в одном здании, наблюдение - круглосуточное.',
-    facts: [
-      { mark: 'Адрес', text: '760, Jumeirah Beach Road, район Umm Suqeim 2, Дубай' },
-      { mark: 'Формат', text: 'Частный многопрофильный госпиталь, стационар работает круглосуточно' },
-      { mark: 'Лицензия', text: 'Медицинское учреждение, лицензированное Департаментом здравоохранения Дубая (DHA)' },
-      { mark: 'Аккредитация', text: 'Международная аккредитация ACHSI - австралийский стандарт качества госпиталей' },
-      { mark: 'Отделение', text: 'Работает оториноларингологическое отделение - профильное для хирургии носа' },
-      { mark: 'Язык', text: 'Приём ведётся на русском и английском' },
+    title: 'Стационар с круглосуточным наблюдением.',
+    lead: 'Эльдар Камалов консультирует и оперирует в Dubai London Hospital - частном госпитале на первой линии Джумейры, в двух километрах от Бурдж-аль-Араба. Консультация, обследование, операция и первые дни восстановления проходят в одном здании - с профильным ЛОР-отделением и своими палатами.',
+    /*
+      «Печати» вместо сухого списка фактов (правка Марка 03.08). Значение + подпись,
+      пунктирное кольцо рифмуется с кольцом-прицелом на карте. size задаёт кегль:
+      длинное значение в кольце набирается мельче.
+    */
+    stamps: [
+      { value: '24/7', size: 'l', caption: 'стационар с круглосуточным наблюдением' },
+      { value: 'DHA', size: 'l', caption: 'лицензия Департамента здравоохранения Дубая' },
+      { value: 'ACHSI', size: 'm', caption: 'международная аккредитация госпиталей' },
+      { value: 'RU · EN', size: 'm', caption: 'приём на русском и английском' },
     ],
     map: {
       alt: 'Карта побережья Джумейры: Dubai London Hospital стоит на Jumeirah Beach Road в районе Umm Suqeim 2, в двух километрах северо-восточнее Бурдж-аль-Араба',
@@ -233,18 +236,62 @@ const ru = {
       burj: 'Бурдж-аль-Араб',
       scale: '1 км',
     },
-    photos: [
+    address: '760, Jumeirah Beach Road · Umm Suqeim 2 · Дубай',
+    route: {
+      label: 'Построить маршрут',
+      // Ключ href типограф не трогает - это адрес, а не текст
+      href: 'https://www.google.com/maps/dir/?api=1&destination=Dubai+London+Hospital,+Jumeirah+Beach+Road,+Dubai',
+    },
+    /*
+      Галерея: клиника с разных сторон, кадры открываются на весь экран (PhotoViewer).
+      Порядок продуман: вход → ресепшен → палата → кабинет → диагностика.
+    */
+    gallery: [
       {
         file: 'clinic/facade.jpg',
+        w: 864,
+        h: 452,
         caption: '// Вход с Jumeirah Beach Road',
         alt: 'Фасад Dubai London Hospital со стороны Jumeirah Beach Road',
       },
       {
         file: 'clinic/reception.jpg',
+        w: 552,
+        h: 800,
         caption: '// Ресепшен амбулаторного отделения',
         alt: 'Ресепшен амбулаторного отделения Dubai London Hospital',
       },
+      {
+        file: 'clinic/ward-view.jpg',
+        w: 1200,
+        h: 800,
+        caption: '// Одноместная палата стационара',
+        alt: 'Одноместная палата стационара Dubai London Hospital',
+      },
+      {
+        file: 'clinic/consulting.jpg',
+        w: 1200,
+        h: 800,
+        caption: '// Кабинет приёма',
+        alt: 'Кабинет приёма в Dubai London Hospital',
+      },
+      {
+        file: 'clinic/imaging-view.jpg',
+        w: 1200,
+        h: 800,
+        caption: '// Кабинет компьютерной томографии',
+        alt: 'Кабинет компьютерной томографии в Dubai London Hospital',
+      },
     ],
+    galleryHint: '// Кадры открываются на весь экран',
+  },
+  /* Просмотрщик фотографий - подписи кнопок. Общие: пригодятся и галерее «до/после» */
+  viewer: {
+    close: 'Закрыть',
+    prev: 'Предыдущий кадр',
+    next: 'Следующий кадр',
+    zoomIn: 'Приблизить',
+    zoomOut: 'Отдалить',
   },
   /*
     Блок «Как проходит лечение». Отвечает на вопрос «что со мной будет от заявки
@@ -444,15 +491,13 @@ const en: typeof ru = {
   // Arabian Gulf, не Persian Gulf - местная норма, см. пояснение в русской версии
   clinic: {
     label: '[06] Where he sees patients',
-    title: 'A hospital, not a consulting room.',
-    lead: 'Eldar Kamalov consults and operates at Dubai London Hospital - a private hospital on the Jumeirah coast. The consultation, the operation and the first days of recovery all happen in one building, with round-the-clock care.',
-    facts: [
-      { mark: 'Address', text: '760, Jumeirah Beach Road, Umm Suqeim 2, Dubai' },
-      { mark: 'Setting', text: 'A private multi-speciality hospital with round-the-clock inpatient care' },
-      { mark: 'Licence', text: 'A medical facility licensed by the Dubai Health Authority (DHA)' },
-      { mark: 'Accreditation', text: 'ACHSI international accreditation - the Australian standard of hospital care' },
-      { mark: 'Department', text: 'Has an otolaryngology department - the profile field for nose surgery' },
-      { mark: 'Language', text: 'Consultations are held in Russian and English' },
+    title: 'An inpatient hospital with round-the-clock care.',
+    lead: 'Eldar Kamalov consults and operates at Dubai London Hospital - a private hospital on the Jumeirah beachfront, two kilometres from the Burj Al Arab. The consultation, tests, surgery and the first days of recovery all happen in one building - with a dedicated ENT department and its own wards.',
+    stamps: [
+      { value: '24/7', size: 'l', caption: 'inpatient care around the clock' },
+      { value: 'DHA', size: 'l', caption: 'licensed by the Dubai Health Authority' },
+      { value: 'ACHSI', size: 'm', caption: 'international hospital accreditation' },
+      { value: 'RU · EN', size: 'm', caption: 'consultations in Russian and English' },
     ],
     map: {
       alt: 'Map of the Jumeirah coast: Dubai London Hospital stands on Jumeirah Beach Road in Umm Suqeim 2, two kilometres north-east of the Burj Al Arab',
@@ -464,18 +509,56 @@ const en: typeof ru = {
       burj: 'Burj Al Arab',
       scale: '1 km',
     },
-    photos: [
+    address: '760, Jumeirah Beach Road · Umm Suqeim 2 · Dubai',
+    route: {
+      label: 'Get directions',
+      href: 'https://www.google.com/maps/dir/?api=1&destination=Dubai+London+Hospital,+Jumeirah+Beach+Road,+Dubai',
+    },
+    gallery: [
       {
         file: 'clinic/facade.jpg',
+        w: 864,
+        h: 452,
         caption: '// The entrance from Jumeirah Beach Road',
         alt: 'The facade of Dubai London Hospital seen from Jumeirah Beach Road',
       },
       {
         file: 'clinic/reception.jpg',
+        w: 552,
+        h: 800,
         caption: '// Outpatient reception',
         alt: 'The outpatient reception at Dubai London Hospital',
       },
+      {
+        file: 'clinic/ward-view.jpg',
+        w: 1200,
+        h: 800,
+        caption: '// A single inpatient room',
+        alt: 'A single inpatient room at Dubai London Hospital',
+      },
+      {
+        file: 'clinic/consulting.jpg',
+        w: 1200,
+        h: 800,
+        caption: '// A consulting room',
+        alt: 'A consulting room at Dubai London Hospital',
+      },
+      {
+        file: 'clinic/imaging-view.jpg',
+        w: 1200,
+        h: 800,
+        caption: '// The CT imaging room',
+        alt: 'The CT imaging room at Dubai London Hospital',
+      },
     ],
+    galleryHint: '// Photos open full screen',
+  },
+  viewer: {
+    close: 'Close',
+    prev: 'Previous photo',
+    next: 'Next photo',
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
   },
   treatment: {
     label: '[07] How treatment works',

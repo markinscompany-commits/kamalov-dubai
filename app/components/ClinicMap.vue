@@ -1,30 +1,42 @@
 <!--
-  Карта побережья Джумейры для блока «Где принимает».
+  Карта Джумейры для блока «Где принимает» - настоящая география.
 
-  Идея принята Марком (вариант «Координата»): разметка хирурга становится
-  разметкой карты. То же перо, что во всём сайте, - тонкие линии, пунктир с шагом
-  4/6, крестик-узел, - но точка впервые ставится не в пустоту, а на место на карте.
+  После правки Марка (03.08, «нарисуй как реально выглядит») карта строится из
+  данных OpenStreetMap: берег с маринами, остров Бурдж-аль-Араба, реальная сетка
+  кварталов Umm Suqeim, Jumeirah Beach Road (в OSM - Jumeira St, D94) проходит
+  точно через точку госпиталя. Пути сгенерированы скриптом и лежат в
+  utils/clinicMapPaths.ts - руками их не править, только перегенерация.
 
-  Никаких Google-карт и скриншотов: свой SVG в цветах сайта. Внешних доменов
-  страница не тянет (скорость для ОАЭ + ничего не ломает стиль).
+  Стиль - перо сайта: земля цвета бумаги, море тонировано разбелом разметочного
+  цвета, улицы волосяными линиями трёх весов, наша дорога - пунктир 4/6, узел
+  госпиталя - крест с пунктирным кольцом (тот же язык, что CrossRules).
 
-  География настоящая, проверена по OpenStreetMap 03.08.2026:
-  · госпиталь - 25.1530° N, 55.2013° E, участок 760 на Jumeirah Beach Road;
-  · Бурдж-аль-Араб - 25.1413° N, 55.1854° E, ~2 км юго-западнее, на острове;
-  · берег в этом месте идёт с юго-запада на северо-восток, море - на северо-западе.
-  Масштаб честный: полоса «1 км» внизу соответствует расстояниям на карте.
+  Подписи важных мест идут с «подложкой» цвета земли (paint-order: stroke) -
+  иначе они нечитаемы поверх уличной сетки.
 
-  ДВИЖЕНИЕ. Как у CrossRules: берег прочерчивается первым (штрихового рисования
-  у сплошной линии нет - работает stroke-dashoffset), дорога открывается слева
-  направо через clip-path (пунктир сжимать нельзя - плывёт шаг), затем проявляется
-  узел госпиталя с пунктирным кольцом, последними - подписи. Блок ушёл с экрана
-  целиком - карта стирается и при возврате чертится заново (правило сайта,
-  наблюдатель с запасом WATCH_SLACK - см. design-system.md, раздел 4).
+  ДВИЖЕНИЕ: карта проявляется слоями, как рисунок - море, сетка кварталов от
+  мелкой к крупной, затем прочерчивается наша дорога, ставится узел, подписи.
+  Блок ушёл с экрана целиком - стирается и при возврате рисуется заново
+  (правило разметки сайта, наблюдатель с запасом WATCH_SLACK).
 
   ⚠️ RTL: карта - географический рисунок, при арабской версии НЕ зеркалится.
-  clip-path дороги оставить как есть.
+  ⚠️ Пунктир и размеры узла на телефоне задаются отдельными значениями: SVG
+  сжимается вместе с содержимым, и десктопные величины превращаются в гребёнку.
 -->
 <script setup lang="ts">
+import {
+  VB,
+  HOSPITAL,
+  BURJ,
+  KM,
+  water,
+  islands,
+  roadAccent,
+  roadsMain,
+  roadsMid,
+  roadsMinor,
+} from '~/utils/clinicMapPaths'
+
 interface MapLabels {
   alt: string
   sea: string
@@ -38,115 +50,99 @@ interface MapLabels {
 
 defineProps<{ labels: MapLabels }>()
 
-/** Запас для наблюдателя, px: убирает случай «граница блока = граница экрана» */
-const WATCH_SLACK = 4
-
 const root = ref<HTMLElement | null>(null)
-const live = ref(false)
+// Рисуется при появлении, стирается при уходе - общий приём разметки сайта
+const live = useRedrawOnReturn(root, 0.25)
 
-let enterWatch: IntersectionObserver | null = null
-let leaveWatch: IntersectionObserver | null = null
-
-onMounted(() => {
-  // Карта показалась на четверть - чертим
-  enterWatch = new IntersectionObserver(
-    (entries) => {
-      if (entries[0]?.isIntersecting) live.value = true
-    },
-    { threshold: 0.25 },
-  )
-  // Карта ушла с экрана целиком - стираем, при возврате рисуется заново
-  leaveWatch = new IntersectionObserver(
-    (entries) => {
-      if (!entries[0]?.isIntersecting) live.value = false
-    },
-    { threshold: 0, rootMargin: `-${WATCH_SLACK}px` },
-  )
-  if (root.value) {
-    enterWatch.observe(root.value)
-    leaveWatch.observe(root.value)
-  }
-})
-
-onBeforeUnmount(() => {
-  enterWatch?.disconnect()
-  leaveWatch?.disconnect()
-})
+/* Геометрия узла и мелочей считается от настоящих координат */
+const H = HOSPITAL
+const B = BURJ
+const scaleX0 = 60
+const scaleY = VB.h - 34
 </script>
 
 <template>
   <div ref="root" class="map" :class="{ 'map--live': live }">
     <svg
       class="map__svg"
-      viewBox="0 0 640 560"
+      :viewBox="`0 0 ${VB.w} ${VB.h}`"
       role="img"
       :aria-label="labels.alt"
       fill="none"
     >
-      <!-- Море: подпись и три штриха-волны в верхнем левом углу, над берегом -->
-      <g class="map__sea">
-        <text class="map__t map__t--soft" x="150" y="140" text-anchor="middle">
-          {{ labels.sea }}
-        </text>
-        <line class="map__wave" x1="66" y1="180" x2="128" y2="180" />
-        <line class="map__wave" x1="96" y1="212" x2="150" y2="212" />
-        <line class="map__wave" x1="48" y1="244" x2="94" y2="244" />
+      <!-- Море: тонированный полигон. Обводка рисует только линию берега:
+           замыкающие отрезки полигона лежат далеко за рамкой -->
+      <g class="map__water-wrap">
+        <path class="map__water" :d="water" />
+        <path v-for="(d, i) in islands" :key="`i${i}`" class="map__island" :d="d" />
+        <text class="map__t map__t--sea" :x="175" :y="205">{{ labels.sea }}</text>
+
+        <!-- Север и честный масштаб: 1 км в единицах карты, оба над водой -->
+        <g class="map__hairgroup">
+          <path class="map__hair" d="M 64 76 L 64 46 M 58 54 L 64 46 L 70 54" />
+          <text class="map__t map__t--soft" x="64" y="94" text-anchor="middle">N</text>
+          <path
+            class="map__hair"
+            :d="`M ${scaleX0} ${scaleY - 4} V ${scaleY + 4} M ${scaleX0} ${scaleY} H ${scaleX0 + KM} M ${scaleX0 + KM} ${scaleY - 4} V ${scaleY + 4}`"
+          />
+          <text class="map__t map__t--soft" :x="scaleX0 + KM / 2" :y="scaleY - 12" text-anchor="middle">
+            {{ labels.scale }}
+          </text>
+        </g>
       </g>
 
-      <!-- Берег: сплошная волосяная линия с юго-запада на северо-восток.
-           pathLength=1 - чтобы прочерчивание не зависело от настоящей длины -->
-      <path
-        class="map__coast"
-        d="M -6 556 C 60 528, 140 504, 200 482 C 268 456, 330 330, 387 210 C 424 132, 520 106, 646 60"
-        pathLength="1"
-      />
+      <!-- Кварталы: три веса, от жилой сетки к артериям -->
+      <g class="map__minor">
+        <path v-for="(d, i) in roadsMinor" :key="`n${i}`" :d="d" />
+      </g>
+      <g class="map__mid">
+        <path v-for="(d, i) in roadsMid" :key="`m${i}`" :d="d" />
+      </g>
+      <g class="map__main">
+        <path v-for="(d, i) in roadsMain" :key="`a${i}`" :d="d" />
+      </g>
 
-      <!-- Jumeirah Beach Road: пунктир тем же шагом 4/6, что вся разметка сайта.
-           Проходит через узел госпиталя - участок 760 стоит на этой дороге -->
-      <g class="map__roadwrap">
-        <path
-          id="clinic-road"
-          class="map__road"
-          d="M 128 610 C 190 560, 240 512, 292 452 C 348 386, 384 296, 420 248 C 458 198, 548 148, 668 92"
-        />
+      <!-- Jumeirah Beach Road: непрерывная нить D94, пунктир языка сайта.
+           Открывается клипом слева направо - пунктир сжимать нельзя, плывёт шаг -->
+      <g class="map__accent-wrap">
+        <path id="clinic-road" class="map__accent" :d="roadAccent ?? ''" />
       </g>
       <text class="map__t map__t--road" dy="-7">
-        <textPath href="#clinic-road" startOffset="12%">{{ labels.road }}</textPath>
+        <textPath href="#clinic-road" startOffset="46%">{{ labels.road }}</textPath>
       </text>
 
-      <!-- Бурдж-аль-Араб: контур паруса на острове, мостик к берегу.
-           Ставит на карте «это Дубай» одним силуэтом -->
+      <!-- Бурдж-аль-Араб: контур паруса на своём острове -->
       <g class="map__burj">
-        <line class="map__hair" x1="176" y1="452" x2="197" y2="476" />
-        <path class="map__hair" d="M 174 418 L 174 450 M 174 421 Q 157 434 155 450 L 174 450" />
-        <text class="map__t map__t--soft" x="140" y="474" text-anchor="end">
+        <path
+          class="map__hair"
+          :d="`M ${B.x} ${B.y - 4} L ${B.x} ${B.y - 36} M ${B.x} ${B.y - 33} Q ${B.x - 17} ${B.y - 20} ${B.x - 18} ${B.y - 4} L ${B.x} ${B.y - 4}`"
+        />
+        <text class="map__t map__t--soft" :x="B.x - 2" :y="B.y + 26" text-anchor="middle">
           {{ labels.burj }}
         </text>
       </g>
 
-      <!-- Узел госпиталя: тот же крест, что в CrossRules, + пунктирное кольцо-прицел.
-           Единственное кольцо на сайте - это и есть точка, ради которой карта -->
-      <g class="map__node">
-        <circle class="map__ring" cx="420" cy="248" r="17" />
-        <path class="map__cross" d="M 420 234 L 420 262 M 406 248 L 434 248" />
+      <!-- Узел госпиталя: крест и пунктирное кольцо-прицел. Размер на телефоне
+           свой - десктопный узел при сжатии SVG превращается в точку -->
+      <g class="map__node map__node--wide">
+        <circle class="map__ring" :cx="H.x" :cy="H.y" r="17" />
+        <path class="map__cross" :d="`M ${H.x} ${H.y - 13} V ${H.y + 13} M ${H.x - 13} ${H.y} H ${H.x + 13}`" />
+      </g>
+      <g class="map__node map__node--narrow" aria-hidden="true">
+        <circle class="map__ring map__ring--narrow" :cx="H.x" :cy="H.y" r="30" />
+        <path class="map__cross" :d="`M ${H.x} ${H.y - 22} V ${H.y + 22} M ${H.x - 22} ${H.y} H ${H.x + 22}`" />
       </g>
 
-      <g class="map__label">
-        <text class="map__t map__t--name" x="444" y="242">{{ labels.hospital }}</text>
-        <text class="map__t map__t--soft" x="444" y="262">{{ labels.area }}</text>
-        <text class="map__t map__t--soft" x="444" y="280">{{ labels.coords }}</text>
+      <!-- Подпись узла: на широких экранах справа от кольца, на телефоне слева
+           и без координат - справа она упиралась в край карты -->
+      <g class="map__label map__label--wide">
+        <text class="map__t map__t--name" :x="H.x + 30" :y="H.y - 8">{{ labels.hospital }}</text>
+        <text class="map__t map__t--soft" :x="H.x + 30" :y="H.y + 12">{{ labels.area }}</text>
+        <text class="map__t map__t--soft" :x="H.x + 30" :y="H.y + 30">{{ labels.coords }}</text>
       </g>
-
-      <!-- Север и честный масштаб: 1 км по расстояниям карты -->
-      <g class="map__north">
-        <path class="map__hair" d="M 598 50 L 598 24 M 593 31 L 598 24 L 603 31" />
-        <text class="map__t map__t--soft" x="598" y="66" text-anchor="middle">N</text>
-      </g>
-      <g class="map__scalebar">
-        <path class="map__hair" d="M 446 522 L 446 528 M 446 525 L 600 525 M 600 522 L 600 528" />
-        <text class="map__t map__t--soft" x="523" y="514" text-anchor="middle">
-          {{ labels.scale }}
-        </text>
+      <g class="map__label map__label--narrow" aria-hidden="true">
+        <text class="map__t map__t--name" :x="H.x - 42" :y="H.y - 4" text-anchor="end">{{ labels.hospital }}</text>
+        <text class="map__t map__t--soft" :x="H.x - 42" :y="H.y + 24" text-anchor="end">{{ labels.area }}</text>
       </g>
     </svg>
   </div>
@@ -163,50 +159,86 @@ onBeforeUnmount(() => {
   block-size: auto;
 }
 
-/* --- Перо: всё нарисовано тем же цветом и толщиной, что разметка --- */
+/* --- Слои воды и суши --- */
 
-.map__coast {
-  stroke: var(--rule);
-  stroke-width: var(--rule-w);
-  /* Прочерчивание сплошной линии: вся длина = 1 штрих, сдвиг открывает её */
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
+.map__water {
+  /* Разбел разметочного цвета: море того же пера, что весь сайт, но заметно */
+  fill: color-mix(in srgb, var(--ink-faint) 19%, var(--paper-deep));
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
 }
 
-.map__road {
-  stroke: var(--rule);
+.map__island {
+  fill: var(--paper-deep);
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* --- Улицы: волосяные линии трёх весов --- */
+
+.map__minor path,
+.map__mid path,
+.map__main path {
+  stroke: var(--ink-faint);
+  vector-effect: non-scaling-stroke;
+}
+
+.map__minor path {
+  stroke-width: 0.55px;
+  opacity: 0.4;
+}
+
+.map__mid path {
+  stroke-width: 0.7px;
+  opacity: 0.6;
+}
+
+.map__main path {
+  stroke-width: 1px;
+  opacity: 0.8;
+}
+
+/* --- Наша дорога и узел --- */
+
+.map__accent {
+  stroke: var(--ink);
   stroke-width: var(--rule-w);
+  vector-effect: non-scaling-stroke;
   stroke-dasharray: var(--dash-on) var(--dash-off);
 }
 
-.map__roadwrap {
-  /* Пунктир открываем клипом, не длиной: иначе шаг штрихов плывёт */
+.map__accent-wrap {
   clip-path: inset(0 100% 0 0);
 }
 
 .map__hair {
-  stroke: var(--rule);
-  stroke-width: var(--rule-w);
-}
-
-.map__wave {
-  stroke: var(--rule-faint);
-  stroke-width: var(--rule-w);
-  stroke-dasharray: var(--dash-on) var(--dash-off);
+  stroke: var(--ink-soft);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
 }
 
 .map__cross {
   stroke: var(--ink);
   stroke-width: var(--rule-w);
+  vector-effect: non-scaling-stroke;
 }
 
 .map__ring {
   stroke: var(--ink);
   stroke-width: var(--rule-w);
+  vector-effect: non-scaling-stroke;
   stroke-dasharray: var(--dash-on) var(--dash-off);
 }
 
-/* --- Подписи: моношрифт полей, как везде на сайте --- */
+/* Узлы и подписи узла: на широких экранах свои, на телефоне свои */
+.map__node--narrow,
+.map__label--narrow {
+  display: none;
+}
+
+/* --- Подписи --- */
 
 .map__t {
   font-family: var(--font-mono);
@@ -214,10 +246,20 @@ onBeforeUnmount(() => {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   fill: var(--ink-soft);
+  /* Подложка цвета земли: подпись остаётся читаемой поверх уличной сетки */
+  stroke: var(--paper-deep);
+  stroke-width: 4px;
+  paint-order: stroke;
+  stroke-linejoin: round;
+}
+
+.map__t--sea {
+  letter-spacing: 0.22em;
+  stroke: none;
 }
 
 .map__t--name {
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 500;
   fill: var(--ink);
 }
@@ -231,82 +273,66 @@ onBeforeUnmount(() => {
   letter-spacing: 0.14em;
 }
 
-/*
-  На телефоне SVG сжимается вместе с текстом, и подписи в 9-11px виртуальных
-  единиц становятся нечитаемыми. Кегль поднимается в единицах viewBox - карта
-  во всю ширину экрана, поэтому места хватает (проверено: имя госпиталя при
-  14.5px заканчивается на 633 из 640).
-*/
-@media (max-width: 700px) {
-  .map__t {
-    font-size: 14px;
-  }
+/* --- Покой: до появления видно только фон секции --- */
 
-  /* Имя не крупнее 13.5px: при 14.5px последние буквы выходили за viewBox
-     (444 + 21 знак x 9.6px = 645 > 640) и обрезались */
-  .map__t--name {
-    font-size: 13.5px;
-    letter-spacing: 0.04em;
-  }
-
-  .map__t--soft {
-    font-size: 13px;
-  }
-
-  .map__t--road {
-    font-size: 12.5px;
-  }
-}
-
-/* --- Покой: до появления на экране видно только фон --- */
-
-.map__sea,
+.map__water-wrap,
+.map__minor,
+.map__mid,
+.map__main,
 .map__burj,
 .map__node,
 .map__label,
-.map__north,
-.map__scalebar,
 .map__t--road {
   opacity: 0;
 }
 
-/* --- Появление. Порядок: берег → дорога → окрестности → узел → подписи --- */
+/* --- Появление: карта собирается слоями, как рисунок --- */
 
-.map--live .map__coast {
-  animation: map-coast var(--dur-draw) var(--ease-draw) both;
+.map--live .map__water-wrap {
+  animation: map-in var(--dur-slow) var(--ease-out) both;
 }
 
-.map--live .map__roadwrap {
-  animation: map-road var(--dur-draw) var(--ease-draw) 300ms both;
+.map--live .map__minor {
+  animation: map-in var(--dur-slow) var(--ease-out) 250ms both;
 }
 
-.map--live .map__sea,
-.map--live .map__burj,
-.map--live .map__north,
-.map--live .map__scalebar {
-  animation: map-in var(--dur-slow) var(--ease-out) 900ms both;
+.map--live .map__mid {
+  animation: map-in var(--dur-slow) var(--ease-out) 420ms both;
+}
+
+.map--live .map__main {
+  animation: map-in var(--dur-slow) var(--ease-out) 590ms both;
+}
+
+.map--live .map__accent-wrap {
+  animation: map-road var(--dur-draw) var(--ease-draw) 700ms both;
+}
+
+.map--live .map__burj {
+  animation: map-in var(--dur-slow) var(--ease-out) 1000ms both;
 }
 
 .map--live .map__t--road {
-  animation: map-in var(--dur-slow) var(--ease-out) 1100ms both;
+  animation: map-in var(--dur-slow) var(--ease-out) 1250ms both;
 }
 
-.map--live .map__node {
+.map--live .map__node--wide,
+.map--live .map__node--narrow {
   transform-box: fill-box;
   transform-origin: center;
-  animation: map-node var(--dur-base) var(--ease-out) 1300ms both;
+  animation: map-node var(--dur-base) var(--ease-out) 1500ms both;
 }
 
 .map--live .map__label {
-  animation: map-in var(--dur-base) var(--ease-out) 1550ms both;
+  animation: map-in var(--dur-base) var(--ease-out) 1750ms both;
 }
 
-@keyframes map-coast {
+@keyframes map-in {
   from {
-    stroke-dashoffset: 1;
+    opacity: 0;
   }
   to {
-    stroke-dashoffset: 0;
+    opacity: 1;
   }
 }
 
@@ -319,15 +345,6 @@ onBeforeUnmount(() => {
   }
 }
 
-@keyframes map-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 @keyframes map-node {
   from {
     opacity: 0;
@@ -336,6 +353,49 @@ onBeforeUnmount(() => {
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/*
+  Телефон: SVG сжимается примерно в 2.4 раза, поэтому у пунктира, узла и
+  подписей свои крупные значения - иначе гребёнка и нечитаемый бисер.
+  Кегли посчитаны так, чтобы на экране 375px выходило ~8px.
+*/
+@media (max-width: 700px) {
+  .map__accent {
+    stroke-dasharray: 10 14;
+  }
+
+  .map__ring {
+    stroke-dasharray: 9 13;
+  }
+
+  .map__node--wide,
+  .map__label--wide {
+    display: none;
+  }
+
+  .map__node--narrow,
+  .map__label--narrow {
+    display: initial;
+  }
+
+  .map__t {
+    font-size: 19px;
+    stroke-width: 7px;
+  }
+
+  .map__t--name {
+    font-size: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  .map__t--soft {
+    font-size: 17px;
+  }
+
+  .map__t--road {
+    font-size: 16px;
   }
 }
 </style>

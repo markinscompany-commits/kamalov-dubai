@@ -151,7 +151,9 @@ const base = useRuntimeConfig().app.baseURL
 .doctor__lead {
   font-size: var(--fs-lead);
   line-height: 1.5;
-  max-inline-size: min(52ch, 100%);
+  /* 62ch - общая ширина текста сайта; 52ch резал колонку слишком узко
+     (правка Марка, 03.08) */
+  max-inline-size: min(62ch, 100%);
 }
 
 /*
