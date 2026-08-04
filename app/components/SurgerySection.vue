@@ -1,26 +1,32 @@
 <!--
-  Блок [04] «Операции» - ВАРИАНТ А: «хирург дорисовывает разметку».
+  Блок [04] «Операции» - подача «хирург дорисовывает разметку».
+  Вариант А, выбран Марком 04.08.
 
-  Подача: профиль стоит на месте, пока справа прокручивается текст, и разметка
-  на нём достраивается по ходу чтения. Три прохода по одному носу -
+  Профиль стоит на месте, пока справа прокручивается текст, и разметка на нём
+  достраивается по ходу чтения. Три прохода по одной голове:
   форма → дыхание → вместе. Последний и есть смысл объединения двух операций
   в один блок: одна точка, две задачи, одно вмешательство.
 
-  Почему так, а не списком: фотографий сюда поставить нельзя ни одной (см.
-  NoseScheme.vue), а два текста подряд про две операции читаются как статья и
-  пролистываются. Здесь же главная метафора сайта - разметка перед операцией -
-  становится не оформлением, а объяснением.
+  Цвет разделяет операции: золото - форма, синий - дыхание (см. NoseScheme).
 
-  ⚠️ Состояние переключается наблюдателем за серединой экрана, а НЕ по событию
-  прокрутки: замерять раскладку на каждом кадре - прямой путь к подёргиванию
-  на iPhone (design-system.md, раздел 6).
+  ⚠️ ТЕКСТА МАЛО НАМЕРЕННО (правка Марка 04.08: «очень сухо, много текста»).
+  Правила этого блока:
+  · что операция трогает - подписано на рисунке, в тексте не повторяется;
+  · у каждого прохода не список фактов, а ДВЕ короткие заметки в строку;
+  · выгода объединения - две плитки антиквой, а не строчка в абзаце;
+  · риски - списком по операциям, а не двумя абзацами: пять строк подряд
+    человек пролистывает, и требование показать риски выполняется только
+    на бумаге. Общая оговорка внизу одна, а не по разу в каждом абзаце.
 
-  ⚠️ На телефоне прилипания нет. Рисунок стоит в начале каждого прохода своим
-  экземпляром: так на маленьком экране он не отъедает половину высоты и не
-  накрывает текст. Какой экземпляр показать - решает медиазапрос.
+  ⚠️ FactList здесь намеренно НЕ используется: этим приёмом набран блок
+  «О докторе» прямо выше, и повтор соседа читается как шаблон.
 
-  ⚠️ Риски обеих операций стоят открытым текстом внизу блока, а не за
-  переключателем: ST-21 п. 7.1.3 требует показывать выгоды и риски наравне.
+  ⚠️ Состояние переключается наблюдателем за серединой экрана, а НЕ по
+  событию прокрутки: замерять раскладку на каждом кадре - прямой путь
+  к подёргиванию на iPhone (design-system.md, раздел 6).
+
+  ⚠️ На телефоне прилипания нет. Рисунок стоит в начале каждого прохода
+  своим экземпляром: так он не отъедает половину высоты и не накрывает текст.
 -->
 <script setup lang="ts">
 const { m } = useLocale()
@@ -87,7 +93,7 @@ onBeforeUnmount(() => watcher?.disconnect())
           :key="stage.state"
           :ref="(el) => setStageRef(el, i)"
           class="sg__stage"
-          :class="{ 'is-active': active === i }"
+          :class="[`sg__stage--${stage.state}`, { 'is-active': active === i }]"
         >
           <!-- На телефоне прилипания нет: у каждого прохода свой рисунок -->
           <NoseScheme class="sg__scheme-m" :state="stage.state" :labels="m.surgery.scheme" />
@@ -98,24 +104,38 @@ onBeforeUnmount(() => watcher?.disconnect())
 
           <p class="sg__stage-lead">{{ stage.lead }}</p>
 
-          <FactList v-if="'facts' in stage" :items="stage.facts" />
-
-          <ul v-if="'marks' in stage" class="sg__marks">
-            <li v-for="mark in stage.marks" :key="mark" class="mono sg__mark">{{ mark }}</li>
+          <!-- Две короткие заметки в строку: пометка сверху, факт под ней -->
+          <ul v-if="'facts' in stage" class="sg__notes">
+            <li v-for="fact in stage.facts" :key="fact.mark" class="sg__note">
+              <span class="mono sg__note-mark">{{ fact.mark }}</span>
+              <span class="sg__note-text">{{ fact.text }}</span>
+            </li>
           </ul>
+
+          <!-- Выгода объединения - двумя плитками, а не строчкой в абзаце -->
+          <ul v-if="'marks' in stage" class="sg__tiles">
+            <li v-for="mark in stage.marks" :key="mark" class="sg__tile">{{ mark }}</li>
+          </ul>
+          <p v-if="'note' in stage" class="sg__stage-note">{{ stage.note }}</p>
         </article>
       </div>
     </div>
 
-    <!-- Риски: обе операции, открытым текстом, тем же кеглем, что основной -->
+    <!-- Риски: по операциям, списком, тем же кеглем, что основной текст -->
     <div class="sg__risks">
       <p class="mono sg__risks-label">{{ m.surgery.risksLabel }}</p>
+
       <div class="sg__risks-cols">
-        <div v-for="part in m.surgery.parts" :key="part.state" class="sg__risk">
-          <p class="mono sg__risk-title">{{ part.risksLabel }}</p>
-          <p class="sg__risk-text">{{ part.risks }}</p>
-        </div>
+        <section v-for="risk in m.surgery.risks" :key="risk.name" class="sg__risk">
+          <h4 class="sg__risk-name">{{ risk.name }}</h4>
+          <p class="sg__risk-note">{{ risk.note }}</p>
+          <ul class="sg__risk-list">
+            <li v-for="item in risk.items" :key="item" class="sg__risk-item">{{ item }}</li>
+          </ul>
+        </section>
       </div>
+
+      <p class="sg__risks-note">{{ m.surgery.risksNote }}</p>
     </div>
 
     <div class="sg__action">
@@ -128,13 +148,13 @@ onBeforeUnmount(() => watcher?.disconnect())
 .sg__lead {
   font-size: var(--fs-lead);
   line-height: 1.5;
-  max-inline-size: min(56ch, 100%);
+  max-inline-size: min(52ch, 100%);
 }
 
 .sg__grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(2rem, 4vw, 4rem);
 }
 
 /* Колонка тянется на всю высоту проходов - только тогда работает прилипание */
@@ -145,7 +165,9 @@ onBeforeUnmount(() => watcher?.disconnect())
 .sg__sticky {
   position: sticky;
   /* Под шапкой, примерно на трети экрана: рисунок оказывается напротив текста */
-  inset-block-start: calc(var(--header-h-scrolled) + 5rem);
+  inset-block-start: calc(var(--header-h-scrolled) + 4rem);
+  /* Подписи выходят за кадр рисунка вправо - им нужно место в коридоре */
+  --ns-size: 19rem;
 }
 
 .sg__stages {
@@ -158,10 +180,10 @@ onBeforeUnmount(() => watcher?.disconnect())
   min-inline-size: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--s-4);
+  gap: var(--s-3);
   /* Запас по высоте: у каждого прохода должно быть своё место на экране,
      иначе разметка на профиле переключается быстрее, чем читается текст */
-  min-block-size: 58vh;
+  min-block-size: 54vh;
   padding-block-end: var(--s-16);
   /* Проход, который сейчас не читают, приглушён - но остаётся читаемым:
      прятать текст нельзя, это медицинские сведения */
@@ -196,24 +218,27 @@ onBeforeUnmount(() => watcher?.disconnect())
 .sg__stage-lead {
   font-size: var(--fs-body);
   line-height: 1.65;
-  max-inline-size: min(54ch, 100%);
-  margin-block-start: var(--s-2);
+  max-inline-size: min(46ch, 100%);
+  margin-block-start: var(--s-1);
 }
 
-/* Две короткие пометки третьего прохода. Не список фактов - там нечего
-   расписывать, это ровно два слова, и им хватает пунктирной черты сверху */
-.sg__marks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-8);
-  margin: var(--s-2) 0 0;
+/* --- Две короткие заметки --- */
+
+.sg__notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-6);
+  margin: var(--s-3) 0 0;
   padding: 0;
   list-style: none;
 }
 
-.sg__mark {
-  padding-block-start: var(--s-4);
-  color: var(--ink);
+.sg__note {
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  padding-block-start: var(--s-3);
   background-image: repeating-linear-gradient(
     to right,
     var(--rule) 0 var(--dash-on),
@@ -222,6 +247,66 @@ onBeforeUnmount(() => watcher?.disconnect())
   background-size: 100% var(--rule-w);
   background-repeat: no-repeat;
   background-position: 0 0;
+}
+
+.sg__note-mark {
+  color: var(--ink-soft);
+}
+
+.sg__note-text {
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+
+/* --- Плитки «один наркоз / одно восстановление» --- */
+
+.sg__tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4);
+  margin: var(--s-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+  Плитка - не кнопка и не карточка с тенью: пунктирная рамка того же пера,
+  что вся разметка, и фраза антиквой. Рамка собрана градиентами, а не
+  border: dashed - у браузерной штриховки шаг зависит от длины стороны
+  и на углах получается мусор (design-system.md, раздел 4).
+*/
+.sg__tile {
+  min-inline-size: 0;
+  padding: var(--s-5) var(--s-4);
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  line-height: 1.15;
+  color: var(--ink);
+  background-image:
+    repeating-linear-gradient(to right, var(--rule) 0 var(--dash-on), transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))),
+    repeating-linear-gradient(to right, var(--rule) 0 var(--dash-on), transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))),
+    repeating-linear-gradient(to bottom, var(--rule) 0 var(--dash-on), transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))),
+    repeating-linear-gradient(to bottom, var(--rule) 0 var(--dash-on), transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off)));
+  background-size:
+    100% var(--rule-w),
+    100% var(--rule-w),
+    var(--rule-w) 100%,
+    var(--rule-w) 100%;
+  background-repeat: no-repeat;
+  background-position:
+    0 0,
+    0 100%,
+    0 0,
+    100% 0;
+}
+
+.sg__stage-note {
+  font-size: var(--fs-body);
+  color: var(--ink-soft);
+  max-inline-size: min(46ch, 100%);
+  margin-block-start: var(--s-3);
 }
 
 /* --- Риски --- */
@@ -243,9 +328,10 @@ onBeforeUnmount(() => watcher?.disconnect())
 }
 
 .sg__risk {
+  min-inline-size: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--s-3);
+  gap: var(--s-2);
   padding-block-start: var(--s-4);
   background-image: repeating-linear-gradient(
     to right,
@@ -257,15 +343,55 @@ onBeforeUnmount(() => watcher?.disconnect())
   background-position: 0 0;
 }
 
-.sg__risk-title {
-  margin: 0;
+.sg__risk-name {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 1.5rem;
+  line-height: 1.2;
   color: var(--ink);
 }
 
-/* Тот же кегль, что основной текст - требование регулятора, не вопрос вкуса */
-.sg__risk-text {
+.sg__risk-note {
   font-size: var(--fs-body);
   color: var(--ink-soft);
+}
+
+.sg__risk-list {
+  margin: var(--s-2) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+/*
+  ⚠️ Кегль рисков - тот же, что у основного текста. Это требование
+  регулятора (ST-21 п. 7.1.5 и 9.6), а не вопрос вкуса: увести их
+  в мелкий серый нельзя.
+*/
+.sg__risk-item {
+  font-size: var(--fs-body);
+  line-height: 1.4;
+  padding-inline-start: var(--s-6);
+  position: relative;
+}
+
+/* Вместо галочки - короткий штрих того же пера, что разметка */
+.sg__risk-item::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0.72em;
+  inline-size: var(--s-4);
+  block-size: var(--rule-w);
+  background: var(--rule);
+}
+
+.sg__risks-note {
+  font-size: var(--fs-body);
+  color: var(--ink-soft);
+  max-inline-size: min(70ch, 100%);
 }
 
 @media (max-width: 900px) {
@@ -299,6 +425,18 @@ onBeforeUnmount(() => watcher?.disconnect())
   /* Кнопка во всю ширину: на телефоне она главное действие экрана */
   .sg__action :deep(.action) {
     inline-size: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  /* Две колонки заметок и плиток на узком экране не помещаются */
+  .sg__notes,
+  .sg__tiles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sg__tile {
+    text-align: start;
   }
 }
 </style>

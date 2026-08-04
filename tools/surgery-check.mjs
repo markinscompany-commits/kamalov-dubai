@@ -27,7 +27,7 @@ for (const vp of [
   const over = await page.evaluate(() => {
     const docW = document.documentElement.clientWidth
     const bad = []
-    for (const el of document.querySelectorAll('#surgery *, #surgery-b *')) {
+    for (const el of document.querySelectorAll('#surgery *')) {
       const r = el.getBoundingClientRect()
       if (r.width === 0) continue
       if (r.right > docW + 1 || r.left < -1) {
@@ -39,7 +39,7 @@ for (const vp of [
 
   // Высоты блоков
   const sizes = await page.evaluate(() =>
-    ['surgery', 'surgery-b'].map((id) => {
+    ['surgery'].map((id) => {
       const el = document.getElementById(id)
       return { id, height: el ? Math.round(el.getBoundingClientRect().height) : null }
     }),

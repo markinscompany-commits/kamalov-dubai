@@ -1,33 +1,38 @@
 <!--
   Профиль с разметкой хирурга - главный рисунок блока операций.
 
-  Зачем именно рисунок: фотографий в этот блок поставить нельзя ни одной -
+  Основа - силуэт головы из набора, присланного Марком (см. заголовок
+  `utils/profileSilhouette.ts`: откуда взят, что с ним сделано и почему это
+  проходит по правилам). Фотографий в этот блок поставить нельзя ни одной:
   снимки пациентов запрещены, операционные кадры запрещены, стоковые лица мы
-  не ставим сами. Разметка перед операцией - единственный образ хирургии,
-  который не нарушает ни одного правила: нет инструментов, нет вмешательства,
-  нет сравнения внешности и нет обещания результата. Профиль обобщённый -
-  это не чей-то нос и не результат операции.
+  не ставим сами. Силуэт - не человек и не результат, поверх него идёт
+  разметка, которую хирург рисует перед операцией.
 
-  Три состояния - три прохода по одному и тому же профилю:
-  · form   - оси лица, спинка, кончик (задача формы);
-  · breath - линия перегородки и путь воздуха (задача дыхания);
-  · both   - обе разметки сразу, в точке их пересечения загорается узел.
+  ЦВЕТ РАЗЛИЧАЕТ ОПЕРАЦИИ (правка Марка 04.08):
+  · золото - задача формы, ринопластика (ось спинки);
+  · синий  - задача дыхания, септопластика (линия перегородки, путь воздуха);
+  · серая разметка - общие оси лица, они ничьи.
+  Поэтому в состоянии «вместе», где обе разметки лежат на одном профиле,
+  сразу видно, что это ДВЕ операции, а не одна каша из линий.
 
-  Линии не проявляются, а ПРОЧЕРЧИВАЮТСЯ, как вся разметка сайта. Сделано
-  масками: у каждой группы линий своя маска-шторка, она раскрывается по
-  направлению линии (горизонталь - слева направо, вертикаль - сверху вниз,
-  путь воздуха - справа налево, снаружи внутрь). Когда состояние сменилось,
-  шторка закрывается обратно - линии убираются тем же движением, каким пришли.
+  ⚠️ Каждая цветная линия нарисована ДВАЖДЫ: внутри тёмного силуэта светлым
+  оттенком, снаружи на бумаге - тёмным. Одним цветом нельзя: золото на
+  чернильном читается (5.47:1), а на бумаге даёт 2.05:1 и пропадает. Тот же
+  приём, что у разметки первого экрана, - там она тоже двухслойная.
 
-  ⚠️ Почему шторками, а не через stroke-dashoffset: штрих у нас 4/6, и любое
-  растягивание пути растягивает вместе с ним шаг пунктира - линия перестаёт
-  быть частью общей системы. Шторка просто открывает готовую линию.
+  Линии не проявляются, а ПРОЧЕРЧИВАЮТСЯ: у каждой группы своя шторка,
+  она раскрывается по направлению линии. Сменилось состояние - шторка
+  закрывается обратно, линия убирается тем же движением, каким пришла.
+  Шторками, а не через stroke-dashoffset: штрих у нас 4/6, и растягивание
+  пути растянуло бы вместе с ним шаг пунктира.
 
-  ⚠️ Подписи - обычный текст поверх рисунка, а НЕ текст внутри SVG. Текст
+  ⚠️ Подписи - обычный текст поверх рисунка, а не текст внутри SVG: текст
   внутри SVG сжимается вместе с картинкой, и на телефоне от него остаются
-  нечитаемые семь пикселей (грабли из block-manifest.md, п. 5).
+  нечитаемые семь пикселей (block-manifest.md, п. 5).
 -->
 <script setup lang="ts">
+import { PROFILE_PATH, PROFILE_TRANSFORM, PROFILE_VIEWBOX } from '~/utils/profileSilhouette'
+
 interface SchemeLabels {
   alt: string
   axes: string
@@ -35,6 +40,8 @@ interface SchemeLabels {
   tip: string
   septum: string
   airway: string
+  form: string
+  breath: string
   both: string
 }
 
@@ -56,107 +63,109 @@ const live = useRedrawOnReturn(root, 0.2)
 const formOn = computed(() => live.value && props.state !== 'breath')
 const breathOn = computed(() => live.value && props.state !== 'form')
 const bothOn = computed(() => live.value && props.state === 'both')
+/* В «вместе» подписи отдельных линий уступают место названиям двух задач */
+const soloOn = computed(() => live.value && !bothOn.value)
 </script>
 
 <template>
   <figure ref="root" class="ns" :class="[`ns--${state}`, { 'is-live': live }]">
     <div class="ns__plate">
-      <!-- Кадр обрезан по содержимому: в исходной системе координат вокруг
-           профиля оставалось столько пустоты, что сам рисунок занимал треть
-           отведённого места и терялся на странице -->
-      <svg class="ns__svg" viewBox="30 4 156 216" role="img" :aria-label="labels.alt">
+      <svg class="ns__svg" :viewBox="PROFILE_VIEWBOX" role="img" :aria-label="labels.alt">
         <defs>
-          <!-- Шторки. Каждая раскрывается по направлению своей линии, задержки
-               разные - линии ложатся одна за другой, а не хором -->
-          <clipPath :id="`fv-${uid}`">
-            <rect class="ns__wipe ns__wipe--v" :class="{ 'is-on': formOn }" x="0" y="0" width="200" height="250" />
+          <!-- Силуэт как область: внутри него цвета светлые, снаружи тёмные -->
+          <clipPath :id="`in-${uid}`">
+            <path :d="PROFILE_PATH" :transform="PROFILE_TRANSFORM" />
           </clipPath>
-          <clipPath :id="`fh-${uid}`">
-            <rect class="ns__wipe ns__wipe--h ns__wipe--d1" :class="{ 'is-on': formOn }" x="0" y="0" width="200" height="250" />
+          <mask :id="`out-${uid}`" maskUnits="userSpaceOnUse" x="-30" y="-30" width="220" height="220">
+            <rect x="-30" y="-30" width="220" height="220" fill="#fff" />
+            <path :d="PROFILE_PATH" :transform="PROFILE_TRANSFORM" fill="#000" />
+          </mask>
+
+          <!-- Шторки. Раскрываются по направлению своей линии, задержки разные:
+               линии ложатся одна за другой, а не хором -->
+          <clipPath :id="`wv-${uid}`">
+            <rect class="ns__wipe ns__wipe--v" :class="{ 'is-on': formOn }" x="-30" y="-30" width="220" height="220" />
           </clipPath>
-          <clipPath :id="`fd-${uid}`">
-            <rect class="ns__wipe ns__wipe--h ns__wipe--d2" :class="{ 'is-on': formOn }" x="0" y="0" width="200" height="250" />
+          <clipPath :id="`wh-${uid}`">
+            <rect class="ns__wipe ns__wipe--h ns__wipe--d1" :class="{ 'is-on': formOn }" x="-30" y="-30" width="220" height="220" />
           </clipPath>
-          <clipPath :id="`bv-${uid}`">
-            <rect class="ns__wipe ns__wipe--v" :class="{ 'is-on': breathOn }" x="0" y="0" width="200" height="250" />
+          <clipPath :id="`wd-${uid}`">
+            <rect class="ns__wipe ns__wipe--h ns__wipe--d2" :class="{ 'is-on': formOn }" x="-30" y="-30" width="220" height="220" />
           </clipPath>
-          <clipPath :id="`bh-${uid}`">
-            <rect class="ns__wipe ns__wipe--h ns__wipe--d1" :class="{ 'is-on': breathOn }" x="0" y="0" width="200" height="250" />
+          <clipPath :id="`ws-${uid}`">
+            <rect class="ns__wipe ns__wipe--v" :class="{ 'is-on': breathOn }" x="-30" y="-30" width="220" height="220" />
           </clipPath>
-          <clipPath :id="`bf-${uid}`">
-            <rect class="ns__wipe ns__wipe--rev ns__wipe--d2" :class="{ 'is-on': breathOn }" x="0" y="0" width="200" height="250" />
+          <clipPath :id="`wf-${uid}`">
+            <rect class="ns__wipe ns__wipe--rev ns__wipe--d2" :class="{ 'is-on': breathOn }" x="-30" y="-30" width="220" height="220" />
           </clipPath>
         </defs>
 
-        <!-- Линия профиля: лоб, переносица, спинка носа, кончик, губа, подбородок.
-             Рисуется пером - сплошной штрих, поэтому его можно прочертить
-             обычным сдвигом штриховки по длине пути -->
-        <path
-          class="ns__face"
-          pathLength="1"
-          d="M62 14
-             C 84 36, 94 60, 92 84
-             C 91 93, 99 99, 112 109
-             C 123 118, 131 126, 129 133
-             C 127 141, 116 144, 103 144
-             C 97 145, 95 150, 96 158
-             C 97 167, 90 176, 83 182
-             C 74 190, 66 200, 64 214"
-        />
+        <!-- Силуэт -->
+        <path class="ns__head" :d="PROFILE_PATH" :transform="PROFILE_TRANSFORM" />
 
-        <!-- ЗАДАЧА ФОРМЫ -->
-        <g class="ns__group">
-          <!-- Вертикаль через переносицу -->
-          <path class="ns__rule" :clip-path="`url(#fv-${uid})`" d="M92 40 L92 200" />
-          <!-- Горизонталь на уровне кончика -->
-          <path class="ns__rule" :clip-path="`url(#fh-${uid})`" d="M40 132 L176 132" />
-          <!--
-            Ось спинки носа: идёт от переносицы через кончик и выходит за него
-            construction-лучом - иначе линия прячется под самой линией профиля.
-
-            ⚠️ Линия намеренно СОВПАДАЕТ с профилем, а не спрямляет его. Прямая,
-            проведённая рядом с изогнутым носом, читается как «вот каким он
-            станет» - то есть как обещание результата, а это прямой запрет
-            (Приложение 2 ST-21, п. 3 и 7). Здесь это ось измерения, не эскиз.
-          -->
-          <path class="ns__rule" :clip-path="`url(#fd-${uid})`" d="M92 84 L146 152" />
+        <!-- Общие оси: ничьи, поэтому обычной серой разметкой и одним слоем -
+             она читается и на чернильном силуэте, и на бумаге -->
+        <g class="ns__axes">
+          <!-- Вертикаль от переносицы -->
+          <path class="ns__rule" :clip-path="`url(#wv-${uid})`" d="M101.5 22 L101.5 126" />
+          <!-- Горизонталь на уровне кончика носа -->
+          <path class="ns__rule" :clip-path="`url(#wh-${uid})`" d="M56 74 L124 74" />
         </g>
 
-        <!-- ЗАДАЧА ДЫХАНИЯ -->
-        <g class="ns__group">
-          <!-- Ось перегородки -->
-          <path class="ns__rule" :clip-path="`url(#bv-${uid})`" d="M104 96 L104 196" />
-          <!-- Горизонталь на уровне основания носа -->
-          <path class="ns__rule" :clip-path="`url(#bh-${uid})`" d="M44 148 L176 148" />
-          <!-- Путь воздуха: единственная тёплая линия на рисунке. Чертится
-               справа налево - снаружи внутрь, по ходу вдоха -->
-          <path
-            class="ns__flow"
-            :clip-path="`url(#bf-${uid})`"
-            d="M172 104 C 142 110, 118 122, 108 140 C 102 152, 100 168, 100 190"
-          />
+        <!-- ЛИНИИ ЗАДАЧ. Каждая нарисована дважды: на бумаге и на силуэте -->
+        <g :mask="`url(#out-${uid})`">
+          <g :clip-path="`url(#wd-${uid})`">
+            <path class="ns__gold ns__gold--paper" d="M97 54.3 L121 95.2" />
+          </g>
+          <g :clip-path="`url(#ws-${uid})`">
+            <path class="ns__blue ns__blue--paper" d="M105 64 L105 122" />
+          </g>
+          <g :clip-path="`url(#wf-${uid})`">
+            <path
+              class="ns__blue ns__blue--paper ns__flow"
+              d="M130 70 C 118 73, 110 76, 106 80 C 101 85, 96 95, 95 112"
+            />
+          </g>
+        </g>
+        <g :clip-path="`url(#in-${uid})`">
+          <g :clip-path="`url(#wd-${uid})`">
+            <path class="ns__gold ns__gold--head" d="M97 54.3 L121 95.2" />
+          </g>
+          <g :clip-path="`url(#ws-${uid})`">
+            <path class="ns__blue ns__blue--head" d="M105 64 L105 122" />
+          </g>
+          <g :clip-path="`url(#wf-${uid})`">
+            <path
+              class="ns__blue ns__blue--head ns__flow"
+              d="M130 70 C 118 73, 110 76, 106 80 C 101 85, 96 95, 95 112"
+            />
+          </g>
         </g>
 
-        <!-- Узлы. В каждом состоянии горит ровно один: свой у формы, свой
-             у дыхания и общий - на пересечении линий - когда показаны обе -->
-        <g class="ns__node" :class="{ 'is-on': state === 'form' && live }">
-          <path d="M131 124 L131 140 M123 132 L139 132" />
+        <!-- Узлы. В каждом состоянии горит ровно один -->
+        <g class="ns__node ns__node--gold" :class="{ 'is-on': state === 'form' && live }">
+          <path d="M108.6 70 L108.6 78 M104.6 74 L112.6 74" />
         </g>
-        <g class="ns__node" :class="{ 'is-on': state === 'breath' && live }">
-          <path d="M104 140 L104 156 M96 148 L112 148" />
+        <g class="ns__node ns__node--blue" :class="{ 'is-on': state === 'breath' && live }">
+          <path d="M105 76 L105 84 M101 80 L109 80" />
         </g>
-        <!-- Пересечение линии спинки и оси перегородки: одна точка на две задачи -->
+        <!-- «Вместе»: узел стоит на пересечении оси спинки и линии перегородки -
+             одна точка на две задачи. Выноска ведёт к подписи на поле -->
         <g class="ns__node ns__node--both" :class="{ 'is-on': bothOn }">
-          <path d="M104 92 L104 108 M96 100 L112 100" />
+          <path class="ns__leader" d="M106.5 66.5 L124 51" />
+          <path d="M105 64 L105 72 M101 68 L109 68" />
         </g>
       </svg>
 
       <!-- Пометки на полях рисунка -->
-      <span class="mono ns__tag ns__tag--axes" :class="{ 'is-on': formOn && !bothOn }">{{ labels.axes }}</span>
-      <span class="mono ns__tag ns__tag--dorsum" :class="{ 'is-on': formOn && !bothOn }">{{ labels.dorsum }}</span>
-      <span class="mono ns__tag ns__tag--tip" :class="{ 'is-on': formOn && !bothOn }">{{ labels.tip }}</span>
-      <span class="mono ns__tag ns__tag--septum" :class="{ 'is-on': breathOn && !bothOn }">{{ labels.septum }}</span>
-      <span class="mono ns__tag ns__tag--airway" :class="{ 'is-on': breathOn && !bothOn }">{{ labels.airway }}</span>
+      <span class="mono ns__tag ns__tag--axes" :class="{ 'is-on': formOn && soloOn }">{{ labels.axes }}</span>
+      <span class="mono ns__tag ns__tag--tip" :class="{ 'is-on': formOn && soloOn }">{{ labels.tip }}</span>
+      <span class="mono ns__tag ns__tag--dorsum" :class="{ 'is-on': formOn && soloOn }">{{ labels.dorsum }}</span>
+      <span class="mono ns__tag ns__tag--airway" :class="{ 'is-on': breathOn && soloOn }">{{ labels.airway }}</span>
+      <span class="mono ns__tag ns__tag--septum" :class="{ 'is-on': breathOn && soloOn }">{{ labels.septum }}</span>
+      <!-- В «вместе» подписаны не линии, а задачи: сразу видно, что операций две -->
+      <span class="mono ns__tag ns__tag--form" :class="{ 'is-on': bothOn }">{{ labels.form }}</span>
+      <span class="mono ns__tag ns__tag--breath" :class="{ 'is-on': bothOn }">{{ labels.breath }}</span>
       <span class="mono ns__tag ns__tag--both" :class="{ 'is-on': bothOn }">{{ labels.both }}</span>
     </div>
   </figure>
@@ -172,55 +181,76 @@ const bothOn = computed(() => live.value && props.state === 'both')
   inline-size: 100%;
   max-inline-size: var(--ns-size, 21rem);
   /* Пропорция кадра рисунка - та же, что в viewBox */
-  aspect-ratio: 156 / 216;
+  aspect-ratio: 114.59 / 145.42;
 }
 
 .ns__svg {
   display: block;
   inline-size: 100%;
   block-size: 100%;
+  /* Разметка и подписи выходят за силуэт вправо - обрезать нечем */
   overflow: visible;
 }
 
-/* --- Профиль --- */
+/* --- Силуэт --- */
 
-.ns__face {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  /* pathLength=1 приводит длину пути к единице, поэтому штрих и сдвиг
-     задаются долями, а не пикселями - и не зависят от формы линии */
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 1400ms var(--ease-draw);
+.ns__head {
+  fill: var(--ink);
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
 }
 
-.ns.is-live .ns__face {
-  stroke-dashoffset: 0;
+.ns.is-live .ns__head {
+  opacity: 1;
 }
 
 /* --- Разметка --- */
 
-.ns__rule {
+.ns__rule,
+.ns__gold,
+.ns__blue {
   fill: none;
-  stroke: var(--rule);
   stroke-width: var(--rule-w);
   /* Тот же шаг пунктира, что у разметки блоков: 4 через 6 */
   stroke-dasharray: var(--dash-on) var(--dash-off);
-  /* Штрих и толщина считаются в экранных пикселях, а не в системе рисунка.
-     Без этого рисунок на десктопе увеличен в 1.7 раза - и вместе с ним
-     растянут шаг пунктира, который на всём сайте одинаковый */
+  /* Штрих и толщина считаются в экранных пикселях, а не в системе рисунка:
+     кадр 114 единиц растянут до 330 px, и без этого шаг пунктира разъехался бы
+     с разметкой всей остальной страницы */
   vector-effect: non-scaling-stroke;
 }
 
+.ns__rule {
+  stroke: var(--rule);
+}
+
+/* Линии задач вдвое толще общих осей: по ним читается, где чья операция.
+   Тоньше нельзя - на прокрутке тонкий цветной пунктир сливается с фоном
+   (правка Марка 04.08) */
+.ns__gold,
+.ns__blue {
+  stroke-width: 2px;
+}
+
+.ns__gold--paper {
+  stroke: var(--gold-deep); /* 5.55:1 на бумаге */
+}
+
+.ns__gold--head {
+  stroke: var(--gold); /* 5.47:1 на чернильном */
+}
+
+.ns__blue--paper {
+  stroke: var(--blue); /* 6.75:1 на бумаге */
+}
+
+.ns__blue--head {
+  stroke: var(--blue-light); /* 5.76:1 на чернильном */
+}
+
+/* У пути воздуха шаг крупнее: это движение, а не измерение */
 .ns__flow {
-  fill: none;
-  stroke: var(--gold);
-  stroke-width: 1.6;
+  stroke-dasharray: 6 8;
   stroke-linecap: round;
-  stroke-dasharray: 5 7;
 }
 
 /* --- Шторки, которыми линии прочерчиваются --- */
@@ -244,12 +274,12 @@ const bothOn = computed(() => live.value && props.state === 'both')
   transform-origin: 0 0;
 }
 
-/* Путь воздуха идёт снаружи внутрь, поэтому его шторка открывается справа.
-   ⚠️ Начало отсчёта у transform-box: view-box - левый верхний угол КАДРА
-   (30 4), а не нуль системы координат. Поэтому правый край это 156px -
-   ширина кадра, а не 200px */
+/* Путь воздуха идёт снаружи внутрь, поэтому его шторка открывается справа -
+   от начала самой линии (x = 130), а не от края кадра: иначе треть движения
+   уходит на пустое место.
+   ⚠️ Отсчёт при transform-box: view-box идёт от левого верхнего угла кадра */
 .ns__wipe--rev {
-  transform-origin: 156px 0;
+  transform-origin: 130px 0;
 }
 
 .ns__wipe--d1 {
@@ -268,9 +298,27 @@ const bothOn = computed(() => live.value && props.state === 'both')
 
 .ns__node path {
   fill: none;
-  stroke: var(--rule);
-  stroke-width: var(--rule-w);
+  stroke-width: 1.4px;
   vector-effect: non-scaling-stroke;
+}
+
+.ns__node--gold path {
+  stroke: var(--gold-deep);
+}
+
+.ns__node--blue path {
+  stroke: var(--blue);
+}
+
+.ns__node--both path {
+  stroke: var(--gold-deep);
+}
+
+/* Выноска от узла к подписи - тоньше самого узла и тем же пунктиром,
+   что вся разметка сайта */
+.ns__node--both .ns__leader {
+  stroke-width: var(--rule-w);
+  stroke-dasharray: var(--dash-on) var(--dash-off);
 }
 
 .ns__node {
@@ -282,13 +330,6 @@ const bothOn = computed(() => live.value && props.state === 'both')
   opacity: 1;
   /* Узел появляется после того, как линии сошлись, а не вместе с ними */
   transition-delay: 620ms;
-}
-
-/* Общий узел заметнее: это смысловая точка блока */
-.ns__node--both path {
-  stroke: var(--gold-deep);
-  stroke-width: 1.4;
-  vector-effect: non-scaling-stroke;
 }
 
 /* --- Пометки на полях --- */
@@ -309,41 +350,57 @@ const bothOn = computed(() => live.value && props.state === 'both')
 }
 
 /*
-  Координаты пересчитаны из системы рисунка (кадр 30 4 156 216):
-  доля по ширине = (x - 30) / 1.56, доля по высоте = (y - 4) / 2.16.
+  Координаты пересчитаны из системы рисунка (кадр 114.59 × 145.42):
+  доля по ширине = x / 1.1459, доля по высоте = y / 1.4542.
 
-  Подписи стоят СПРАВА от своих линий: слева от рисунка идёт колонка
-  с номером раздела, места там нет. Часть подписей выходит за кадр рисунка -
-  так и задумано, справа от него пустое поле.
+  Подписи стоят СПРАВА от своих линий и частью выходят за кадр рисунка -
+  там пустое поле до колонки с текстом. Слева ставить нельзя: там колонка
+  с номером раздела.
 */
 .ns__tag--axes {
-  inset-inline-start: 42%;
-  inset-block-start: 9%;
-}
-
-.ns__tag--dorsum {
-  inset-inline-start: 77%;
-  inset-block-start: 68%;
+  inset-inline-start: 91%;
+  inset-block-start: 11%;
 }
 
 .ns__tag--tip {
-  inset-inline-start: 95%;
-  inset-block-start: 55%;
+  inset-inline-start: 110%;
+  inset-block-start: 47%;
+}
+
+.ns__tag--dorsum {
+  inset-inline-start: 104%;
+  inset-block-start: 58%;
+  color: var(--gold-deep);
 }
 
 .ns__tag--airway {
-  inset-inline-start: 94%;
-  inset-block-start: 39%;
+  inset-inline-start: 105%;
+  inset-block-start: 42%;
+  color: var(--blue);
 }
 
 .ns__tag--septum {
-  inset-inline-start: 51%;
-  inset-block-start: 82%;
+  inset-inline-start: 94%;
+  inset-block-start: 80%;
+  color: var(--blue);
+}
+
+/* «Вместе»: две задачи подписаны своими цветами, узел - выноской */
+.ns__tag--form {
+  inset-inline-start: 104%;
+  inset-block-start: 59%;
+  color: var(--gold-deep);
+}
+
+.ns__tag--breath {
+  inset-inline-start: 105%;
+  inset-block-start: 41%;
+  color: var(--blue);
 }
 
 .ns__tag--both {
-  inset-inline-start: 53%;
-  inset-block-start: 38%;
+  inset-inline-start: 110%;
+  inset-block-start: 32%;
   color: var(--gold-deep);
 }
 
