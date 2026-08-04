@@ -165,9 +165,13 @@ const scaleLen = KM * 5
         <text class="map__t map__t--name" :x="H.x + 34" :y="H.y - 2">{{ labels.hospital }}</text>
         <text class="map__t map__t--soft" :x="H.x + 34" :y="H.y + 20">{{ labels.area }}</text>
       </g>
+      <!-- ⚠️ Подпись стоит ПОД маркером и заметно левее его: строки, привязанные
+           к правому краю, на реальных телефонах уже дважды срезались кромкой
+           (видимая ширина окна карты на устройствах гуляет). Центр на 660
+           выдерживает окно вплоть до ~740 единиц -->
       <g class="map__label map__label--narrow" aria-hidden="true">
-        <text class="map__t map__t--name" :x="H.x - 40" :y="H.y - 2" text-anchor="end">{{ nameParts[0] }}</text>
-        <text class="map__t map__t--name" :x="H.x - 40" :y="H.y + 26" text-anchor="end">{{ nameParts[1] }}</text>
+        <text class="map__t map__t--name" :x="660" :y="H.y + 66" text-anchor="middle">{{ nameParts[0] }}</text>
+        <text class="map__t map__t--name" :x="660" :y="H.y + 94" text-anchor="middle">{{ nameParts[1] }}</text>
       </g>
     </svg>
   </div>
@@ -407,9 +411,11 @@ const scaleLen = KM * 5
   масштабе они нечитаемы и налезают на соседей; Бурдж остаётся контуром.
 */
 @media (max-width: 700px) {
-  /* Окно уже, правая часть кадра (пустой Al Quoz) обрезается - важное крупнее */
+  /* Окно уже, правая часть кадра (пустой Al Quoz) обрезается - важное крупнее.
+     830, а не 880: на реальном телефоне Марка окно оказалось уже расчётного
+     и кромка срезала маркер - взят запас */
   .map {
-    aspect-ratio: calc(880 / 576);
+    aspect-ratio: calc(830 / 576);
   }
 
   .map__accent {
