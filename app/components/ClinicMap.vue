@@ -335,74 +335,72 @@ const scaleLen = KM * 5
   opacity: 0;
 }
 
-/* --- Появление: карта собирается слоями, как рисунок --- */
+.map__node {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0.72);
+}
 
-.map--live .map__water-wrap {
-  animation: map-in var(--dur-slow) var(--ease-out) both;
+/*
+  --- Появление: карта собирается слоями, как рисунок ---
+
+  ⚠️ НЕ анимациями, а переходами к состояниям, прописанным в каскаде.
+  На animation с fill both уже обожглись: видимость держалась только на
+  «замершем кадре» анимации, и iOS Safari его сбрасывал - подпись госпиталя
+  появлялась и пропадала (правка Марка 04.08). У transition конечное состояние
+  задаёт обычное CSS-правило (opacity: 1), сбрасывать нечего: даже если переход
+  не сыграет, элемент просто виден.
+
+  Переходы объявлены ВНУТРИ .map--live: при стирании (блок ушёл с экрана)
+  класс снимается вместе с переходами, и всё гаснет мгновенно, без хвостов.
+*/
+
+.map--live .map__water-wrap,
+.map--live .map__minor,
+.map--live .map__mid,
+.map--live .map__main,
+.map--live .map__burj,
+.map--live .map__node,
+.map--live .map__label,
+.map--live .map__t--road {
+  opacity: 1;
+  transition: opacity var(--dur-slow) var(--ease-out);
 }
 
 .map--live .map__minor {
-  animation: map-in var(--dur-slow) var(--ease-out) 250ms both;
+  transition-delay: 250ms;
 }
 
 .map--live .map__mid {
-  animation: map-in var(--dur-slow) var(--ease-out) 420ms both;
+  transition-delay: 420ms;
 }
 
 .map--live .map__main {
-  animation: map-in var(--dur-slow) var(--ease-out) 590ms both;
+  transition-delay: 590ms;
 }
 
 .map--live .map__accent-wrap {
-  animation: map-road var(--dur-draw) var(--ease-draw) 700ms both;
+  clip-path: inset(0);
+  transition: clip-path var(--dur-draw) var(--ease-draw) 700ms;
 }
 
 .map--live .map__burj {
-  animation: map-in var(--dur-slow) var(--ease-out) 1000ms both;
+  transition-delay: 1000ms;
 }
 
 .map--live .map__t--road {
-  animation: map-in var(--dur-slow) var(--ease-out) 1250ms both;
+  transition-delay: 1250ms;
 }
 
-.map--live .map__node--wide,
-.map--live .map__node--narrow {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: map-node var(--dur-base) var(--ease-out) 1500ms both;
+.map--live .map__node {
+  transform: scale(1);
+  transition:
+    opacity var(--dur-base) var(--ease-out) 1500ms,
+    transform var(--dur-base) var(--ease-out) 1500ms;
 }
 
 .map--live .map__label {
-  animation: map-in var(--dur-base) var(--ease-out) 1750ms both;
-}
-
-@keyframes map-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes map-road {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0);
-  }
-}
-
-@keyframes map-node {
-  from {
-    opacity: 0;
-    transform: scale(0.72);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  transition: opacity var(--dur-base) var(--ease-out) 1750ms;
 }
 
 /*
@@ -432,10 +430,12 @@ const scaleLen = KM * 5
     display: none;
   }
 
+  /* ⚠️ Для SVG-групп включение через display: inline, не initial:
+     initial на SVG-элементах в Safari ведёт себя ненадёжно */
   .map__node--narrow,
   .map__label--narrow,
   .map__t--palm-narrow {
-    display: initial;
+    display: inline;
   }
 
   .map__t {
