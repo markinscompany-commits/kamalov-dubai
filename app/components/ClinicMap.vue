@@ -92,7 +92,12 @@ const scaleLen = KM * 5
         <path v-for="(d, i) in islands" :key="`i${i}`" class="map__island" :d="d" />
 
         <text class="map__t map__t--sea" x="235" y="112">{{ labels.sea }}</text>
-        <text class="map__t map__t--sea map__t--palm" x="392" y="302">{{ labels.palm }}</text>
+        <!-- Подпись Пальмы: на широких экранах внутри полумесяца, на телефоне -
+             на воде под островом, чтобы не закрывать сам силуэт (правка Марка) -->
+        <text class="map__t map__t--sea map__t--palm map__t--palm-wide" x="392" y="302">{{ labels.palm }}</text>
+        <!-- ⚠️ y в пределах viewBox (576), x с запасом от левой рамки: на 130
+             первую букву срезало краем -->
+        <text class="map__t map__t--sea map__t--palm map__t--palm-narrow" x="165" y="392">{{ labels.palm }}</text>
 
         <!-- Север и честный масштаб -->
         <g class="map__hairgroup">
@@ -140,30 +145,29 @@ const scaleLen = KM * 5
         </text>
       </g>
 
-      <!-- Узел госпиталя: красный маркер с пунктирным кольцом, заметно крупнее
-           волосяных линий. Точка - главный ответ блока. Размер на телефоне свой -->
+      <!-- Узел госпиталя: «мишень» - сплошное кольцо с точкой в центре.
+           ⚠️ БЕЗ креста и БЕЗ пунктира: крест внутри пунктирного кольца на
+           телефоне читался как свастика (правка Марка 04.08) - форма запрещена -->
       <g class="map__node map__node--wide">
-        <circle class="map__ring" :cx="H.x" :cy="H.y" r="22" />
-        <path class="map__cross" :d="`M ${H.x} ${H.y - 16} V ${H.y + 16} M ${H.x - 16} ${H.y} H ${H.x + 16}`" />
+        <circle class="map__ring" :cx="H.x" :cy="H.y" r="17" />
+        <circle class="map__dot" :cx="H.x" :cy="H.y" r="5" />
       </g>
       <g class="map__node map__node--narrow" aria-hidden="true">
-        <circle class="map__ring map__ring--narrow" :cx="H.x" :cy="H.y" r="34" />
-        <path class="map__cross" :d="`M ${H.x} ${H.y - 25} V ${H.y + 25} M ${H.x - 25} ${H.y} H ${H.x + 25}`" />
+        <circle class="map__ring" :cx="H.x" :cy="H.y" r="26" />
+        <circle class="map__dot" :cx="H.x" :cy="H.y" r="8" />
       </g>
 
-      <!-- Подпись узла: имя тем же красным, что маркер (правка Марка).
-           На широких экранах справа от кольца, на телефоне под узлом -->
+      <!-- Подпись узла: имя тем же красным, что маркер.
+           На широких экранах справа от кольца, на телефоне - двумя строками
+           слева от узла, правым краем к нему; район на телефоне не выводим,
+           он есть в адресе под картой (подписи мешали друг другу - правка Марка) -->
       <g class="map__label map__label--wide">
         <text class="map__t map__t--name" :x="H.x + 34" :y="H.y - 2">{{ labels.hospital }}</text>
         <text class="map__t map__t--soft" :x="H.x + 34" :y="H.y + 20">{{ labels.area }}</text>
       </g>
-      <!-- ⚠️ Узел стоит у правой кромки мобильного окна карты (обрезка на 880),
-           поэтому имя разбито на две строки и центровано левее узла - одной
-           строкой оно вылезало за край -->
       <g class="map__label map__label--narrow" aria-hidden="true">
-        <text class="map__t map__t--name" :x="H.x - 60" :y="H.y + 64" text-anchor="middle">{{ nameParts[0] }}</text>
-        <text class="map__t map__t--name" :x="H.x - 60" :y="H.y + 92" text-anchor="middle">{{ nameParts[1] }}</text>
-        <text class="map__t map__t--soft" :x="H.x - 60" :y="H.y + 120" text-anchor="middle">{{ labels.area }}</text>
+        <text class="map__t map__t--name" :x="H.x - 40" :y="H.y - 2" text-anchor="end">{{ nameParts[0] }}</text>
+        <text class="map__t map__t--name" :x="H.x - 40" :y="H.y + 26" text-anchor="end">{{ nameParts[1] }}</text>
       </g>
     </svg>
   </div>
@@ -254,28 +258,27 @@ const scaleLen = KM * 5
   vector-effect: non-scaling-stroke;
 }
 
-/* --- Узел: красный маркер (правка Марка) - конвенция карт, точка находится
-       мгновенно. Терракотовый оттенок, чтобы не спорил с тёплой палитрой --- */
+/* --- Узел: красный маркер-«мишень» (правка Марка) - конвенция карт, точка
+       находится мгновенно. Терракотовый оттенок, чтобы не спорил с палитрой.
+       ⚠️ Кольцо СПЛОШНОЕ и без креста - см. комментарий у разметки узла --- */
 
 .map {
   --map-marker: #A93C33;
-}
-
-.map__cross {
-  stroke: var(--map-marker);
-  stroke-width: 1.5px;
-  vector-effect: non-scaling-stroke;
 }
 
 .map__ring {
   stroke: var(--map-marker);
   stroke-width: 1.5px;
   vector-effect: non-scaling-stroke;
-  stroke-dasharray: var(--dash-on) var(--dash-off);
+}
+
+.map__dot {
+  fill: var(--map-marker);
 }
 
 .map__node--narrow,
-.map__label--narrow {
+.map__label--narrow,
+.map__t--palm-narrow {
   display: none;
 }
 
@@ -414,21 +417,18 @@ const scaleLen = KM * 5
   }
 
   .map__ring {
-    stroke-dasharray: 10 14;
-  }
-
-  .map__cross,
-  .map__ring {
     stroke-width: 2px;
   }
 
   .map__node--wide,
-  .map__label--wide {
+  .map__label--wide,
+  .map__t--palm-wide {
     display: none;
   }
 
   .map__node--narrow,
-  .map__label--narrow {
+  .map__label--narrow,
+  .map__t--palm-narrow {
     display: initial;
   }
 

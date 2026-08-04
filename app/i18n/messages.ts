@@ -229,12 +229,13 @@ const ru = {
       лицензия уже раскрыта в блоке о враче. Сами знаки собраны в
       ClinicSection.vue, здесь только подписи.
     */
+    // Первыми - языки приёма (правка Марка 04.08)
     stamps: [
+      { caption: 'приём на русском и английском' },
       {
         imgAlt: 'Знак Австралийского совета по стандартам здравоохранения (ACHS)',
         caption: 'международная аккредитация госпиталей ACHSI',
       },
-      { caption: 'приём на русском и английском' },
     ],
     mapLabel: '// Расположение госпиталя',
     map: {
@@ -487,11 +488,11 @@ const en: typeof ru = {
     title: 'An inpatient hospital with round-the-clock care',
     lead: 'Consultations, tests and surgery all take place at Dubai London Hospital - a private hospital on the Jumeirah beachfront, two kilometres from the Burj Al Arab. A dedicated ENT department, the operating theatres and wards are under one roof: after surgery the patient stays in the same building, with no transfers between clinics.',
     stamps: [
+      { caption: 'consultations in Russian and English' },
       {
         imgAlt: 'The mark of the Australian Council on Healthcare Standards (ACHS)',
         caption: 'ACHSI international hospital accreditation',
       },
-      { caption: 'consultations in Russian and English' },
     ],
     mapLabel: '// Where the hospital is',
     map: {

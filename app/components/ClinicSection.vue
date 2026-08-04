@@ -142,27 +142,10 @@ onBeforeUnmount(() => {
 
     <p class="clinic__lead" data-mobile-order="3">{{ m.clinic.lead }}</p>
 
-    <!-- Печати: аккредитация значком, языки флагами. Пунктирное кольцо - язык
-         разметки, как кольцо маркера на карте. Печати ЛОР нет: факт живёт в лиде -->
+    <!-- Печати: первыми языки приёма, следом аккредитация значком (порядок -
+         правка Марка 04.08). Пунктирное кольцо - язык разметки сайта -->
     <ul ref="stampsEl" class="clinic__stamps" :class="{ 'is-live': stampsLive }">
       <li class="clinic__stamp" :style="{ '--i': 0 }">
-        <span class="clinic__badge">
-          <svg class="clinic__ring" viewBox="0 0 120 120" aria-hidden="true">
-            <circle cx="60" cy="60" r="59" />
-          </svg>
-          <img
-            class="clinic__badge-logo"
-            :src="`${base}media/logos/achsi.png`"
-            :alt="m.clinic.stamps[0].imgAlt"
-            width="320"
-            height="320"
-            loading="lazy"
-          />
-        </span>
-        <span class="clinic__caption">{{ m.clinic.stamps[0].caption }}</span>
-      </li>
-
-      <li class="clinic__stamp" :style="{ '--i': 1 }">
         <span class="clinic__badge">
           <svg class="clinic__ring" viewBox="0 0 120 120" aria-hidden="true">
             <circle cx="60" cy="60" r="59" />
@@ -182,6 +165,23 @@ onBeforeUnmount(() => {
               <path d="M15 0 V20 M0 10 H30" stroke="#A8423C" stroke-width="3" />
             </svg>
           </span>
+        </span>
+        <span class="clinic__caption">{{ m.clinic.stamps[0].caption }}</span>
+      </li>
+
+      <li class="clinic__stamp" :style="{ '--i': 1 }">
+        <span class="clinic__badge">
+          <svg class="clinic__ring" viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="59" />
+          </svg>
+          <img
+            class="clinic__badge-logo"
+            :src="`${base}media/logos/achsi.png`"
+            :alt="m.clinic.stamps[1].imgAlt"
+            width="320"
+            height="320"
+            loading="lazy"
+          />
         </span>
         <span class="clinic__caption">{{ m.clinic.stamps[1].caption }}</span>
       </li>
