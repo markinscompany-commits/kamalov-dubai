@@ -19,6 +19,9 @@ interface Props {
   compact?: boolean
 }
 
+/* Атрибуты ставим руками на полотно меню, а не на корень - см. пояснение в разметке */
+defineOptions({ inheritAttrs: false })
+
 const props = withDefaults(defineProps<Props>(), { compact: false })
 const emit = defineEmits<{ close: [] }>()
 
@@ -76,8 +79,15 @@ onBeforeUnmount(() => {
   -->
   <Teleport to="body">
     <Transition name="nav">
+      <!--
+        v-bind="$attrs" здесь обязателен. Корень компонента - Teleport, а на него
+        Vue атрибуты навесить не может: они просто пропадали вместе с предупреждением
+        в консоли. Пропадал в том числе id, на который ссылается бургер через
+        aria-controls, - то есть ссылка вела в никуда.
+      -->
       <div
         v-if="open"
+        v-bind="$attrs"
         class="nav"
         :class="{ 'nav--compact': compact }"
         role="dialog"

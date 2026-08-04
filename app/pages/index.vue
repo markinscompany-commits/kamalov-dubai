@@ -17,35 +17,26 @@ useHead(() => ({
     <DoctorSection />
 
     <!--
-      ⚠️ БЛОКИ УСЛУГ ВРЕМЕННО СКРЫТЫ (решение Марка, 01.08).
-      Разметка сохранена целиком: включить обратно - снять эту обёртку и вернуть
-      в messages.ts два пункта меню (nav.links, помечены тем же комментарием).
-      Ничего не переписано, блоки собраны и проверены.
+      🔴 ВРЕМЕННО: блок [04] «Операции» стоит на странице ДВАЖДЫ - два варианта
+      подачи рядом, чтобы Марк выбрал живьём, а не по описанию. Неудачный
+      убирается вместе с меткой варианта и своим компонентом.
 
-    ·  Обе услуги собраны одним компонентом: структура у них общая, разный текст.
-         Фон чередуется, чтобы блоки не слипались в одно полотно. 
-    <ServiceSection
-      id="rhinoplasty"
-      tone="deep"
-      :label="m.rhinoplasty.label"
-      :title="m.rhinoplasty.title"
-      :lead="m.rhinoplasty.lead"
-      :facts="m.rhinoplasty.facts"
-      :risks="m.rhinoplasty.risks"
-      mark="dorsum"
-      :mark-caption="m.rhinoplasty.markCaption"
-    />
-    <ServiceSection
-      id="septoplasty"
-      :label="m.septoplasty.label"
-      :title="m.septoplasty.title"
-      :lead="m.septoplasty.lead"
-      :facts="m.septoplasty.facts"
-      :risks="m.septoplasty.risks"
-      mark="airway"
-      :mark-caption="m.septoplasty.markCaption"
-    />
+      А - «хирург дорисовывает разметку»: профиль прилипает, разметка на нём
+          достраивается по ходу чтения. Три прохода: форма → дыхание → вместе.
+      Б - «разворот»: две половины по корешку, линии сходятся в один узел.
+
+      Якорь меню (#surgery) стоит на варианте А. Тона разные намеренно -
+      иначе варианты слипаются в одно полотно; тон победителя выбираем отдельно.
+
+      Старые отдельные блоки услуг (ServiceSection на #rhinoplasty и
+      #septoplasty) сняты: по структуре из 11 блоков операции слиты в один.
+      Тексты перенесены в messages.ts, ключ surgery; прежняя разметка - в истории git.
     -->
+    <p class="variant-mark">Вариант А - прилипающий рисунок</p>
+    <SurgerySection />
+
+    <p class="variant-mark">Вариант Б - разворот</p>
+    <SurgerySpread />
 
     <!-- [06] Где принимает: Dubai London Hospital. Подача «Координата» принята
          Марком 03.08 - карта Джумейры, нарисованная разметкой сайта -->
@@ -66,3 +57,18 @@ useHead(() => ({
     -->
   </main>
 </template>
+
+<style scoped>
+/* 🔴 ВРЕМЕННАЯ метка варианта - убрать вместе с проигравшим вариантом */
+.variant-mark {
+  margin: 0;
+  padding: var(--s-3) var(--page-pad);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  max-inline-size: none;
+}
+</style>

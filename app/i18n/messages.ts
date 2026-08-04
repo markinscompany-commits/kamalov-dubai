@@ -35,10 +35,9 @@ const ru = {
     */
     links: [
       { label: 'О докторе', short: 'О докторе', href: '#doctor', service: false },
-      // ⚠️ Блоки услуг сейчас скрыты, а пункты меню на месте (правка Марка):
-      // пока блоков нет, эти ссылки никуда не ведут - клик просто ничего не делает.
-      { label: 'Ринопластика', short: 'Ринопластика', href: '#rhinoplasty', service: true },
-      { label: 'Септопластика', short: 'Септопластика', href: '#septoplasty', service: true },
+      // Ринопластика и септопластика слиты в один блок (структура из 11 блоков,
+      // принята Марком 02.08) - и в меню это теперь один пункт
+      { label: 'Операции', short: 'Операции', href: '#surgery', service: true },
       // menuOnly: в строке шапки места нет (с пятью пунктами английская строка
       // пересекала границу половин) - пункт живёт только в бургер-меню
       { label: 'Где принимает', short: 'Госпиталь', href: '#clinic', service: false, menuOnly: true },
@@ -165,37 +164,79 @@ const ru = {
     photoCaption: 'Шамсутин Камалов - отоларинголог и пластический хирург. Отец и первый учитель.',
   },
   /*
-    Блоки операций. Общее правило: говорим о том, какие задачи операция решает,
-    а не о том, каким станет человек. Ни одного обещания результата, ни одного
+    Блок [04] «Операции» - ринопластика и септопластика ВМЕСТЕ.
+
+    Почему слиты (решение Марка 02.08, структура из 11 блоков): содержание
+    совпадает процентов на восемьдесят, а настоящий вопрос человека звучит
+    иначе, чем название операции: «у меня и форма не нравится, и дышу плохо -
+    это одна операция или две». Блок отвечает именно на него.
+
+    Общее правило текстов: говорим о том, какие задачи операция решает, а не
+    о том, каким станет человек. Ни одного обещания результата, ни одного
     обращения к недостаткам внешности - это прямые запреты Meta и DHA.
-    Блок про риски обязателен (ST-21, п. 7.1.3) и стоит внутри каждой услуги.
+
+    ⚠️ Риски у каждой операции СВОИ и стоят открытым текстом, а не за
+    переключателем: ST-21 п. 7.1.3 требует показывать выгоды и риски наравне,
+    п. 7.1.5 и 9.6 - тем же кеглем, что основной текст.
   */
-  rhinoplasty: {
-    label: '[04] Ринопластика',
+  surgery: {
+    label: '[04] Операции',
     title: 'Форма и дыхание - одна задача, а не две.',
-    lead: 'Ринопластика меняет форму носа: горбинку, кончик, крылья, ширину спинки. Вместе с формой хирург смотрит на дыхание - внутренний каркас носа отвечает и за то, и за другое, поэтому менять их по отдельности нельзя.',
-    facts: [
-      { mark: 'Форма', text: 'Горбинка, кончик, крылья, ширина спинки, пропорции носа относительно лица' },
-      { mark: 'Дыхание', text: 'Носовое дыхание, в том числе при искривлённой перегородке - тогда операции совмещают' },
-      { mark: 'Повторно', text: 'Коррекция после ранее перенесённых операций на носу' },
-      { mark: 'Травма', text: 'Восстановление формы и проходимости носа после травм' },
-      { mark: 'Техника', text: 'Открытая и закрытая ринопластика. Доступ выбирается по задаче и анатомии, а не по желанию' },
+    lead: 'За внешние очертания носа и за проходимость дыхательного хода отвечает один и тот же каркас - кости, хрящи и перегородка. Поэтому на осмотре хирург оценивает и то, и другое сразу, а какую задачу решает операция, становится понятно уже после осмотра.',
+    /*
+      Три «прохода» по одному профилю: форма → дыхание → вместе. На рисунке
+      каждому соответствует своя разметка (NoseScheme.vue, состояния
+      form / breath / both).
+    */
+    parts: [
+      {
+        state: 'form',
+        step: 'Задача 01',
+        name: 'Форма',
+        surgery: 'Ринопластика',
+        lead: 'Ринопластика меняет очертания носа: горбинку, кончик, крылья, ширину спинки. Доступ - открытый или закрытый - выбирают по анатомии и объёму работы, а не по предпочтению.',
+        facts: [
+          { mark: 'Что меняют', text: 'Горбинку, кончик, крылья, ширину спинки, пропорции носа относительно лица' },
+          { mark: 'Повторно', text: 'Коррекция после ранее перенесённых операций на носу и после травм' },
+          { mark: 'Дыхание', text: 'Оценивается всегда: сузить наружные очертания, не сузив дыхательный ход, - часть той же работы' },
+        ],
+        risksLabel: 'Риски ринопластики',
+        risks: 'Ринопластика - хирургическая операция. Она проходит под наркозом, требует восстановления и имеет риски: отёк, временное нарушение носового дыхания, изменение чувствительности, необходимость повторной коррекции. Хирург разбирает их на консультации, до принятия решения. Результат зависит от анатомии и особенностей заживления и у разных людей отличается.',
+      },
+      {
+        state: 'breath',
+        step: 'Задача 02',
+        name: 'Дыхание',
+        surgery: 'Септопластика',
+        lead: 'Септопластика возвращает носовую перегородку в срединное положение и освобождает путь воздуху. Наружные очертания носа при этом не меняются - задача функциональная.',
+        facts: [
+          { mark: 'Показание', text: 'Стойкое затруднение носового дыхания, связанное с искривлением перегородки' },
+          { mark: 'Что делают', text: 'Выравнивают перегородку изнутри, наружные очертания носа остаются прежними' },
+          { mark: 'Решение', text: 'Принимают по осмотру и снимкам, а не по фотографии носа' },
+        ],
+        risksLabel: 'Риски септопластики',
+        risks: 'Септопластика - хирургическая операция. Она проходит с обезболиванием, требует восстановления и имеет риски: отёк, сухость в носу, кровотечение, повторное искривление перегородки. Хирург разбирает их на консультации. Результат зависит от индивидуальных особенностей и у разных людей отличается.',
+      },
     ],
-    markCaption: 'Спинка, кончик, оси',
-    risks: 'Ринопластика - хирургическая операция. Она проходит под наркозом, требует восстановления и имеет риски: отёк, временное нарушение носового дыхания, изменение чувствительности, необходимость повторной коррекции. Хирург разбирает их на консультации до принятия решения. Результат зависит от анатомии и особенностей заживления и не может быть одинаковым у разных людей.',
-  },
-  septoplasty: {
-    label: '[05] Септопластика',
-    title: 'Операция про дыхание, а не про форму.',
-    lead: 'Септопластика возвращает носовую перегородку в правильное положение. Задача функциональная - восстановить свободное носовое дыхание. Наружная форма носа при этом не меняется.',
-    facts: [
-      { mark: 'Показание', text: 'Стойкое затруднение носового дыхания, связанное с искривлением перегородки' },
-      { mark: 'Что делают', text: 'Выравнивают перегородку изнутри, не меняя наружную форму носа' },
-      { mark: 'Вместе', text: 'При необходимости совмещается с ринопластикой - одна операция вместо двух' },
-      { mark: 'Решение', text: 'Принимается по осмотру и снимкам, а не по фотографии носа' },
-    ],
-    markCaption: 'Перегородка и путь воздуха',
-    risks: 'Септопластика - хирургическая операция. Она проходит с обезболиванием, требует восстановления и имеет риски: отёк, сухость в носу, кровотечение, повторное искривление перегородки. Хирург разбирает их на консультации. Результат зависит от индивидуальных особенностей и не может быть одинаковым у разных людей.',
+    /* Третий проход: обе разметки на одном профиле - смысловая точка блока */
+    together: {
+      state: 'both',
+      step: 'Вместе',
+      name: 'Одна операция',
+      lead: 'Если перегородку нужно выровнять, а очертания - изменить, обе задачи закрывают за одно вмешательство: один наркоз и одно восстановление вместо двух. Возможно ли это в конкретном случае, хирург говорит после осмотра.',
+      marks: ['один наркоз', 'одно восстановление'],
+    },
+    risksLabel: '// Риски',
+    /* Подписи на самом рисунке. Короткие: это пометки на полях, а не текст */
+    scheme: {
+      alt: 'Профиль лица с разметкой хирурга: оси, спинка носа, кончик, линия перегородки и путь воздуха',
+      axes: 'оси лица',
+      dorsum: 'спинка',
+      tip: 'кончик',
+      septum: 'перегородка',
+      airway: 'путь воздуха',
+      both: 'одна операция',
+    },
   },
   /*
     Блок «Где принимает» - Dubai London Hospital.
@@ -378,8 +419,7 @@ const en: typeof ru = {
   nav: {
     links: [
       { label: 'About the doctor', short: 'About', href: '#doctor', service: false },
-      { label: 'Rhinoplasty', short: 'Rhinoplasty', href: '#rhinoplasty', service: true },
-      { label: 'Septoplasty', short: 'Septoplasty', href: '#septoplasty', service: true },
+      { label: 'Surgery', short: 'Surgery', href: '#surgery', service: true },
       // menuOnly - см. пояснение в русской версии
       { label: 'Where he sees patients', short: 'Hospital', href: '#clinic', service: false, menuOnly: true },
       { label: 'Contacts', short: 'Contacts', href: '#contacts', service: false },
@@ -455,32 +495,58 @@ const en: typeof ru = {
     photoAlt: 'Shamsutin Kamalov, ENT and plastic surgeon, archive photograph',
     photoCaption: 'Shamsutin Kamalov - ENT and plastic surgeon. Father and first teacher.',
   },
-  rhinoplasty: {
-    label: '[04] Rhinoplasty',
+  // Ринопластика и септопластика одним блоком - см. пояснение в русской версии
+  surgery: {
+    label: '[04] Surgery',
     title: 'Shape and breathing are one task, not two.',
-    lead: 'Rhinoplasty changes the shape of the nose: the hump, the tip, the nostrils, the width of the bridge. Along with the shape the surgeon looks at breathing - the internal framework of the nose is responsible for both, so they cannot be changed separately.',
-    facts: [
-      { mark: 'Shape', text: 'Hump, tip, nostrils, width of the bridge, proportions of the nose relative to the face' },
-      { mark: 'Breathing', text: 'Nasal breathing, including cases with a deviated septum - the operations are then combined' },
-      { mark: 'Revision', text: 'Correction after previous nose surgery' },
-      { mark: 'Trauma', text: 'Restoring the shape and patency of the nose after an injury' },
-      { mark: 'Technique', text: 'Open and closed rhinoplasty. The approach is chosen by the task and the anatomy, not by preference' },
+    lead: 'The same framework - bone, cartilage and the septum - holds the outer line of the nose and keeps the airway open. That is why the surgeon assesses both at the examination, and which task the operation solves becomes clear only after it.',
+    parts: [
+      {
+        state: 'form',
+        step: 'Task 01',
+        name: 'Shape',
+        surgery: 'Rhinoplasty',
+        lead: 'Rhinoplasty changes the outline of the nose: the hump, the tip, the nostrils, the width of the dorsum. The approach - open or closed - is chosen by the anatomy and the scope of work, not by preference.',
+        facts: [
+          { mark: 'What changes', text: 'The hump, the tip, the nostrils, the width of the dorsum, the proportions of the nose relative to the face' },
+          { mark: 'Revision', text: 'Correction after previous nose surgery and after an injury' },
+          { mark: 'Breathing', text: 'Always assessed: narrowing the outer line without narrowing the airway is part of the same work' },
+        ],
+        risksLabel: 'Risks of rhinoplasty',
+        risks: 'Rhinoplasty is a surgical operation. It is performed under anaesthesia, requires a recovery period and carries risks: swelling, temporary difficulty with nasal breathing, changes in sensation, the possibility of a revision procedure. The surgeon goes through them at the consultation, before any decision is made. The outcome depends on the anatomy and on how the tissues heal, and differs from one person to another.',
+      },
+      {
+        state: 'breath',
+        step: 'Task 02',
+        name: 'Breathing',
+        surgery: 'Septoplasty',
+        lead: 'Septoplasty returns the nasal septum to the midline and clears the path for the air. The outer line of the nose stays as it is - the task is functional.',
+        facts: [
+          { mark: 'Indication', text: 'Persistent difficulty with nasal breathing related to a deviated septum' },
+          { mark: 'The procedure', text: 'The septum is straightened from the inside, the outer line of the nose stays unchanged' },
+          { mark: 'Decision', text: 'Made on examination and imaging, not on a photograph of the nose' },
+        ],
+        risksLabel: 'Risks of septoplasty',
+        risks: 'Septoplasty is a surgical operation. It is performed with anaesthesia, requires a recovery period and carries risks: swelling, dryness in the nose, bleeding, recurrence of the deviation. The surgeon goes through them at the consultation. The outcome depends on individual characteristics and differs from one person to another.',
+      },
     ],
-    markCaption: 'Dorsum, tip, axes',
-    risks: 'Rhinoplasty is a surgical operation. It is performed under anaesthesia, requires a recovery period and carries risks: swelling, temporary difficulty with nasal breathing, changes in sensation, the possibility of a revision procedure. The surgeon goes through them at the consultation, before any decision is made. The outcome depends on the anatomy and on how the tissues heal, and cannot be the same for different people.',
-  },
-  septoplasty: {
-    label: '[05] Septoplasty',
-    title: 'An operation about breathing, not about shape.',
-    lead: 'Septoplasty returns the nasal septum to the correct position. The task is functional - to restore free nasal breathing. The external shape of the nose is not changed.',
-    facts: [
-      { mark: 'Indication', text: 'Persistent difficulty with nasal breathing related to a deviated septum' },
-      { mark: 'The procedure', text: 'The septum is straightened from the inside, without changing the external shape of the nose' },
-      { mark: 'Combined', text: 'Where needed it is combined with rhinoplasty - one operation instead of two' },
-      { mark: 'Decision', text: 'Made on examination and imaging, not on a photograph of the nose' },
-    ],
-    markCaption: 'Septum and the airway',
-    risks: 'Septoplasty is a surgical operation. It is performed with anaesthesia, requires a recovery period and carries risks: swelling, dryness in the nose, bleeding, recurrence of the deviation. The surgeon goes through them at the consultation. The outcome depends on individual characteristics and cannot be the same for different people.',
+    together: {
+      state: 'both',
+      step: 'Together',
+      name: 'One operation',
+      lead: 'When the septum needs straightening and the outline needs changing, both tasks are closed in a single procedure: one anaesthesia and one recovery instead of two. Whether that is possible in a particular case, the surgeon says after the examination.',
+      marks: ['one anaesthesia', 'one recovery'],
+    },
+    risksLabel: '// Risks',
+    scheme: {
+      alt: "A profile with the surgeon's markings: axes, the dorsum of the nose, the tip, the line of the septum and the path of the air",
+      axes: 'facial axes',
+      dorsum: 'dorsum',
+      tip: 'tip',
+      septum: 'septum',
+      airway: 'airway',
+      both: 'one operation',
+    },
   },
   // Arabian Gulf, не Persian Gulf - местная норма, см. пояснение в русской версии
   clinic: {
