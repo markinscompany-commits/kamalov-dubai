@@ -69,12 +69,14 @@ onBeforeUnmount(() => watcher?.disconnect())
 </script>
 
 <template>
+  <!-- Фон и точка разметки - те же, что у «О докторе» и «Где принимает»
+       (правка Марка 04.08): при 0.161 вертикаль вставала левее, чем у соседей -->
   <PageSection
     id="surgery"
     :label="m.surgery.label"
-    tone="paper"
+    tone="deep"
     cross-y="5.5rem"
-    :cross-fraction="0.161"
+    :cross-fraction="0.207"
   >
     <SectionTitle :text="m.surgery.title" />
     <p class="sg__lead">{{ m.surgery.lead }}</p>
@@ -95,12 +97,14 @@ onBeforeUnmount(() => watcher?.disconnect())
           class="sg__stage"
           :class="[`sg__stage--${stage.state}`, { 'is-active': active === i }]"
         >
-          <!-- На телефоне прилипания нет: у каждого прохода свой рисунок -->
-          <NoseScheme class="sg__scheme-m" :state="stage.state" :labels="m.surgery.scheme" />
-
+          <!-- На телефоне заголовки стоят НАД схемой (правка Марка 04.08):
+               порядок задаёт media-запрос, в разметке они идут подряд -->
           <p class="mono sg__step">{{ stage.step }}</p>
           <h3 class="sg__name">{{ stage.name }}</h3>
           <p v-if="'surgery' in stage" class="mono sg__surgery">{{ stage.surgery }}</p>
+
+          <!-- На телефоне прилипания нет: у каждого прохода свой рисунок -->
+          <NoseScheme class="sg__scheme-m" :state="stage.state" :labels="m.surgery.scheme" />
 
           <p class="sg__stage-lead">{{ stage.lead }}</p>
 
@@ -112,6 +116,15 @@ onBeforeUnmount(() => watcher?.disconnect())
             </li>
           </ul>
 
+          <!-- Риски стоят внутри своей задачи, а не разделом внизу -->
+          <div v-if="'risks' in stage" class="sg__risks">
+            <p class="mono sg__risks-label">{{ stage.risks.label }}</p>
+            <p class="sg__risks-note">{{ stage.risks.note }}</p>
+            <ul class="sg__risks-list">
+              <li v-for="item in stage.risks.items" :key="item" class="sg__risk-item">{{ item }}</li>
+            </ul>
+          </div>
+
           <!-- Выгода объединения - двумя плитками, а не строчкой в абзаце -->
           <ul v-if="'marks' in stage" class="sg__tiles">
             <li v-for="mark in stage.marks" :key="mark" class="sg__tile">{{ mark }}</li>
@@ -119,23 +132,6 @@ onBeforeUnmount(() => watcher?.disconnect())
           <p v-if="'note' in stage" class="sg__stage-note">{{ stage.note }}</p>
         </article>
       </div>
-    </div>
-
-    <!-- Риски: по операциям, списком, тем же кеглем, что основной текст -->
-    <div class="sg__risks">
-      <p class="mono sg__risks-label">{{ m.surgery.risksLabel }}</p>
-
-      <div class="sg__risks-cols">
-        <section v-for="risk in m.surgery.risks" :key="risk.name" class="sg__risk">
-          <h4 class="sg__risk-name">{{ risk.name }}</h4>
-          <p class="sg__risk-note">{{ risk.note }}</p>
-          <ul class="sg__risk-list">
-            <li v-for="item in risk.items" :key="item" class="sg__risk-item">{{ item }}</li>
-          </ul>
-        </section>
-      </div>
-
-      <p class="sg__risks-note">{{ m.surgery.risksNote }}</p>
     </div>
 
     <div class="sg__action">
@@ -167,7 +163,7 @@ onBeforeUnmount(() => watcher?.disconnect())
   /* Под шапкой, примерно на трети экрана: рисунок оказывается напротив текста */
   inset-block-start: calc(var(--header-h-scrolled) + 4rem);
   /* Подписи выходят за кадр рисунка вправо - им нужно место в коридоре */
-  --ns-size: 19rem;
+  --ns-size: 22rem;
 }
 
 .sg__stages {
@@ -258,6 +254,65 @@ onBeforeUnmount(() => watcher?.disconnect())
   line-height: 1.5;
 }
 
+/* --- Риски внутри задачи --- */
+
+.sg__risks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  margin-block-start: var(--s-5);
+  padding-block-start: var(--s-4);
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--rule) 0 var(--dash-on),
+    transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))
+  );
+  background-size: 100% var(--rule-w);
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+
+.sg__risks-label {
+  margin: 0;
+}
+
+.sg__risks-note {
+  font-size: var(--fs-body);
+  color: var(--ink-soft);
+}
+
+.sg__risks-list {
+  margin: var(--s-2) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+/*
+  ⚠️ Кегль рисков - тот же, что у основного текста. Это требование
+  регулятора (ST-21 п. 7.1.5 и 9.6), а не вопрос вкуса: увести их
+  в мелкий серый нельзя.
+*/
+.sg__risk-item {
+  position: relative;
+  font-size: var(--fs-body);
+  line-height: 1.4;
+  padding-inline-start: var(--s-6);
+}
+
+/* Вместо галочки - короткий штрих того же пера, что разметка */
+.sg__risk-item::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-start: 0.72em;
+  inline-size: var(--s-4);
+  block-size: var(--rule-w);
+  background: var(--rule);
+}
+
 /* --- Плитки «один наркоз / одно восстановление» --- */
 
 .sg__tiles {
@@ -277,11 +332,15 @@ onBeforeUnmount(() => watcher?.disconnect())
 */
 .sg__tile {
   min-inline-size: 0;
-  padding: var(--s-5) var(--s-4);
+  padding: var(--s-5) var(--s-3);
   text-align: center;
   font-family: var(--font-display);
   font-weight: 300;
-  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  /* Кегль подобран так, чтобы «одно восстановление» стояло в ОДНУ строку -
+     и на компьютере, и на телефоне (правка Марка 04.08). Разная высота
+     двух плиток рядом читается как ошибка вёрстки */
+  font-size: clamp(1rem, 1.5vw, 1.375rem);
+  white-space: nowrap;
   line-height: 1.15;
   color: var(--ink);
   background-image:
@@ -309,91 +368,6 @@ onBeforeUnmount(() => watcher?.disconnect())
   margin-block-start: var(--s-3);
 }
 
-/* --- Риски --- */
-
-.sg__risks {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-6);
-}
-
-.sg__risks-label {
-  margin: 0;
-}
-
-.sg__risks-cols {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(2rem, 4vw, 4rem);
-}
-
-.sg__risk {
-  min-inline-size: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-2);
-  padding-block-start: var(--s-4);
-  background-image: repeating-linear-gradient(
-    to right,
-    var(--rule) 0 var(--dash-on),
-    transparent var(--dash-on) calc(var(--dash-on) + var(--dash-off))
-  );
-  background-size: 100% var(--rule-w);
-  background-repeat: no-repeat;
-  background-position: 0 0;
-}
-
-.sg__risk-name {
-  font-family: var(--font-display);
-  font-weight: 300;
-  font-size: 1.5rem;
-  line-height: 1.2;
-  color: var(--ink);
-}
-
-.sg__risk-note {
-  font-size: var(--fs-body);
-  color: var(--ink-soft);
-}
-
-.sg__risk-list {
-  margin: var(--s-2) 0 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-2);
-}
-
-/*
-  ⚠️ Кегль рисков - тот же, что у основного текста. Это требование
-  регулятора (ST-21 п. 7.1.5 и 9.6), а не вопрос вкуса: увести их
-  в мелкий серый нельзя.
-*/
-.sg__risk-item {
-  font-size: var(--fs-body);
-  line-height: 1.4;
-  padding-inline-start: var(--s-6);
-  position: relative;
-}
-
-/* Вместо галочки - короткий штрих того же пера, что разметка */
-.sg__risk-item::before {
-  content: '';
-  position: absolute;
-  inset-inline-start: 0;
-  inset-block-start: 0.72em;
-  inline-size: var(--s-4);
-  block-size: var(--rule-w);
-  background: var(--rule);
-}
-
-.sg__risks-note {
-  font-size: var(--fs-body);
-  color: var(--ink-soft);
-  max-inline-size: min(70ch, 100%);
-}
-
 @media (max-width: 900px) {
   .sg__grid {
     grid-template-columns: minmax(0, 1fr);
@@ -407,7 +381,7 @@ onBeforeUnmount(() => watcher?.disconnect())
 
   .sg__scheme-m {
     display: block;
-    margin-block-end: var(--s-4);
+    margin-block: var(--s-2) var(--s-4);
   }
 
   .sg__stage {
@@ -415,11 +389,6 @@ onBeforeUnmount(() => watcher?.disconnect())
     padding-block-end: var(--s-12);
     /* На телефоне на экране всегда один проход - приглушать нечего */
     opacity: 1;
-  }
-
-  .sg__risks-cols {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--s-8);
   }
 
   /* Кнопка во всю ширину: на телефоне она главное действие экрана */

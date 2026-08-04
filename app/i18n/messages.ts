@@ -200,6 +200,16 @@ const ru = {
           { mark: 'Доступ', text: 'Открытый или закрытый - по задаче' },
           { mark: 'Повторно', text: 'После прежних операций и травм' },
         ],
+        risks: {
+          label: 'Риски',
+          note: 'Проходит под наркозом, требует восстановления.',
+          items: [
+            'отёк',
+            'временное затруднение носового дыхания',
+            'изменение чувствительности',
+            'возможная повторная коррекция',
+          ],
+        },
       },
       {
         state: 'breath',
@@ -211,6 +221,18 @@ const ru = {
           { mark: 'Показание', text: 'Стойкое затруднение носового дыхания' },
           { mark: 'Изнутри', text: 'Наружные разрезы не нужны' },
         ],
+        /*
+          ⚠️ Риски стоят ВНУТРИ своей задачи, а не отдельным разделом внизу
+          (правка Марка 04.08). Так они читаются вместе с описанием операции,
+          а не как приписка мелким шрифтом в конце. Требование ST-21 п. 7.1.3 -
+          показывать риски наравне с выгодами; п. 7.1.5 и 9.6 - тем же кеглем,
+          что основной текст.
+        */
+        risks: {
+          label: 'Риски',
+          note: 'Проходит с обезболиванием, требует восстановления.',
+          items: ['отёк', 'сухость в носу', 'кровотечение', 'повторное искривление перегородки'],
+        },
       },
     ],
     /* Третий проход: обе разметки на одном профиле - смысловая точка блока */
@@ -221,40 +243,13 @@ const ru = {
       lead: 'Часто нужно и то, и другое. Тогда обе задачи закрывают за одно вмешательство.',
       /* Две плитки, а не строчка текста (правка Марка): это и есть вся выгода */
       marks: ['один наркоз', 'одно восстановление'],
-      note: 'Подойдёт ли это в конкретном случае, хирург скажет на очном приёме - по осмотру и снимкам, а не по фотографии носа.',
+      /* Общая оговорка - один раз на весь блок, здесь. Раньше она стояла
+         дословно в обоих абзацах рисков */
+      note: 'Хирург разбирает риски на консультации, до решения об операции, и там же говорит, подойдёт ли она в конкретном случае: по осмотру и снимкам, а не по фотографии носа. Результат зависит от анатомии и особенностей заживления и у разных людей отличается.',
     },
-    /*
-      Риски. Требование ST-21 п. 7.1.3 - показывать их наравне с выгодами,
-      п. 7.1.5 и 9.6 - тем же кеглем, что основной текст.
-
-      Списком, а не сплошным абзацем: два абзаца по пять строк человек
-      пролистывает, и тогда требование выполнено только на бумаге. Общая
-      оговорка вынесена вниз ОДИН раз - в первой сборке она стояла в обоих
-      абзацах слово в слово.
-    */
-    risksLabel: '// Риски',
-    risks: [
-      {
-        name: 'Ринопластика',
-        note: 'Проходит под наркозом, требует восстановления.',
-        items: [
-          'отёк',
-          'временное затруднение носового дыхания',
-          'изменение чувствительности',
-          'возможная повторная коррекция',
-        ],
-      },
-      {
-        name: 'Септопластика',
-        note: 'Проходит с обезболиванием, требует восстановления.',
-        items: ['отёк', 'сухость в носу', 'кровотечение', 'повторное искривление перегородки'],
-      },
-    ],
-    risksNote: 'Хирург разбирает риски на консультации, до решения об операции. Результат зависит от анатомии и особенностей заживления и у разных людей отличается.',
     /* Подписи на самом рисунке. Короткие: это пометки на полях, а не текст */
     scheme: {
-      alt: 'Силуэт головы в профиль с разметкой хирурга: оси лица, ось спинки носа, кончик, линия перегородки и путь воздуха',
-      axes: 'оси лица',
+      alt: 'Линия лица в профиль с разметкой хирурга: уровни переносицы и кончика, ось спинки носа, линия перегородки и путь воздуха',
       dorsum: 'спинка',
       tip: 'кончик',
       septum: 'перегородка',
@@ -534,6 +529,16 @@ const en: typeof ru = {
           { mark: 'Approach', text: 'Open or closed - by the task' },
           { mark: 'Revision', text: 'After previous surgery and after injury' },
         ],
+        risks: {
+          label: 'Risks',
+          note: 'Performed under anaesthesia, requires a recovery period.',
+          items: [
+            'swelling',
+            'temporary difficulty with nasal breathing',
+            'changes in sensation',
+            'possible revision procedure',
+          ],
+        },
       },
       {
         state: 'breath',
@@ -545,6 +550,11 @@ const en: typeof ru = {
           { mark: 'Indication', text: 'Persistent difficulty with nasal breathing' },
           { mark: 'From inside', text: 'No external incisions needed' },
         ],
+        risks: {
+          label: 'Risks',
+          note: 'Performed with anaesthesia, requires a recovery period.',
+          items: ['swelling', 'dryness in the nose', 'bleeding', 'recurrence of the deviation'],
+        },
       },
     ],
     together: {
@@ -553,30 +563,10 @@ const en: typeof ru = {
       name: 'One operation',
       lead: 'Often both are needed. Then both tasks are closed in a single procedure.',
       marks: ['one anaesthesia', 'one recovery'],
-      note: 'Whether that suits a particular case, the surgeon says in person - from an examination and imaging, not from a photograph of the nose.',
+      note: 'The surgeon goes through the risks at the consultation, before any decision is made, and says there whether the operation suits a particular case: from an examination and imaging, not from a photograph of the nose. The outcome depends on the anatomy and on how the tissues heal, and differs from one person to another.',
     },
-    risksLabel: '// Risks',
-    risks: [
-      {
-        name: 'Rhinoplasty',
-        note: 'Performed under anaesthesia, requires a recovery period.',
-        items: [
-          'swelling',
-          'temporary difficulty with nasal breathing',
-          'changes in sensation',
-          'possible revision procedure',
-        ],
-      },
-      {
-        name: 'Septoplasty',
-        note: 'Performed with anaesthesia, requires a recovery period.',
-        items: ['swelling', 'dryness in the nose', 'bleeding', 'recurrence of the deviation'],
-      },
-    ],
-    risksNote: 'The surgeon goes through the risks at the consultation, before any decision is made. The outcome depends on the anatomy and on how the tissues heal, and differs from one person to another.',
     scheme: {
-      alt: "A head silhouette in profile with the surgeon's markings: facial axes, the axis of the nasal dorsum, the tip, the line of the septum and the path of the air",
-      axes: 'facial axes',
+      alt: "A profile line with the surgeon's markings: the levels of the nasion and the tip, the axis of the nasal dorsum, the line of the septum and the path of the air",
       dorsum: 'dorsum',
       tip: 'tip',
       septum: 'septum',
