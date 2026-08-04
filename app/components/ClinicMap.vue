@@ -165,13 +165,12 @@ const scaleLen = KM * 5
         <text class="map__t map__t--name" :x="H.x + 34" :y="H.y - 2">{{ labels.hospital }}</text>
         <text class="map__t map__t--soft" :x="H.x + 34" :y="H.y + 20">{{ labels.area }}</text>
       </g>
-      <!-- ⚠️ Подпись стоит ПОД маркером и заметно левее его: строки, привязанные
-           к правому краю, на реальных телефонах уже дважды срезались кромкой
-           (видимая ширина окна карты на устройствах гуляет). Центр на 660
-           выдерживает окно вплоть до ~740 единиц -->
+      <!-- ⚠️ Подпись стоит ПОД маркером, обе строки выровнены по правому краю
+           (правка Марка). Правый край на 745 - под левой кромкой кольца маркера,
+           с запасом ~85 единиц от края окна: видимая ширина на устройствах гуляет -->
       <g class="map__label map__label--narrow" aria-hidden="true">
-        <text class="map__t map__t--name" :x="660" :y="H.y + 66" text-anchor="middle">{{ nameParts[0] }}</text>
-        <text class="map__t map__t--name" :x="660" :y="H.y + 94" text-anchor="middle">{{ nameParts[1] }}</text>
+        <text class="map__t map__t--name" :x="745" :y="H.y + 66" text-anchor="end">{{ nameParts[0] }}</text>
+        <text class="map__t map__t--name" :x="745" :y="H.y + 94" text-anchor="end">{{ nameParts[1] }}</text>
       </g>
     </svg>
   </div>
