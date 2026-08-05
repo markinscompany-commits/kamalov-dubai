@@ -180,8 +180,8 @@ const ru = {
   */
   surgery: {
     label: '[04] Хирургия носа',
-    // Короче на хвост «а не две» - правка Марка 04.08
-    title: 'Форма и дыхание - одна задача.',
+    // Короче на хвост «а не две» (04.08) и без точки на конце (05.08) - правки Марка
+    title: 'Форма и дыхание - одна задача',
     lead: 'Один каркас - кости, хрящи и перегородка - держит и очертания носа, и ход для воздуха. Поэтому хирург смотрит на обе задачи сразу.',
     /*
       Три «прохода» по одному профилю: форма → дыхание → вместе. На рисунке
@@ -524,7 +524,7 @@ const en: typeof ru = {
   // Ринопластика и септопластика одним блоком - см. пояснение в русской версии
   surgery: {
     label: '[04] Nose surgery',
-    title: 'Shape and breathing are one task.',
+    title: 'Shape and breathing are one task',
     lead: 'One framework - bone, cartilage and the septum - holds both the outline of the nose and the path for the air. So the surgeon looks at both tasks at once.',
     parts: [
       {
