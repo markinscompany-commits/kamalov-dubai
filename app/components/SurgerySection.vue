@@ -90,8 +90,11 @@ onBeforeUnmount(() => watcher?.disconnect())
       </div>
 
       <div class="sg__stages">
+        <!-- У задач есть якоря (#rhinoplasty / #septoplasty): пункты меню
+             «Ринопластика» и «Септопластика» ведут каждый на свою часть блока -->
         <article
           v-for="(stage, i) in stages"
+          :id="'anchor' in stage ? stage.anchor : undefined"
           :key="stage.state"
           :ref="(el) => setStageRef(el, i)"
           class="sg__stage"
@@ -177,6 +180,8 @@ onBeforeUnmount(() => watcher?.disconnect())
   display: flex;
   flex-direction: column;
   gap: var(--s-3);
+  /* Переход по якорю из меню: заголовок задачи не должен нырять под шапку */
+  scroll-margin-block-start: calc(var(--header-h) + var(--s-6));
   /* Запас по высоте: у каждого прохода должно быть своё место на экране,
      иначе разметка на профиле переключается быстрее, чем читается текст */
   min-block-size: 54vh;

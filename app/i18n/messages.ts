@@ -35,12 +35,11 @@ const ru = {
     */
     links: [
       { label: 'О докторе', short: 'О докторе', href: '#doctor', service: false },
-      // Ринопластика и септопластика слиты в один блок (структура из 11 блоков,
-      // принята Марком 02.08) - и в меню это теперь один пункт.
-      // «Операции» переименованы (правка Марка 04.08): само слово пациенту
-      // ничего не говорило. В меню - полные названия операций, в строке
-      // шапки - короткое «Хирургия носа»
-      { label: 'Ринопластика и септопластика', short: 'Хирургия носа', href: '#surgery', service: true },
+      // Блок операций один, но в меню - ДВА пункта (правка Марка 04.08):
+      // каждый ведёт на свою часть блока. Якоря стоят на проходах внутри
+      // SurgerySection: #rhinoplasty - задача формы, #septoplasty - дыхания.
+      { label: 'Ринопластика', short: 'Ринопластика', href: '#rhinoplasty', service: true },
+      { label: 'Септопластика', short: 'Септопластика', href: '#septoplasty', service: true },
       // menuOnly: в строке шапки места нет (с пятью пунктами английская строка
       // пересекала границу половин) - пункт живёт только в бургер-меню
       { label: 'Где принимает', short: 'Госпиталь', href: '#clinic', service: false, menuOnly: true },
@@ -196,6 +195,8 @@ const ru = {
     parts: [
       {
         state: 'form',
+        // Якорь пункта меню «Ринопластика»
+        anchor: 'rhinoplasty',
         step: 'Задача 01',
         name: 'Форма',
         surgery: 'Ринопластика',
@@ -217,6 +218,8 @@ const ru = {
       },
       {
         state: 'breath',
+        // Якорь пункта меню «Септопластика»
+        anchor: 'septoplasty',
         step: 'Задача 02',
         name: 'Дыхание',
         surgery: 'Септопластика',
@@ -444,7 +447,8 @@ const en: typeof ru = {
   nav: {
     links: [
       { label: 'About the doctor', short: 'About', href: '#doctor', service: false },
-      { label: 'Rhinoplasty and septoplasty', short: 'Nose surgery', href: '#surgery', service: true },
+      { label: 'Rhinoplasty', short: 'Rhinoplasty', href: '#rhinoplasty', service: true },
+      { label: 'Septoplasty', short: 'Septoplasty', href: '#septoplasty', service: true },
       // menuOnly - см. пояснение в русской версии
       { label: 'Where he sees patients', short: 'Hospital', href: '#clinic', service: false, menuOnly: true },
       { label: 'Contacts', short: 'Contacts', href: '#contacts', service: false },
@@ -525,6 +529,7 @@ const en: typeof ru = {
     parts: [
       {
         state: 'form',
+        anchor: 'rhinoplasty',
         step: 'Task 01',
         name: 'Shape',
         surgery: 'Rhinoplasty',
@@ -546,6 +551,7 @@ const en: typeof ru = {
       },
       {
         state: 'breath',
+        anchor: 'septoplasty',
         step: 'Task 02',
         name: 'Breathing',
         surgery: 'Septoplasty',
