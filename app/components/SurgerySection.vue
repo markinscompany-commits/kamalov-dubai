@@ -7,7 +7,9 @@
   форма → дыхание → вместе. Последний и есть смысл объединения двух операций
   в один блок: одна точка, две задачи, одно вмешательство.
 
-  Цвет разделяет операции: золото - форма, синий - дыхание (см. NoseScheme).
+  Рисунок - артворк Марка из Фигмы (см. NoseScheme и utils/schemeArt.ts):
+  задачи по отдельности размечены золотом, в «вместе» линии синие,
+  а золотом - узел на пересечении и подпись «одна операция».
 
   ⚠️ ТЕКСТА МАЛО НАМЕРЕННО (правка Марка 04.08: «очень сухо, много текста»).
   Правила этого блока:
@@ -85,7 +87,7 @@ onBeforeUnmount(() => watcher?.disconnect())
       <!-- Рисунок держится на месте, пока идут все три прохода -->
       <div class="sg__figure">
         <div class="sg__sticky">
-          <NoseScheme :state="activeState" :labels="m.surgery.scheme" />
+          <NoseScheme :state="activeState" :alt="m.surgery.scheme.alt" />
         </div>
       </div>
 
@@ -107,7 +109,7 @@ onBeforeUnmount(() => watcher?.disconnect())
           <p v-if="'surgery' in stage" class="mono sg__surgery">{{ stage.surgery }}</p>
 
           <!-- На телефоне прилипания нет: у каждого прохода свой рисунок -->
-          <NoseScheme class="sg__scheme-m" :state="stage.state" :labels="m.surgery.scheme" />
+          <NoseScheme class="sg__scheme-m" :state="stage.state" :alt="m.surgery.scheme.alt" />
 
           <p class="sg__stage-lead">{{ stage.lead }}</p>
 
@@ -165,8 +167,9 @@ onBeforeUnmount(() => watcher?.disconnect())
   position: sticky;
   /* Под шапкой, примерно на трети экрана: рисунок оказывается напротив текста */
   inset-block-start: calc(var(--header-h-scrolled) + 4rem);
-  /* Подписи выходят за кадр рисунка вправо - им нужно место в коридоре */
-  --ns-size: 22rem;
+  /* Кадр из Фигмы показывается близко к авторскому размеру (460px):
+     подписи нарисованы под кегль ~11px и при сильном уменьшении гаснут */
+  --ns-size: 28.75rem;
 }
 
 .sg__stages {
