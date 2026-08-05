@@ -42,6 +42,7 @@ const ru = {
       { label: 'Септопластика', short: 'Септопластика', href: '#septoplasty', service: true },
       // menuOnly: в строке шапки места нет (с пятью пунктами английская строка
       // пересекала границу половин) - пункт живёт только в бургер-меню
+      { label: 'Результаты', short: 'Результаты', href: '#results', service: false, menuOnly: true },
       { label: 'Где принимает', short: 'Госпиталь', href: '#clinic', service: false, menuOnly: true },
       { label: 'Контакты', short: 'Контакты', href: '#contacts', service: false },
     ],
@@ -267,6 +268,55 @@ const ru = {
     },
   },
   /*
+    Блок [05] «Результаты» - галерея «до/после». Подача «Журнал случаев»
+    (вариант А, выбор Марка 05.08): вертикальный архив, каждая пара - запись.
+
+    ⚠️ ЗАГЛУШКА ДО МАТЕРИАЛОВ КЛИНИКИ. Кадры взяты из опубликованных работ на
+    dr-kamalov.com (решение Марка 02.08), обрезаны до профиля - обе половины
+    пары одинаково (обрезка - не ретушь, ST-21 п. 9.6 это допускает; цвет и
+    свет НЕ трогали - «без обработки» это запрещает). Перед запуском клиника
+    обязана заменить кадры на свои с письменными согласиями пациентов -
+    требование стоит в письменном списке передачи.
+
+    ⚠️ Оговорка под КАЖДОЙ парой, тем же кеглем, что основной текст, -
+    дословное требование ST-21 п. 9.6. Повтор одной фразы шесть раз - это
+    требование регулятора, а не небрежность текста.
+
+    ⚠️ Сроки «спустя N месяцев» указаны только там, где они стояли в исходной
+    публикации врача (случаи 5 и 6). Выдумывать сроки остальным нельзя.
+
+    ⚠️ Никаких оценочных слов («аккуратный», «ровный», «красивый») - запрет
+    ST-21 на обещание результата. Только факты: до, после, срок.
+  */
+  results: {
+    label: '[05] Результаты',
+    // Без точки, без превосходных степеней. «Случаи» - язык врача, не рекламы
+    title: 'Шесть случаев из практики',
+    lead: 'Все кадры - из опубликованных работ доктора. Каждая пара снята в профиль и обрезана одинаково: сравнивается форма носа, а не свет, макияж или причёска.',
+    caseWord: 'Случай',
+    before: 'До',
+    after: 'После',
+    /* Оговорка по ST-21 п. 9.6 - под каждой парой, кеглем основного текста */
+    disclaimer: 'Результат не гарантирован и может отличаться у разных людей.',
+    /* Сроки - только подтверждённые исходной публикацией. У остальных случаев
+       поле пустое, и подпись срока не выводится */
+    cases: [
+      { id: 'case1', term: '' },
+      { id: 'case2', term: '' },
+      { id: 'case3', term: '' },
+      { id: 'case4', term: '' },
+      { id: 'case5', term: 'спустя 10 месяцев' },
+      { id: 'case6', term: 'спустя год' },
+    ],
+    /* Риски по требованию ST-21 идут вместе с оговоркой: перечислены выше
+       в блоке операций, здесь - отсылка одной строкой на весь блок */
+    risksNote: 'Риски ринопластики и септопластики перечислены в разделе о хирургии носа и разбираются на консультации.',
+    photoAlt: {
+      before: 'Профиль пациента до операции',
+      after: 'Профиль пациента после операции',
+    },
+  },
+  /*
     Блок «Где принимает» - Dubai London Hospital.
 
     Факты сверены 03.08.2026: адрес и участок 760 - 2GIS/Nominatim, круглосуточный
@@ -449,6 +499,7 @@ const en: typeof ru = {
       { label: 'About the doctor', short: 'About', href: '#doctor', service: false },
       { label: 'Rhinoplasty', short: 'Rhinoplasty', href: '#rhinoplasty', service: true },
       { label: 'Septoplasty', short: 'Septoplasty', href: '#septoplasty', service: true },
+      { label: 'Results', short: 'Results', href: '#results', service: false, menuOnly: true },
       // menuOnly - см. пояснение в русской версии
       { label: 'Where he sees patients', short: 'Hospital', href: '#clinic', service: false, menuOnly: true },
       { label: 'Contacts', short: 'Contacts', href: '#contacts', service: false },
@@ -584,6 +635,30 @@ const en: typeof ru = {
       form: 'shape',
       breath: 'breathing',
       both: 'one operation',
+    },
+  },
+  // Комментарии к блоку - в русской версии (results выше)
+  results: {
+    label: '[05] Results',
+    title: 'Six cases from practice',
+    lead: "All frames are from the doctor's published work. Each pair is shot in profile and cropped the same way: what you compare is the shape of the nose - not the light, make-up or hair.",
+    caseWord: 'Case',
+    before: 'Before',
+    after: 'After',
+    // Дословная формула ST-21 п. 9.6
+    disclaimer: 'There is no guarantee that the result will be the same - it may vary from one individual to another.',
+    cases: [
+      { id: 'case1', term: '' },
+      { id: 'case2', term: '' },
+      { id: 'case3', term: '' },
+      { id: 'case4', term: '' },
+      { id: 'case5', term: '10 months after surgery' },
+      { id: 'case6', term: 'one year after surgery' },
+    ],
+    risksNote: 'The risks of rhinoplasty and septoplasty are listed in the nose surgery section and are discussed at the consultation.',
+    photoAlt: {
+      before: "A patient's profile before surgery",
+      after: "A patient's profile after surgery",
     },
   },
   // Arabian Gulf, не Persian Gulf - местная норма, см. пояснение в русской версии
