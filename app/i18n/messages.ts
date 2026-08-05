@@ -36,8 +36,11 @@ const ru = {
     links: [
       { label: 'О докторе', short: 'О докторе', href: '#doctor', service: false },
       // Ринопластика и септопластика слиты в один блок (структура из 11 блоков,
-      // принята Марком 02.08) - и в меню это теперь один пункт
-      { label: 'Операции', short: 'Операции', href: '#surgery', service: true },
+      // принята Марком 02.08) - и в меню это теперь один пункт.
+      // «Операции» переименованы (правка Марка 04.08): само слово пациенту
+      // ничего не говорило. В меню - полные названия операций, в строке
+      // шапки - короткое «Хирургия носа»
+      { label: 'Ринопластика и септопластика', short: 'Хирургия носа', href: '#surgery', service: true },
       // menuOnly: в строке шапки места нет (с пятью пунктами английская строка
       // пересекала границу половин) - пункт живёт только в бургер-меню
       { label: 'Где принимает', short: 'Госпиталь', href: '#clinic', service: false, menuOnly: true },
@@ -177,8 +180,9 @@ const ru = {
     п. 7.1.5 и 9.6 - тем же кеглем, что основной текст.
   */
   surgery: {
-    label: '[04] Операции',
-    title: 'Форма и дыхание - одна задача, а не две.',
+    label: '[04] Хирургия носа',
+    // Короче на хвост «а не две» - правка Марка 04.08
+    title: 'Форма и дыхание - одна задача.',
     lead: 'Один каркас - кости, хрящи и перегородка - держит и очертания носа, и ход для воздуха. Поэтому хирург смотрит на обе задачи сразу.',
     /*
       Три «прохода» по одному профилю: форма → дыхание → вместе. На рисунке
@@ -440,7 +444,7 @@ const en: typeof ru = {
   nav: {
     links: [
       { label: 'About the doctor', short: 'About', href: '#doctor', service: false },
-      { label: 'Surgery', short: 'Surgery', href: '#surgery', service: true },
+      { label: 'Rhinoplasty and septoplasty', short: 'Nose surgery', href: '#surgery', service: true },
       // menuOnly - см. пояснение в русской версии
       { label: 'Where he sees patients', short: 'Hospital', href: '#clinic', service: false, menuOnly: true },
       { label: 'Contacts', short: 'Contacts', href: '#contacts', service: false },
@@ -515,8 +519,8 @@ const en: typeof ru = {
   },
   // Ринопластика и септопластика одним блоком - см. пояснение в русской версии
   surgery: {
-    label: '[04] Surgery',
-    title: 'Shape and breathing are one task, not two.',
+    label: '[04] Nose surgery',
+    title: 'Shape and breathing are one task.',
     lead: 'One framework - bone, cartilage and the septum - holds both the outline of the nose and the path for the air. So the surgeon looks at both tasks at once.',
     parts: [
       {

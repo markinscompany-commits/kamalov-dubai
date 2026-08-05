@@ -395,6 +395,12 @@ onBeforeUnmount(() => watcher?.disconnect())
   .sg__action :deep(.action) {
     inline-size: 100%;
   }
+
+  /* Плитки на телефоне крупнее (правка Марка 04.08: clamp упирался в нижнюю
+     границу и текст выходил слишком мелким). Кегль ПК не трогаем */
+  .sg__tile {
+    font-size: 1.25rem;
+  }
 }
 
 @media (max-width: 560px) {

@@ -73,8 +73,9 @@ const bothOn = computed(() => live.value && props.state === 'both')
 /* В «вместе» подписи отдельных линий уступают место названиям двух задач */
 const soloOn = computed(() => live.value && !bothOn.value)
 
-/** Кадр обрезан по содержимому: контур + разметка + запас справа под выноску */
-const VIEWBOX = '62 16 72 114'
+/** Кадр обрезан по содержимому: контур + разметка + запас справа под выноску.
+    Верх поднят до y=26 - лоб укорочен по правке Марка 04.08 */
+const VIEWBOX = '62 26 72 104'
 </script>
 
 <template>
@@ -102,7 +103,7 @@ const VIEWBOX = '62 16 72 114'
             <rect class="ns__wipe ns__wipe--v ns__wipe--d1" :class="{ 'is-on': breathOn }" x="40" y="0" width="140" height="160" />
           </clipPath>
           <clipPath :id="`wa-${uid}`">
-            <rect class="ns__wipe ns__wipe--rev ns__wipe--d2" :class="{ 'is-on': breathOn }" x="40" y="0" width="140" height="160" />
+            <rect class="ns__wipe ns__wipe--h ns__wipe--d2" :class="{ 'is-on': breathOn }" x="40" y="0" width="140" height="160" />
           </clipPath>
         </defs>
 
@@ -126,10 +127,12 @@ const VIEWBOX = '62 16 72 114'
         <g :clip-path="`url(#ws-${uid})`">
           <path class="ns__line ns__line--septum" d="M104.4 62 L104.4 92" />
         </g>
+        <!-- Путь воздуха: дуга ОТ ноздри наружу и вниз (правка Марка 04.08 -
+             прежняя шла поперёк лица внутрь и читалась неанатомично) -->
         <g :clip-path="`url(#wa-${uid})`">
           <path
             class="ns__line ns__line--flow"
-            d="M126 70 C 116 73, 108 76, 104 80 C 99 85, 94 90, 91 97"
+            d="M104.8 80.5 C 110 84.5, 117 90, 124 98"
           />
         </g>
 
@@ -149,8 +152,8 @@ const VIEWBOX = '62 16 72 114'
       </svg>
 
       <!-- Пометки на полях рисунка. Координаты пересчитаны из системы
-           рисунка (кадр 62 16 72 114): доля по ширине = (x - 62) / 0.72,
-           доля по высоте = (y - 16) / 1.14 -->
+           рисунка (кадр 62 26 72 104): доля по ширине = (x - 62) / 0.72,
+           доля по высоте = (y - 26) / 1.04 -->
       <span class="mono ns__tag ns__tag--tip" :class="{ 'is-on': formOn && soloOn }">{{ labels.tip }}</span>
       <span class="mono ns__tag ns__tag--dorsum" :class="{ 'is-on': formOn && soloOn }">{{ labels.dorsum }}</span>
       <span class="mono ns__tag ns__tag--septum" :class="{ 'is-on': breathOn && soloOn }">{{ labels.septum }}</span>
@@ -173,7 +176,7 @@ const VIEWBOX = '62 16 72 114'
   inline-size: 100%;
   max-inline-size: var(--ns-size, 22rem);
   /* Пропорция кадра рисунка - та же, что в viewBox */
-  aspect-ratio: 72 / 114;
+  aspect-ratio: 72 / 104;
 }
 
 .ns__svg {
@@ -263,12 +266,6 @@ const VIEWBOX = '62 16 72 114'
   transform-origin: 0 0;
 }
 
-/* Путь воздуха идёт снаружи внутрь, поэтому его шторка открывается справа -
-   от начала самой линии (x = 126, то есть 64 от края кадра) */
-.ns__wipe--rev {
-  transform-origin: 64px 0;
-}
-
 /* Контур чертится дольше линеек: он длиннее и он главный на рисунке */
 .ns__wipe--slow {
   transition-duration: 1500ms;
@@ -334,43 +331,45 @@ const VIEWBOX = '62 16 72 114'
    идёт колонка с номером раздела, места там нет */
 .ns__tag--tip {
   inset-inline-start: 92%;
-  inset-block-start: 46%;
+  inset-block-start: 41%;
 }
 
 .ns__tag--dorsum {
   inset-inline-start: 76%;
-  inset-block-start: 65%;
+  inset-block-start: 62%;
   color: var(--gold-deep);
 }
 
 .ns__tag--septum {
   inset-inline-start: 62%;
-  inset-block-start: 68%;
+  inset-block-start: 65%;
   color: var(--gold-deep);
 }
 
+/* Подпись пути воздуха стоит ПОД концом дуги, ступенькой ниже подписи
+   перегородки - на одной высоте они налезали друг на друга */
 .ns__tag--airway {
-  inset-inline-start: 86%;
-  inset-block-start: 42%;
+  inset-inline-start: 84%;
+  inset-block-start: 74%;
   color: var(--gold-deep);
 }
 
 /* «Вместе»: задачи подписаны синим, узел - золотом */
 .ns__tag--form {
   inset-inline-start: 76%;
-  inset-block-start: 65%;
+  inset-block-start: 62%;
   color: var(--blue);
 }
 
 .ns__tag--breath {
-  inset-inline-start: 86%;
-  inset-block-start: 42%;
+  inset-inline-start: 84%;
+  inset-block-start: 74%;
   color: var(--blue);
 }
 
 .ns__tag--both {
   inset-inline-start: 83%;
-  inset-block-start: 25%;
+  inset-block-start: 18%;
   color: var(--gold-deep);
 }
 
