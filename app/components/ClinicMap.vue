@@ -76,6 +76,32 @@ const B = BURJ
 const scaleX0 = 60
 const scaleY = VB.h - 56
 const scaleLen = KM * 5
+
+/*
+  Имя госпиталя - HTML-слой поверх карты, а НЕ <text> внутри SVG.
+
+  ⚠️ Причина - баг WebKit на iPhone (правка Марка 05.08): после каскада
+  переходов карты текстовый слой SVG иногда выпадал из отрисовки - маркер
+  оставался, а название исчезало. Фигуры (кольцо, точка) этому не подвержены,
+  текст - да. Обычному HTML-абзацу поверх карты пропадать нечем.
+
+  Позиции пересчитаны из прежних SVG-координат в проценты кадра.
+  ⚠️ NARROW_W = ширина видимого кадра на телефоне - число обязано совпадать
+  с aspect-ratio в @media (max-width: 700px) ниже.
+*/
+const NARROW_W = 830
+
+const nameWideStyle = {
+  insetInlineStart: `${(((H.x + 34) / VB.w) * 100).toFixed(2)}%`,
+  insetBlockStart: `${(((H.y - 13) / VB.h) * 100).toFixed(2)}%`,
+}
+
+/* На телефоне подпись стоит ПОД маркером, правым краем к 745 (см. прежнее
+   пояснение у SVG-подписи: запас ~85 единиц от кромки - видимая ширина гуляет) */
+const nameNarrowStyle = {
+  insetInlineEnd: `${(((NARROW_W - 745) / NARROW_W) * 100).toFixed(2)}%`,
+  insetBlockStart: `${(((H.y + 48) / VB.h) * 100).toFixed(2)}%`,
+}
 </script>
 
 <template>
@@ -163,34 +189,37 @@ const scaleLen = KM * 5
         <circle class="map__dot" :cx="H.x" :cy="H.y" r="8" />
       </g>
 
-      <!-- Подпись узла: имя тем же красным, что маркер.
-           На широких экранах справа от кольца, на телефоне - двумя строками
-           слева от узла, правым краем к нему; район на телефоне не выводим,
-           он есть в адресе под картой (подписи мешали друг другу - правка Марка) -->
-      <g class="map__label map__label--wide">
-        <text class="map__t map__t--name" :x="H.x + 34" :y="H.y - 2">{{ labels.hospital }}</text>
-        <text class="map__t map__t--soft" :x="H.x + 34" :y="H.y + 20">{{ labels.area }}</text>
-      </g>
-      <!-- ⚠️ Подпись стоит ПОД маркером, обе строки выровнены по правому краю
-           (правка Марка). Правый край на 745 - под левой кромкой кольца маркера,
-           с запасом ~85 единиц от края окна: видимая ширина на устройствах гуляет -->
-      <g class="map__label map__label--narrow" aria-hidden="true">
-        <text class="map__t map__t--name" :x="745" :y="H.y + 66" text-anchor="end">{{ nameParts[0] }}</text>
-        <text class="map__t map__t--name" :x="745" :y="H.y + 94" text-anchor="end">{{ nameParts[1] }}</text>
-      </g>
     </svg>
+
+    <!-- Подпись узла: имя тем же красным, что маркер. HTML-слой, не SVG-текст -
+         см. пояснение у nameWideStyle в скрипте. На широких экранах справа от
+         кольца (+ район), на телефоне - двумя строками под маркером, правым
+         краем к нему; район на телефоне не выводим, он есть в адресе под картой -->
+    <p class="map__name map__name--wide" :style="nameWideStyle">
+      <span class="map__name-title">{{ labels.hospital }}</span>
+      <span class="map__name-area">{{ labels.area }}</span>
+    </p>
+    <p class="map__name map__name--narrow" :style="nameNarrowStyle" aria-hidden="true">
+      <span class="map__name-title">{{ nameParts[0] }}</span>
+      <span class="map__name-title">{{ nameParts[1] }}</span>
+    </p>
   </div>
 </template>
 
 <style scoped>
 .map {
+  /* От карты позиционируется HTML-подпись госпиталя */
+  position: relative;
+  /* Кегли подписи считаются от ширины карты, как раньше масштабировался
+     SVG-текст: контейнерные единицы дают тот же эффект для HTML-слоя */
+  container-type: inline-size;
   inline-size: 100%;
   /*
     Пропорция видимого окна карты. На десктопе равна viewBox (1200x576 - ничего
     не режется), на телефоне окно уже - preserveAspectRatio="xMinYMin slice"
     обрезает КАРТУ СПРАВА (правка Марка: на узком экране правая пустая часть
     только сжимала важное). ⚠️ При перегенерации данных с другим кадром
-    поправить числа и здесь.
+    поправить числа и здесь, и NARROW_W в скрипте.
   */
   aspect-ratio: calc(1200 / 576);
   overflow: hidden;
@@ -286,9 +315,51 @@ const scaleLen = KM * 5
 }
 
 .map__node--narrow,
-.map__label--narrow,
 .map__t--palm-narrow {
   display: none;
+}
+
+/* --- Имя госпиталя: HTML-слой поверх карты --- */
+
+.map__name {
+  position: absolute;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35cqw;
+  font-family: var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  pointer-events: none;
+  /* Подложка вместо SVG-обводки: подпись читается поверх линий дорог */
+  text-shadow:
+    1px 1px 0 var(--paper-raised),
+    -1px 1px 0 var(--paper-raised),
+    1px -1px 0 var(--paper-raised),
+    -1px -1px 0 var(--paper-raised),
+    0 0 6px var(--paper-raised);
+}
+
+.map__name-title {
+  /* 14 единиц кадра из 1200, как у прежнего SVG-текста */
+  font-size: max(1.17cqw, 10px);
+  font-weight: 500;
+  color: var(--map-marker);
+}
+
+.map__name-area {
+  font-size: max(0.92cqw, 9px);
+  color: var(--ink-soft);
+}
+
+/* ⚠️ display у узкой подписи задаётся ЗДЕСЬ, после базового .map__name:
+   у селекторов одинаковый вес, побеждает порядок - выше по файлу правило
+   скрытия проигрывало бы базовому display: flex */
+.map__name--narrow {
+  display: none;
+  align-items: flex-end;
+  text-align: end;
 }
 
 /* --- Подписи --- */
@@ -312,12 +383,6 @@ const scaleLen = KM * 5
   text-anchor: middle;
 }
 
-.map__t--name {
-  font-size: 14px;
-  font-weight: 500;
-  fill: var(--map-marker);
-}
-
 .map__t--soft {
   font-size: 11px;
 }
@@ -335,7 +400,7 @@ const scaleLen = KM * 5
 .map__main,
 .map__burj,
 .map__node,
-.map__label,
+.map__name,
 .map__t--road {
   opacity: 0;
 }
@@ -366,7 +431,7 @@ const scaleLen = KM * 5
 .map--live .map__main,
 .map--live .map__burj,
 .map--live .map__node,
-.map--live .map__label,
+.map--live .map__name,
 .map--live .map__t--road {
   opacity: 1;
   transition: opacity var(--dur-slow) var(--ease-out);
@@ -404,7 +469,7 @@ const scaleLen = KM * 5
     transform var(--dur-base) var(--ease-out) 1500ms;
 }
 
-.map--live .map__label {
+.map--live .map__name {
   transition: opacity var(--dur-base) var(--ease-out) 1750ms;
 }
 
@@ -430,7 +495,7 @@ const scaleLen = KM * 5
   }
 
   .map__node--wide,
-  .map__label--wide,
+  .map__name--wide,
   .map__t--palm-wide {
     display: none;
   }
@@ -438,19 +503,23 @@ const scaleLen = KM * 5
   /* ⚠️ Для SVG-групп включение через display: inline, не initial:
      initial на SVG-элементах в Safari ведёт себя ненадёжно */
   .map__node--narrow,
-  .map__label--narrow,
   .map__t--palm-narrow {
     display: inline;
+  }
+
+  .map__name--narrow {
+    display: flex;
+  }
+
+  /* 22 единицы кадра из 830 видимых - как у прежнего SVG-текста телефона */
+  .map__name-title {
+    font-size: max(2.65cqw, 12px);
+    letter-spacing: 0.04em;
   }
 
   .map__t {
     font-size: 22px;
     stroke-width: 8px;
-  }
-
-  .map__t--name {
-    font-size: 22px;
-    letter-spacing: 0.04em;
   }
 
   .map__t--soft {
