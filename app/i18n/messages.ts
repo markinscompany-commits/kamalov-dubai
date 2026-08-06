@@ -493,6 +493,63 @@ const ru = {
     sunLabel: '// Отдельно про солнце',
     sun: 'В климате Эмиратов это важнее, чем кажется: прямое солнце на свежих рубцах и в период отёка хирурги ограничивают дольше, чем всё остальное. Срок и способы защиты хирург называет на контрольном осмотре.',
   },
+  /*
+    Блок [11] «Заявка и контакты».
+    Формулировки без обещаний сроков ответа и без искусственной срочности
+    (ST-21 п. 8.1.14). Цены не показываем - но сказать, что стоимость
+    обсуждается на консультации, можно и нужно: это главный невысказанный
+    вопрос человека в конце страницы.
+    🔴 Отправка заявок: адреса почты и Telegram от клиники НЕ получены
+    (срок 06.08 прошёл) - транспорт подключается на временный адрес,
+    см. useBookingForm.ts.
+  */
+  booking: {
+    label: '[11] Заявка и контакты',
+    title: 'Запись на консультацию',
+    lead: 'Консультация проходит в Dubai London Hospital, по предварительной записи. Оставьте контакты удобным способом - через форму или в WhatsApp.',
+    form: {
+      name: 'Имя',
+      phone: 'Телефон',
+      email: 'E-mail',
+      optional: 'необязательно',
+      consent: 'Даю согласие на обработку персональных данных',
+      submit: 'Отправить заявку',
+      sending: 'Отправляем...',
+      doneTitle: 'Заявка получена',
+      doneText: 'Клиника свяжется с вами в рабочее время, чтобы согласовать визит.',
+      error: 'Отправить не получилось. Попробуйте ещё раз или напишите в WhatsApp.',
+      errName: 'Напишите, как к вам обращаться',
+      errPhone: 'Проверьте номер телефона',
+      errEmail: 'Проверьте адрес почты',
+      errConsent: 'Без согласия отправить заявку нельзя',
+    },
+    /* Вариант Б «Анкета»: поля стоят внутри фразы. Части фразы - отдельно,
+       чтобы вёрстка собирала «текст - поле - текст» на обоих языках */
+    phrase: {
+      p1: 'Меня зовут',
+      p2: 'Свяжитесь со мной по телефону',
+      p3: 'или почте',
+      nameHint: 'имя',
+      phoneHint: 'номер',
+      emailHint: 'адрес',
+    },
+    nextLabel: '// Что будет дальше',
+    next: [
+      { title: 'Связь из клиники', text: 'С вами согласуют дату и время консультации и подскажут, что взять с собой.' },
+      { title: 'Консультация у хирурга', text: 'Осмотр, разбор вашей задачи и план. Стоимость обсуждается на консультации.' },
+      { title: 'Решение без спешки', text: 'После консультации есть время подумать. Дата операции назначается, когда вы готовы.' },
+    ],
+    altLabel: '// Напрямую',
+    altText: 'Короткий вопрос удобнее задать в мессенджере',
+  },
+  /* Подвал. 🔴 Дополнится к запуску: номер рекламной лицензии MOH
+     (client-request, строка 3.1) и ссылка на политику конфиденциальности
+     (этап 5). Без них подвал намеренно короткий */
+  footer: {
+    name: 'Доктор Эльдар Камалов',
+    place: 'Dubai London Hospital, Дубай',
+    rights: '© 2026',
+  },
 }
 
 const en: typeof ru = {
@@ -779,6 +836,48 @@ const en: typeof ru = {
     note: 'The timings above are a guide, not a promise. They depend on the extent of the operation, on individual tissue characteristics and on how closely instructions are followed. The surgeon gives you the timings for your own case at the consultation, after examining you.',
     sunLabel: '// A note on the sun',
     sun: 'In the climate of the Emirates this matters more than it might seem: surgeons restrict direct sun on fresh scars and during the swelling period for longer than almost anything else. The surgeon sets the period and the means of protection at your follow-up.',
+  },
+  booking: {
+    label: '[11] Booking and contacts',
+    title: 'Book a consultation',
+    lead: 'Consultations are held at Dubai London Hospital, by appointment. Leave your contacts whichever way is easier - the form or WhatsApp.',
+    form: {
+      name: 'Name',
+      phone: 'Phone',
+      email: 'E-mail',
+      optional: 'optional',
+      consent: 'I consent to the processing of my personal data',
+      submit: 'Send request',
+      sending: 'Sending...',
+      doneTitle: 'Request received',
+      doneText: 'The clinic will contact you during working hours to arrange the visit.',
+      error: 'Something went wrong. Please try again or write on WhatsApp.',
+      errName: 'Tell us how to address you',
+      errPhone: 'Check the phone number',
+      errEmail: 'Check the e-mail address',
+      errConsent: 'The request cannot be sent without consent',
+    },
+    phrase: {
+      p1: 'My name is',
+      p2: 'Reach me by phone',
+      p3: 'or e-mail',
+      nameHint: 'name',
+      phoneHint: 'number',
+      emailHint: 'address',
+    },
+    nextLabel: '// What happens next',
+    next: [
+      { title: 'The clinic gets in touch', text: 'You agree on the date and time of the consultation and learn what to bring along.' },
+      { title: 'Consultation with the surgeon', text: 'Examination, a review of your case and a plan. Pricing is discussed at the consultation.' },
+      { title: 'No rush to decide', text: 'There is time to think after the consultation. Surgery is scheduled when you are ready.' },
+    ],
+    altLabel: '// Directly',
+    altText: 'A quick question is easier to ask in the messenger',
+  },
+  footer: {
+    name: 'Dr Eldar Kamalov',
+    place: 'Dubai London Hospital, Dubai',
+    rights: '© 2026',
   },
 }
 

@@ -10,11 +10,14 @@
 interface Props {
   variant?: 'primary' | 'ghost'
   href?: string
+  /** Для кнопки в форме: type="submit". Ссылок не касается */
+  type?: 'button' | 'submit'
 }
 
 withDefaults(defineProps<Props>(), {
   variant: 'primary',
   href: undefined,
+  type: 'button',
 })
 </script>
 
@@ -22,7 +25,7 @@ withDefaults(defineProps<Props>(), {
   <component
     :is="href ? 'a' : 'button'"
     :href="href"
-    :type="href ? undefined : 'button'"
+    :type="href ? undefined : type"
     class="action"
     :class="[`action--${variant}`, { brackets: variant === 'ghost' }]"
   >
@@ -77,6 +80,13 @@ withDefaults(defineProps<Props>(), {
 
 .action--ghost {
   color: var(--action-line);
+}
+
+/* Пока заявка отправляется, кнопка заблокирована - без прыжков размера */
+.action:disabled {
+  opacity: 0.55;
+  cursor: default;
+  pointer-events: none;
 }
 
 /* На узком экране длинная подпись важнее, чем строка в одну линию */
