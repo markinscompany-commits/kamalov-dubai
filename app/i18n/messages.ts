@@ -42,7 +42,7 @@ const ru = {
       { label: 'Септопластика', short: 'Септопластика', href: '#septoplasty', service: true },
       // menuOnly: в строке шапки места нет (с пятью пунктами английская строка
       // пересекала границу половин) - пункт живёт только в бургер-меню
-      { label: 'Результаты', short: 'Результаты', href: '#results', service: false, menuOnly: true },
+      { label: 'Примеры работ', short: 'Примеры работ', href: '#results', service: false, menuOnly: true },
       { label: 'Где принимает', short: 'Госпиталь', href: '#clinic', service: false, menuOnly: true },
       { label: 'Контакты', short: 'Контакты', href: '#contacts', service: false },
     ],
@@ -289,15 +289,20 @@ const ru = {
     ST-21 на обещание результата. Только факты: до, после, срок.
   */
   results: {
-    label: '[05] Результаты',
-    // Без точки, без превосходных степеней. «Случаи» - язык врача, не рекламы
-    title: 'Шесть случаев из практики',
-    lead: 'Все кадры - из опубликованных работ доктора. Каждая пара снята в профиль и обрезана одинаково: сравнивается форма носа, а не свет, макияж или причёска.',
+    /*
+      Правки Марка 05.08: «Результаты» → «Примеры работ» (и в меню), заголовок
+      «Шесть случаев из практики» и лид про происхождение кадров убраны -
+      посетителю это знание не нужно, пары говорят сами. Заголовок - «До и после»:
+      называет, что человек видит, и ничего не обещает.
+    */
+    label: '[05] Примеры работ',
+    title: 'До и после',
     caseWord: 'Случай',
     before: 'До',
     after: 'После',
-    /* Оговорка по ST-21 п. 9.6 - под каждой парой, кеглем основного текста */
-    disclaimer: 'Результат не гарантирован и может отличаться у разных людей.',
+    /* Оговорка по ST-21 п. 9.6 - под каждой парой, кеглем основного текста.
+       Без точки на конце (правка Марка 05.08) */
+    disclaimer: 'Результат не гарантирован и может отличаться у разных людей',
     /* Сроки - только подтверждённые исходной публикацией. У остальных случаев
        поле пустое, и подпись срока не выводится */
     cases: [
@@ -499,7 +504,7 @@ const en: typeof ru = {
       { label: 'About the doctor', short: 'About', href: '#doctor', service: false },
       { label: 'Rhinoplasty', short: 'Rhinoplasty', href: '#rhinoplasty', service: true },
       { label: 'Septoplasty', short: 'Septoplasty', href: '#septoplasty', service: true },
-      { label: 'Results', short: 'Results', href: '#results', service: false, menuOnly: true },
+      { label: 'Examples of work', short: 'Examples', href: '#results', service: false, menuOnly: true },
       // menuOnly - см. пояснение в русской версии
       { label: 'Where he sees patients', short: 'Hospital', href: '#clinic', service: false, menuOnly: true },
       { label: 'Contacts', short: 'Contacts', href: '#contacts', service: false },
@@ -639,14 +644,13 @@ const en: typeof ru = {
   },
   // Комментарии к блоку - в русской версии (results выше)
   results: {
-    label: '[05] Results',
-    title: 'Six cases from practice',
-    lead: "All frames are from the doctor's published work. Each pair is shot in profile and cropped the same way: what you compare is the shape of the nose - not the light, make-up or hair.",
+    label: '[05] Examples of work',
+    title: 'Before and after',
     caseWord: 'Case',
     before: 'Before',
     after: 'After',
-    // Дословная формула ST-21 п. 9.6
-    disclaimer: 'There is no guarantee that the result will be the same - it may vary from one individual to another.',
+    // Дословная формула ST-21 п. 9.6, без точки на конце
+    disclaimer: 'There is no guarantee that the result will be the same - it may vary from one individual to another',
     cases: [
       { id: 'case1', term: '' },
       { id: 'case2', term: '' },

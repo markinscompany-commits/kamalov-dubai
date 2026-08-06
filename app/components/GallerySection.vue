@@ -1,8 +1,13 @@
 <!--
-  Блок [05] «Результаты» - галерея «до/после». Подача «Журнал случаев»
+  Блок [05] «Примеры работ» - галерея «до/после». Подача «Журнал случаев»
   (вариант А, выбор Марка 05.08): спокойный вертикальный архив, каждая пара -
   запись. Сравнение держит вертикальный пунктир между «до» и «после» - наша
   разметка вместо запрещённого бегунка-шторки (типовой приём ниши, ST-21).
+
+  Правки Марка 05.08 (вторая итерация): кадры вертикальные 3:4 вместо квадрата,
+  заголовок «До и после», лид убран, «Результаты» → «Примеры работ», оговорка
+  без точки. Строка про риски ОСТАЛАСЬ: ST-21 п. 9.6.4 требует к «до/после»
+  оговорку «and the risks» - убирать нельзя.
 
   · пары гуляют по сетке влево-вправо - разворот журнала, а не таблица;
   · под КАЖДОЙ парой оговорка кеглем основного текста - дословное требование
@@ -93,8 +98,6 @@ onBeforeUnmount(() => {
   <PageSection id="results" :label="m.results.label" tone="paper" cross-y="5.5rem">
     <SectionTitle :text="m.results.title" />
 
-    <p class="gal__lead">{{ m.results.lead }}</p>
-
     <ol class="gal__list">
       <li
         v-for="(c, i) in m.results.cases"
@@ -122,8 +125,8 @@ onBeforeUnmount(() => {
                   <img
                     :src="`${base}media/gallery/${c.id}-before.jpg`"
                     :alt="m.results.photoAlt.before"
-                    width="900"
-                    height="900"
+                    width="720"
+                    height="960"
                     loading="lazy"
                   />
                   <span class="gal__expand" aria-hidden="true">
@@ -149,8 +152,8 @@ onBeforeUnmount(() => {
                   <img
                     :src="`${base}media/gallery/${c.id}-after.jpg`"
                     :alt="m.results.photoAlt.after"
-                    width="900"
-                    height="900"
+                    width="720"
+                    height="960"
                     loading="lazy"
                   />
                   <span class="gal__expand" aria-hidden="true">
@@ -177,12 +180,6 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.gal__lead {
-  font-size: var(--fs-lead);
-  line-height: 1.5;
-  max-inline-size: min(62ch, 100%);
-}
-
 /* --- Журнал случаев --- */
 
 .gal__list {
@@ -253,11 +250,12 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
+/* Кадры вертикальные 3:4 - лицо целиком (правка Марка 05.08: не квадрат) */
 .gal__shot img {
   display: block;
   inline-size: 100%;
   block-size: auto;
-  aspect-ratio: 1;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
   background: var(--paper-raised);
   transition: transform var(--dur-base) var(--ease-out);
