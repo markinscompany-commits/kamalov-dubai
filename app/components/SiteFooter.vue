@@ -22,6 +22,9 @@ const { m } = useLocale()
       <div class="footer__meta">
         <p class="mono footer__line">{{ m.footer.name }}</p>
         <p class="mono footer__line">{{ m.footer.place }}</p>
+        <p class="mono footer__line">
+          <NuxtLink class="footer__link" to="/privacy">{{ m.footer.policy }}</NuxtLink>
+        </p>
         <p class="mono footer__line">{{ m.footer.rights }}</p>
       </div>
     </div>
@@ -65,6 +68,18 @@ const { m } = useLocale()
   margin: 0;
   color: var(--paper);
   opacity: 0.75;
+}
+
+.footer__link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.footer__link:hover {
+  opacity: 1;
+  color: var(--gold-light);
 }
 
 @media (max-width: 700px) {

@@ -44,7 +44,8 @@ const ru = {
       // пересекала границу половин) - пункт живёт только в бургер-меню
       { label: 'Примеры работ', short: 'Примеры работ', href: '#results', service: false, menuOnly: true },
       { label: 'Где принимает', short: 'Госпиталь', href: '#clinic', service: false, menuOnly: true },
-      { label: 'Контакты', short: 'Контакты', href: '#contacts', service: false },
+      // Ведёт на блок заявки целиком: отдельного якоря контактов внутри него нет
+      { label: 'Контакты', short: 'Контакты', href: '#booking', service: false },
     ],
     sections: 'Разделы страницы',
     open: 'Открыть меню',
@@ -512,7 +513,9 @@ const ru = {
       phone: 'Телефон',
       email: 'E-mail',
       optional: 'необязательно',
-      consent: 'Даю согласие на обработку персональных данных',
+      /* Согласие разбито надвое: вторая часть - ссылка на страницу политики */
+      consentPre: 'Даю согласие на',
+      consentLink: 'обработку персональных данных',
       submit: 'Отправить заявку',
       sending: 'Отправляем...',
       doneTitle: 'Заявка получена',
@@ -523,12 +526,17 @@ const ru = {
       errEmail: 'Проверьте адрес почты',
       errConsent: 'Без согласия отправить заявку нельзя',
     },
-    /* Вариант Б «Анкета»: поля стоят внутри фразы. Части фразы - отдельно,
-       чтобы вёрстка собирала «текст - поле - текст» на обоих языках */
+    /*
+      Подача «Анкета»: поля стоят внутри фразы. Разбивка по строкам -
+      правка Марка 06.08: каждое поле заканчивает СВОЮ строку и забирает
+      её остаток, иначе длинные имя, номер и почта не помещались (проверено
+      его тестами). Строки собираются в вёрстке: l1+поле / l2 / l3+поле / l4+поле.
+    */
     phrase: {
-      p1: 'Меня зовут',
-      p2: 'Свяжитесь со мной по телефону',
-      p3: 'или почте',
+      l1: 'Меня зовут',
+      l2: 'Свяжитесь со мной по',
+      l3: 'телефону',
+      l4: 'почте',
       nameHint: 'имя',
       phoneHint: 'номер',
       emailHint: 'адрес',
@@ -543,12 +551,51 @@ const ru = {
     altText: 'Короткий вопрос удобнее задать в мессенджере',
   },
   /* Подвал. 🔴 Дополнится к запуску: номер рекламной лицензии MOH
-     (client-request, строка 3.1) и ссылка на политику конфиденциальности
-     (этап 5). Без них подвал намеренно короткий */
+     (client-request, строка 3.1). Без него подвал намеренно короткий */
   footer: {
     name: 'Доктор Эльдар Камалов',
     place: 'Dubai London Hospital, Дубай',
     rights: '© 2026',
+    policy: 'Политика конфиденциальности',
+  },
+  /*
+    Страница политики конфиденциальности (/privacy).
+    🔴 ЧЕРНОВИК ДО УТВЕРЖДЕНИЯ КЛИНИКОЙ: за содержание отвечает медицинский
+    директор (ST-21, разд. 7). Написана по факту работы сайта: собирается
+    только то, что человек сам вводит в форму. При подключении веб-аналитики
+    (этап 5) текст дополняется. Реквизиты оператора данных добавит клиника.
+  */
+  privacy: {
+    title: 'Политика конфиденциальности',
+    back: 'На главную',
+    lead: 'Эта страница объясняет, какие данные собирает сайт, зачем они нужны и что с ними происходит.',
+    sections: [
+      {
+        h: 'Какие данные собираются',
+        p: 'Форма заявки передаёт имя, номер телефона и, если вы его указали, адрес электронной почты. Ничего другого форма не собирает.',
+      },
+      {
+        h: 'Зачем они нужны',
+        p: 'Только чтобы связаться с вами и согласовать консультацию. Данные не используются для рассылок и рекламы.',
+      },
+      {
+        h: 'Основание обработки',
+        p: 'Ваше согласие - отметка в форме перед отправкой. Без неё заявка не отправляется.',
+      },
+      {
+        h: 'Кому передаются',
+        p: 'Сотрудникам клиники, которые отвечают за запись на консультацию. Данные не продаются и не передаются третьим лицам, кроме случаев, предусмотренных законом.',
+      },
+      {
+        h: 'Сколько хранятся',
+        p: 'Пока идёт обработка заявки и запись на консультацию. Согласие можно отозвать в любой момент - данные будут удалены.',
+      },
+      {
+        h: 'Ваши права',
+        p: 'Вы можете запросить копию своих данных, их исправление или удаление. Для этого напишите в WhatsApp - кнопка есть на главной странице.',
+      },
+    ],
+    note: 'Документ дополняется по мере развития сайта: при подключении статистики посещений здесь появится раздел о ней.',
   },
 }
 
@@ -566,7 +613,7 @@ const en: typeof ru = {
       { label: 'Examples of work', short: 'Examples', href: '#results', service: false, menuOnly: true },
       // menuOnly - см. пояснение в русской версии
       { label: 'Where he sees patients', short: 'Hospital', href: '#clinic', service: false, menuOnly: true },
-      { label: 'Contacts', short: 'Contacts', href: '#contacts', service: false },
+      { label: 'Contacts', short: 'Contacts', href: '#booking', service: false },
     ],
     sections: 'Page sections',
     open: 'Open menu',
@@ -846,7 +893,8 @@ const en: typeof ru = {
       phone: 'Phone',
       email: 'E-mail',
       optional: 'optional',
-      consent: 'I consent to the processing of my personal data',
+      consentPre: 'I consent to the',
+      consentLink: 'processing of my personal data',
       submit: 'Send request',
       sending: 'Sending...',
       doneTitle: 'Request received',
@@ -858,9 +906,10 @@ const en: typeof ru = {
       errConsent: 'The request cannot be sent without consent',
     },
     phrase: {
-      p1: 'My name is',
-      p2: 'Reach me by phone',
-      p3: 'or e-mail',
+      l1: 'My name is',
+      l2: 'You can reach me by',
+      l3: 'phone',
+      l4: 'e-mail',
       nameHint: 'name',
       phoneHint: 'number',
       emailHint: 'address',
@@ -878,6 +927,39 @@ const en: typeof ru = {
     name: 'Dr Eldar Kamalov',
     place: 'Dubai London Hospital, Dubai',
     rights: '© 2026',
+    policy: 'Privacy policy',
+  },
+  privacy: {
+    title: 'Privacy policy',
+    back: 'Back to the main page',
+    lead: 'This page explains what data the site collects, why it is needed and what happens to it.',
+    sections: [
+      {
+        h: 'What data is collected',
+        p: 'The booking form passes on your name, phone number and, if you have provided it, your e-mail address. The form collects nothing else.',
+      },
+      {
+        h: 'Why it is needed',
+        p: 'Only to contact you and arrange the consultation. The data is not used for mailings or advertising.',
+      },
+      {
+        h: 'Legal basis',
+        p: 'Your consent - the checkbox in the form before sending. Without it the request is not sent.',
+      },
+      {
+        h: 'Who receives it',
+        p: 'Clinic staff responsible for booking consultations. The data is not sold or passed to third parties, except where required by law.',
+      },
+      {
+        h: 'How long it is kept',
+        p: 'While your request is being processed and the visit arranged. You can withdraw consent at any time - the data will be deleted.',
+      },
+      {
+        h: 'Your rights',
+        p: 'You can request a copy of your data, its correction or deletion. To do so, write on WhatsApp - the button is on the main page.',
+      },
+    ],
+    note: 'This document evolves with the site: when visit statistics are connected, a section about them will appear here.',
   },
 }
 

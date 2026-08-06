@@ -44,7 +44,9 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app">
-    <SiteHeader />
+    <!-- Шапка - только на главной: её пункты - якоря разделов главной,
+         на /privacy они вели бы в никуда. У /privacy своя верхняя строка -->
+    <SiteHeader v-if="$route.path === '/'" />
     <NuxtPage />
     <GrainOverlay />
     <AppPreloader />
