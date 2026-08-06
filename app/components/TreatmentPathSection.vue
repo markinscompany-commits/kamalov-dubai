@@ -1,5 +1,7 @@
 <!--
-  Блок [07] «Как проходит лечение» - ВАРИАНТ А «Маршрут».
+  Блок [07] «Как проходит лечение» - подача «Маршрут».
+  Вариант А, выбран Марком 06.08 из двух собранных вживую; вариант Б
+  «Весь путь перед глазами» (прилипшее оглавление) снят, он в истории git.
 
   Подача: через блок сверху вниз идёт одна пунктирная ломаная - маршрут,
   прочерченный на плане. Линия РИСУЕТСЯ ПО МЕРЕ ПРОКРУТКИ (слушается пальца,
@@ -30,6 +32,10 @@
 const { m } = useLocale()
 
 const base = useRuntimeConfig().app.baseURL
+
+/* Тот же адрес, что в шапке и первом экране. 🔴 Номер - заглушка до передачи
+   номера ОАЭ клиникой (client-request, строка 3.2) */
+const whatsapp = 'https://wa.me/79285030807'
 
 const pad = (i: number) => String(i + 1).padStart(2, '0')
 
@@ -215,13 +221,9 @@ function segStyle(s: Segment) {
 </script>
 
 <template>
-  <PageSection
-    id="treatment"
-    :label="m.treatment.label"
-    tone="paper"
-    cross-y="5.5rem"
-    :cross-fraction="0.161"
-  >
+  <!-- Разметки с узлом и лучами в этом блоке НЕТ (правка Марка 06.08):
+       маршрут сам - пунктирная линия, вторая система линий здесь лишняя -->
+  <PageSection id="treatment" :label="m.treatment.label" tone="paper" no-rules>
     <SectionTitle :text="m.treatment.title" />
 
     <p class="path__lead">{{ m.treatment.lead }}</p>
@@ -257,6 +259,13 @@ function segStyle(s: Segment) {
               <p class="mono path__num">{{ m.treatment.stepWord }} {{ pad(i) }}</p>
               <h3 class="path__name">{{ step.title }}</h3>
               <p class="path__body">{{ step.text }}</p>
+
+              <!-- Кнопки прямо в первом шаге (правка Марка 06.08): «оставить
+                   заявку» - это и есть шаг 01, действие даётся на месте -->
+              <div v-if="i === 0" class="path__actions">
+                <MarkAction href="#booking">{{ m.action.bookLong }}</MarkAction>
+                <MarkAction variant="ghost" :href="whatsapp">{{ m.action.whatsapp }}</MarkAction>
+              </div>
             </div>
 
             <figure v-if="step.photo" class="path__figure">
@@ -425,6 +434,14 @@ function segStyle(s: Segment) {
   line-height: 1.65;
   margin: 0;
   max-inline-size: min(46ch, 100%);
+}
+
+.path__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  margin-block-start: var(--s-6);
 }
 
 .path__figure {

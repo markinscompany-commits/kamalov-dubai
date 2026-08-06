@@ -425,7 +425,8 @@ const ru = {
   */
   treatment: {
     label: '[07] Как проходит лечение',
-    title: 'Шесть шагов от заявки до последнего осмотра.',
+    // Цифрой и без точки на конце - правка Марка 06.08
+    title: '6 шагов от заявки до последнего осмотра',
     lead: 'Порядок одинаковый для ринопластики и септопластики. Решение об операции принимается только после очного осмотра - по фотографии носа его не принимают.',
     stepWord: 'Шаг',
     steps: [
@@ -723,7 +724,8 @@ const en: typeof ru = {
   },
   treatment: {
     label: '[07] How treatment works',
-    title: 'Six steps from enquiry to the final check-up.',
+    // Цифрой и без точки - как в русской версии (правка Марка 06.08)
+    title: '6 steps from enquiry to the final check-up',
     lead: 'The order is the same for rhinoplasty and septoplasty. The decision to operate is made only after an in-person examination - never from a photograph of the nose.',
     stepWord: 'Step',
     steps: [
