@@ -448,8 +448,8 @@ const ru = {
       {
         title: 'Операция',
         text: 'Проходит в стационаре больницы, под наркозом. Продолжительность зависит от объёма вмешательства и обсуждается заранее.',
-        photo: 'operating-room.jpg',
-        photoAlt: 'Операционная Dubai London Hospital',
+        // ⚠️ Фото операционной снято: решение Марка (сессия 5) - операционную
+        // не показываем до подтверждения Meta. В [06] его тоже нет
       },
       {
         title: 'Первые дни',
@@ -746,8 +746,7 @@ const en: typeof ru = {
       {
         title: 'Surgery',
         text: 'Carried out at the hospital, under anaesthesia. How long it takes depends on the extent of the procedure and is discussed in advance.',
-        photo: 'operating-room.jpg',
-        photoAlt: 'Operating theatre at Dubai London Hospital',
+        // ⚠️ Фото операционной снято - см. пояснение в русской версии
       },
       {
         title: 'The first days',
