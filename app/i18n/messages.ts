@@ -477,7 +477,8 @@ const ru = {
   */
   recovery: {
     label: '[08] Восстановление',
-    title: 'Сколько времени это займёт.',
+    // Без точки на конце - правка Марка, повторённая на [04], [06] и [07]
+    title: 'Сколько времени это займёт',
     lead: 'Восстановление - часть операции, а не приложение к ней. Ниже обычные сроки. Они зависят от объёма вмешательства и от того, как заживают ткани, поэтому у разных людей отличаются.',
     columns: { when: 'Когда', what: 'Что происходит' },
     rows: [
@@ -764,7 +765,7 @@ const en: typeof ru = {
   },
   recovery: {
     label: '[08] Recovery',
-    title: 'How long it takes.',
+    title: 'How long it takes',
     lead: 'Recovery is part of the operation, not an appendix to it. Below are the usual timings. They depend on the extent of the procedure and on how the tissues heal, so they differ from one person to another.',
     columns: { when: 'When', what: 'What happens' },
     rows: [
