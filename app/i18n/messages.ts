@@ -495,6 +495,74 @@ const ru = {
     sun: 'В климате Эмиратов это важнее, чем кажется: прямое солнце на свежих рубцах и в период отёка хирурги ограничивают дольше, чем всё остальное. Срок и способы защиты хирург называет на контрольном осмотре.',
   },
   /*
+    Блок [09] «Кому операция не подходит».
+    Зачем: самый сильный доступный нам аргумент доверия - врач не берётся
+    за всех подряд. Прямая противоположность искусственному спросу
+    (ST-21 п. 8.1.14), поэтому и самый безопасный блок страницы.
+    Тон: «хирург предложит подождать», а не «вам нельзя» - без страха.
+    🔴 ФОРМУЛИРОВКИ - МЕДИЦИНСКИЕ, УТВЕРЖДАЕТ ДОКТОР (ST-21 п. 8.1.5).
+    Возраст «около 18» - общепринятый ориентир, но тоже на подтверждение.
+  */
+  unsuited: {
+    label: '[09] Кому не подходит',
+    title: 'Операция подходит не всем',
+    lead: 'Консультация может закончиться и решением не оперировать - это нормальный итог. Ниже случаи, в которых хирург предложит подождать или откажет.',
+    items: [
+      {
+        title: 'Нос ещё растёт',
+        text: 'Плановую операцию не проводят, пока лицевой скелет не завершил рост - обычно это возраст около 18 лет. Раньше - только по медицинским показаниям.',
+      },
+      {
+        title: 'Ожидания, которые операция не выполнит',
+        text: 'Хирургия меняет ваш нос, а не повторяет чужой. Если цель - нос с фотографии другого человека, хирург обсудит, что достижимо, и не возьмётся за то, чего обещать нельзя.',
+      },
+      {
+        title: 'Обострение заболеваний',
+        text: 'Острые состояния и болезни вне ремиссии - повод сначала закончить лечение у профильного врача. Плановая операция подождёт.',
+      },
+      {
+        title: 'Беременность и кормление',
+        text: 'Плановые операции в этот период не проводятся - возвращение к вопросу откладывается до его окончания.',
+      },
+      {
+        title: 'Недавняя операция на носу',
+        text: 'Повторная коррекция возможна не раньше, чем ткани полностью заживут после предыдущей. Срок называет хирург по состоянию тканей.',
+      },
+    ],
+    note: 'Список - ориентир: окончательное решение хирург принимает на осмотре.',
+  },
+  /*
+    Блок [10] «Вопросы и ответы».
+    Вопросы отобраны так, чтобы НЕ повторять факты соседних блоков (манифест):
+    возраст - в [09], наркоз и обследования - в [07], язык приёма - в [06],
+    «как записаться» - в [11]. Здесь то, чего на странице ещё не было:
+    цена без цифр, поездка из другой страны, что взять, следы.
+    🔴 ФОРМУЛИРОВКИ УТВЕРЖДАЕТ ДОКТОР - особенно про следы (п. 4) и про
+    снимки в госпитале (п. 3).
+  */
+  faq: {
+    label: '[10] Вопросы и ответы',
+    title: 'Что спрашивают перед консультацией',
+    items: [
+      {
+        q: 'Сколько стоит операция?',
+        a: 'Объём вмешательства у всех разный, поэтому цена определяется после осмотра. На консультации хирург называет стоимость и рассказывает, что в неё входит.',
+      },
+      {
+        q: 'Я прилетаю из другой страны. Сколько времени закладывать?',
+        a: 'График поездки складывается на консультации: к дате операции добавляются дни на обследование до неё и наблюдение после. Ориентиры по срокам - в разделе «Восстановление» выше.',
+      },
+      {
+        q: 'Что взять с собой на консультацию?',
+        a: 'Пригодятся выписки и снимки прошлых лет, если они есть. Если нет - достаточно прийти: осмотр проходит на месте, снимки при необходимости делают в госпитале.',
+      },
+      {
+        q: 'Останутся ли видимые следы?',
+        a: 'Зависит от плана операции: часть техник обходится разрезами внутри носа, часть оставляет малозаметный след. Как будет в вашем случае, хирург объясняет на осмотре.',
+      },
+    ],
+  },
+  /*
     Блок [11] «Заявка и контакты».
     Формулировки без обещаний сроков ответа и без искусственной срочности
     (ST-21 п. 8.1.14). Цены не показываем - но сказать, что стоимость
@@ -883,6 +951,56 @@ const en: typeof ru = {
     note: 'The timings above are a guide, not a promise. They depend on the extent of the operation, on individual tissue characteristics and on how closely instructions are followed. The surgeon gives you the timings for your own case at the consultation, after examining you.',
     sunLabel: '// A note on the sun',
     sun: 'In the climate of the Emirates this matters more than it might seem: surgeons restrict direct sun on fresh scars and during the swelling period for longer than almost anything else. The surgeon sets the period and the means of protection at your follow-up.',
+  },
+  unsuited: {
+    label: '[09] Who it does not suit',
+    title: 'Surgery is not for everyone',
+    lead: 'A consultation can also end with a decision not to operate - that is a normal outcome. Below are the cases where the surgeon will suggest waiting, or decline.',
+    items: [
+      {
+        title: 'The nose is still growing',
+        text: 'Elective surgery is not performed until the facial skeleton has finished growing - usually around the age of 18. Earlier - only for medical indications.',
+      },
+      {
+        title: 'Expectations surgery cannot meet',
+        text: 'Surgery changes your nose - it does not copy someone else’s. If the goal is a nose from another person’s photograph, the surgeon will discuss what is achievable and will not take on what cannot be promised.',
+      },
+      {
+        title: 'Conditions in flare-up',
+        text: 'Acute illness, or chronic conditions out of remission, mean finishing treatment with the relevant specialist first. An elective operation can wait.',
+      },
+      {
+        title: 'Pregnancy and breastfeeding',
+        text: 'Elective operations are not performed during this period - the question is set aside until it is over.',
+      },
+      {
+        title: 'A recent nose operation',
+        text: 'A revision is possible only once the tissues have fully healed after the previous surgery. The surgeon sets the timing based on their condition.',
+      },
+    ],
+    note: 'This list is a guide: the final decision is made by the surgeon at the examination.',
+  },
+  faq: {
+    label: '[10] Questions and answers',
+    title: 'What people ask before the consultation',
+    items: [
+      {
+        q: 'How much does the operation cost?',
+        a: 'The extent of surgery differs from person to person, so the price is determined after the examination. At the consultation the surgeon names the cost and explains what it includes.',
+      },
+      {
+        q: 'I am flying in from another country. How much time should I allow?',
+        a: 'The schedule takes shape at the consultation: days for examinations before the operation and follow-up after it are added to the surgery date. Rough timings are in the Recovery section above.',
+      },
+      {
+        q: 'What should I bring to the consultation?',
+        a: 'Medical records and scans from past years are useful, if you have them. If not, just come: the examination happens on site, and scans can be done at the hospital if needed.',
+      },
+      {
+        q: 'Will there be visible marks?',
+        a: 'It depends on the surgical plan: some techniques use incisions inside the nose only, others leave a barely noticeable mark. The surgeon explains what applies to your case at the examination.',
+      },
+    ],
   },
   booking: {
     label: '[11] Booking and contacts',
