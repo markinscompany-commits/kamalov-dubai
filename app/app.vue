@@ -17,6 +17,12 @@ function localeFromPath(p: string): 'ru' | 'en' | null {
 const initial = localeFromPath(route.path)
 if (initial) locale.value = initial
 
+// Языковые версии главной - с учётом хвостового слэша (/en и /en/ - одна страница)
+const isLanding = computed(() => {
+  const p = route.path.replace(/\/+$/, '') || '/'
+  return p === '/' || p === '/en'
+})
+
 watch(
   () => route.path,
   (p) => {
@@ -71,8 +77,10 @@ onBeforeUnmount(() => {
 <template>
   <div class="app">
     <!-- Шапка - только на языковых версиях главной: её пункты - якоря
-         разделов главной, на /privacy они вели бы в никуда -->
-    <SiteHeader v-if="$route.path === '/' || $route.path === '/en'" />
+         разделов главной, на /privacy они вели бы в никуда.
+         Сравниваем без хвостового слэша: хостинг отдаёт /en как /en/,
+         и строгое равенство прятало шапку на английской версии -->
+    <SiteHeader v-if="isLanding" />
     <NuxtPage />
     <!-- Попап записи: открывается со всех кнопок «Записаться» с источником
          блока (правка Марка 07.08) -->

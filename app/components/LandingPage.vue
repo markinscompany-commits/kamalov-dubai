@@ -13,14 +13,31 @@ const SITE = 'https://markinscompany-commits.github.io/kamalov-dubai'
 // Заголовок вкладки, описание и язык страницы меняются вместе с языком.
 // Функция, а не объект: иначе значения замрут на первом языке.
 // hreflang связывает две языковые версии, canonical - у каждой свой адрес.
+/* Карточка ссылки в соцсетях. Без неё Meta собирает превью сама, из чего
+   попало и без картинки - а это первое, что видит и модератор, и человек.
+   Кадр нейтральный (портрет врача): «до/после» в ленте показывать нельзя */
+const pageUrl = computed(() => (locale.value === 'en' ? `${SITE}/en/` : `${SITE}/`))
+
 useHead(() => ({
   htmlAttrs: { lang: locale.value },
   title: m.value.meta.title,
-  meta: [{ name: 'description', content: m.value.meta.description }],
+  meta: [
+    { name: 'description', content: m.value.meta.description },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:site_name', content: 'Dr. Kamalov' },
+    { property: 'og:title', content: m.value.meta.title },
+    { property: 'og:description', content: m.value.meta.description },
+    { property: 'og:url', content: pageUrl.value },
+    { property: 'og:image', content: `${SITE}/media/doctor-portrait.jpg` },
+    { property: 'og:locale', content: locale.value === 'en' ? 'en_GB' : 'ru_RU' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+  ],
   link: [
-    { rel: 'canonical', href: locale.value === 'en' ? `${SITE}/en` : `${SITE}/` },
+    /* /en/ со слэшем: без него хостинг отвечает редиректом, а canonical
+       и hreflang обязаны указывать на адрес, который отвечает сразу */
+    { rel: 'canonical', href: locale.value === 'en' ? `${SITE}/en/` : `${SITE}/` },
     { rel: 'alternate', hreflang: 'ru', href: `${SITE}/` },
-    { rel: 'alternate', hreflang: 'en', href: `${SITE}/en` },
+    { rel: 'alternate', hreflang: 'en', href: `${SITE}/en/` },
     { rel: 'alternate', hreflang: 'x-default', href: `${SITE}/` },
   ],
 }))

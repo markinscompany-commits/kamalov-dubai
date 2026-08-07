@@ -141,8 +141,11 @@ const ru = {
     docs: [
       // ⚠️ Надпись, а не герб: ST-21 п. 7.2 запрещает эмблему госоргана в оформлении
       // без письменного разрешения. Скан с гербом внутри открывается по клику - это
-      // воспроизведение документа, и оно разрешено. Файл logos/org-dha.svg оставлен
-      // на месте: придёт разрешение - меняем mark обратно на logo.
+      // воспроизведение документа, и оно разрешено.
+      // Файл org-dha.svg вынесен ИЗ СБОРКИ в assets-temp/otkluchennaya-gossimvolika/:
+      // лежал в public/ и публиковался по прямой ссылке, хотя нигде не подключён.
+      // Придёт письменное разрешение - вернуть файл в public/media/logos/ и
+      // поменять mark обратно на logo.
       { file: 'doc-dha-2025.jpg', mark: 'DHA', title: 'Регистрация DHA, Дубай' },
       { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.png', title: 'Диплом врача, 1994' },
       { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.png', title: 'Кандидат наук, 2003' },
@@ -155,8 +158,10 @@ const ru = {
         название или эмблему DHA «или любого другого государственного либо публичного
         органа» без письменного разрешения. На письме - герб России и название органа.
         Плюс само письмо о благотворительной деятельности, к медицине отношения не имеет.
-        Вернуть - раскомментировать строку и файлы docs/doc-letter-2024.jpg,
-        logos/org-letter.png (оба на месте).
+        Вернуть - раскомментировать строку и положить обратно два файла из
+        assets-temp/otkluchennaya-gossimvolika/ (doc-letter-2024.jpg -> public/media/docs/,
+        org-letter.png -> public/media/logos/). Из public/ они вынесены потому,
+        что оттуда публиковались по прямой ссылке, хотя на странице не показывались.
         { file: 'doc-letter-2024.jpg', logo: 'media/logos/org-letter.png', title: 'Благодарственное письмо, 2024' },
       */
     ],
@@ -314,9 +319,12 @@ const ru = {
       { id: 'case5', term: 'спустя 10 месяцев' },
       { id: 'case6', term: 'спустя год' },
     ],
-    /* Риски по требованию ST-21 идут вместе с оговоркой: перечислены выше
-       в блоке операций, здесь - отсылка одной строкой на весь блок */
-    risksNote: 'Риски ринопластики и септопластики перечислены в разделе о хирургии носа и разбираются на консультации.',
+    /* ⚠️ Риски перечислены ЗДЕСЬ, а не отсылкой в другой раздел: ST-21 п. 9.6
+       требует, чтобы рядом с кадрами «до/после» стояли и оговорка, и сами риски
+       («...and the risks»), тем же кеглем. Раньше здесь была только отсылка
+       к блоку операций - формально это требование не закрывало */
+    risksNote:
+      'Возможные риски: отёк, кровотечение, временное затруднение носового дыхания, изменение чувствительности, возможная повторная коррекция. Подробно - в разделе о хирургии носа и на консультации.',
     photoAlt: {
       before: 'Профиль пациента до операции',
       after: 'Профиль пациента после операции',
@@ -816,8 +824,12 @@ const en: typeof ru = {
     caseWord: 'Case',
     before: 'Before',
     after: 'After',
-    // Дословная формула ST-21 п. 9.6, без точки на конце
-    disclaimer: 'There is no guarantee that the result will be the same - it may vary from one individual to another',
+    /* Дословная формула ST-21 п. 9.6, без точки на конце.
+       ⚠️ Стандарт задаёт цитату буква в букву: «...will be the same, as it might
+       vary from one individual to another». Здесь стояло «- it may vary» -
+       приведено к тексту стандарта, менять формулировку нельзя */
+    disclaimer:
+      'There is no guarantee that the result will be the same, as it might vary from one individual to another',
     cases: [
       { id: 'case1', term: '' },
       { id: 'case2', term: '' },
@@ -826,7 +838,9 @@ const en: typeof ru = {
       { id: 'case5', term: '10 months after surgery' },
       { id: 'case6', term: 'one year after surgery' },
     ],
-    risksNote: 'The risks of rhinoplasty and septoplasty are listed in the nose surgery section and are discussed at the consultation.',
+    // См. пояснение в русской версии: риски обязаны стоять рядом с кадрами
+    risksNote:
+      'Possible risks: swelling, bleeding, temporary difficulty with nasal breathing, changes in sensation and the possibility of revision surgery. These are covered in detail in the nose surgery section and at the consultation.',
     photoAlt: {
       before: "A patient's profile before surgery",
       after: "A patient's profile after surgery",

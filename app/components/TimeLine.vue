@@ -69,15 +69,24 @@ const buttonLabel = computed(() => (open.value ? props.lessLabel : props.moreLab
       <span class="tl__fade" aria-hidden="true" />
     </div>
 
+    <!--
+      ⚠️ Свёрнутые записи НЕ лежат в готовом HTML: текст, невидимый человеку, но
+      присутствующий в разметке, модерация видит и читает как скрытый контент.
+      Поэтому хвост рендерится по v-if, а движение раскрытия сохранено переходом:
+      контейнер остаётся на месте и анимирует высоту, содержимое приходит и уходит
+      вместе с ним. Тот же приём, что в FaqFoldSection.
+    -->
     <div class="tl__rest">
       <div class="tl__rest-inner">
-        <ol class="tl__list tl__list--rest">
-          <li v-for="(item, i) in rest" :key="item.year + i" class="tl__row" :style="{ '--i': i }">
-            <span class="tl__year">{{ item.year }}</span>
-            <span class="tl__node" aria-hidden="true" />
-            <span class="tl__text">{{ item.text }}</span>
-          </li>
-        </ol>
+        <Transition name="tl-rest" :duration="{ enter: 0, leave: 700 }">
+          <ol v-if="open" class="tl__list tl__list--rest">
+            <li v-for="(item, i) in rest" :key="item.year + i" class="tl__row" :style="{ '--i': i }">
+              <span class="tl__year">{{ item.year }}</span>
+              <span class="tl__node" aria-hidden="true" />
+              <span class="tl__text">{{ item.text }}</span>
+            </li>
+          </ol>
+        </Transition>
       </div>
     </div>
 
@@ -186,10 +195,16 @@ const buttonLabel = computed(() => (open.value ? props.lessLabel : props.moreLab
     transform var(--dur-base) var(--ease-out) calc(140ms + var(--i, 0) * 60ms);
 }
 
-.tl--folded .tl__list--rest .tl__row {
+/* Состояние «до появления»: записи приходят снизу по очереди, как раньше давал
+   класс .tl--folded. Теперь их в этот момент просто нет в разметке */
+.tl-rest-enter-from .tl__row {
   opacity: 0;
   transform: translateY(8px);
-  /* При сворачивании гаснут сразу, чтобы не мелькать в схлопывающейся ленте */
+}
+
+/* При сворачивании гаснут сразу, чтобы не мелькать в схлопывающейся ленте */
+.tl-rest-leave-to .tl__row {
+  opacity: 0;
   transition-delay: 0ms;
 }
 
