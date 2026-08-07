@@ -20,8 +20,14 @@
 
   ⚠️ Подписи запечены в SVG кривыми (текст Фигма перевела в контуры) -
   это осознанное отступление от манифеста, расстановка подписей - часть
-  артворка. В английской версии они останутся русскими, пока Марк не отдаст
-  английские кадры - отмечено в work-plan.
+  артворка.
+
+  АНГЛИЙСКАЯ ВЕРСИЯ ПОДПИСЕЙ (решение Марка 07.08: переводим сами, в тех же
+  местах): на /en русские кривые скрываются, вместо них - HTML-слой поверх
+  кадра с теми же координатами (доли viewBox 460×570, сняты с кадров Марка).
+  Именно HTML, не <text> в SVG - грабля WebKit из сессии 6: после каскада
+  переходов внутри SVG текстовый слой на iPhone иногда выпадает из отрисовки.
+  Кегль - в контейнерных единицах, масштабируется вместе с кадром, как кривые.
 -->
 <script setup lang="ts">
 import { SCHEME_FACE, SCHEME_LEVELS, SCHEME_STATES, SCHEME_VIEWBOX } from '~/utils/schemeArt'
@@ -33,6 +39,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), { state: 'form' })
+
+const { locale } = useLocale()
 
 /* Шторки адресуются по id, а рисунок стоит на странице не в одном
    экземпляре - идентификаторы обязаны быть разными у каждого */
@@ -46,6 +54,25 @@ const states = ['form', 'breath', 'both'] as const
 
 function stateOn(s: (typeof states)[number]) {
   return live.value && props.state === s
+}
+
+/*
+  Английские подписи. Координаты - авторские, из кадров Марка (сняты по
+  исходным SVG, единицы viewBox 460×570): x - левый край текста, y - середина
+  строки. Цвета - те же, что у русских кривых в schemeArt (fill подписей).
+  РУ: КОНЧИК / СПИНКА / ПУТЬ ВОЗДУХА / ОДНА ОПЕРАЦИЯ.
+*/
+const EN_LABELS: Record<(typeof states)[number], { x: number; y: number; text: string; color: string }[]> = {
+  form: [
+    { x: 247, y: 287, text: 'TIP', color: '#0A3454' },
+    { x: 273, y: 367, text: 'BRIDGE', color: '#775A37' },
+  ],
+  breath: [{ x: 305, y: 327, text: 'AIRFLOW', color: '#775A37' }],
+  both: [
+    { x: 300, y: 153, text: 'ONE OPERATION', color: '#775A37' },
+    { x: 305, y: 327, text: 'AIRFLOW', color: '#005592' },
+    { x: 273, y: 367, text: 'BRIDGE', color: '#005592' },
+  ],
 }
 </script>
 
@@ -120,12 +147,31 @@ function stateOn(s: (typeof states)[number]) {
             />
           </g>
 
-          <!-- Подписи (кривые из Фигмы) приходят последними -->
-          <g class="ns__fade ns__fade--labels" :class="{ 'is-on': stateOn(s) }">
+          <!-- Подписи (кривые из Фигмы, по-русски) приходят последними.
+               На английском их заменяет HTML-слой ниже -->
+          <g v-if="locale === 'ru'" class="ns__fade ns__fade--labels" :class="{ 'is-on': stateOn(s) }">
             <path v-for="(label, i) in SCHEME_STATES[s].labels" :key="`t${i}`" :d="label.d" :fill="label.fill" />
           </g>
         </g>
       </svg>
+
+      <!-- Английские подписи: HTML-слой поверх кадра (не <text> в SVG -
+           грабля WebKit), координаты и цвета - авторские -->
+      <div v-if="locale === 'en'" class="ns__en" aria-hidden="true">
+        <template v-for="s in states" :key="`en-${s}`">
+          <span
+            v-for="(lb, i) in EN_LABELS[s]"
+            :key="i"
+            class="ns__fade ns__fade--labels ns__en-label"
+            :class="{ 'is-on': stateOn(s) }"
+            :style="{
+              insetInlineStart: `${(lb.x / 460) * 100}%`,
+              insetBlockStart: `${(lb.y / 570) * 100}%`,
+              color: lb.color,
+            }"
+          >{{ lb.text }}</span>
+        </template>
+      </div>
     </div>
   </figure>
 </template>
@@ -143,6 +189,28 @@ function stateOn(s: (typeof states)[number]) {
   max-inline-size: var(--ns-size, 28.75rem);
   /* Пропорция кадра - та же, что в viewBox (460 × 570) */
   aspect-ratio: 460 / 570;
+  /* Контейнер запросов - для кегля английских подписей в долях кадра */
+  container-type: inline-size;
+}
+
+/* --- Английские подписи (HTML-слой) --- */
+
+.ns__en {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ns__en-label {
+  position: absolute;
+  translate: 0 -50%;
+  font-family: var(--font-mono);
+  /* Кегль авторских подписей ~11px при ширине кадра 460 - масштабируется
+     вместе с кадром. Первая строка - запасная для браузеров без cqw */
+  font-size: 11px;
+  font-size: 2.4cqw;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
 }
 
 .ns__svg {

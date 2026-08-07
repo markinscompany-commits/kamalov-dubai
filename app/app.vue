@@ -1,6 +1,32 @@
 <script setup lang="ts">
-const { restoreLocale } = useLocale()
-const { boot } = usePreloader()
+const { locale, restoreLocale } = useLocale()
+const route = useRoute()
+
+/*
+ * Язык выставляется ПО МАРШРУТУ: `/` - русский, `/en` - английский.
+ * Работает и на сервере (каждая версия пререндерится своим языком),
+ * и при переходах. Страницы вне языковых маршрутов (например /privacy)
+ * язык не трогают - там он живёт состоянием.
+ */
+function localeFromPath(p: string): 'ru' | 'en' | null {
+  if (p === '/en' || p.startsWith('/en/')) return 'en'
+  if (p === '/') return 'ru'
+  return null
+}
+
+const initial = localeFromPath(route.path)
+if (initial) locale.value = initial
+
+watch(
+  () => route.path,
+  (p) => {
+    const l = localeFromPath(p)
+    if (l) {
+      locale.value = l
+      if (import.meta.client) document.documentElement.lang = l
+    }
+  },
+)
 
 /**
  * Фиксируем реальную высоту окна в переменной --app-height.
@@ -31,9 +57,9 @@ onMounted(() => {
   updateAppHeight()
   setTimeout(updateAppHeight, 200)
   window.addEventListener('orientationchange', onRotate)
-  // Язык вспоминаем ДО того, как уйдёт заставка: подмена текстов происходит за ней
+  // Заставки при первой загрузке больше нет (решение Марка) - только
+  // тихий увод на /en, если человек в прошлый раз выбрал английский
   restoreLocale()
-  boot()
 })
 
 onBeforeUnmount(() => {
@@ -44,9 +70,9 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app">
-    <!-- Шапка - только на главной: её пункты - якоря разделов главной,
-         на /privacy они вели бы в никуда. У /privacy своя верхняя строка -->
-    <SiteHeader v-if="$route.path === '/'" />
+    <!-- Шапка - только на языковых версиях главной: её пункты - якоря
+         разделов главной, на /privacy они вели бы в никуда -->
+    <SiteHeader v-if="$route.path === '/' || $route.path === '/en'" />
     <NuxtPage />
     <GrainOverlay />
     <AppPreloader />

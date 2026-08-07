@@ -5,14 +5,17 @@ const STORAGE_KEY = 'kamalov-locale'
 /**
  * Язык сайта.
  *
- * Держим своё, а не подключаем модуль перевода: контента на странице немного, а
- * лишний модуль на этапе, когда тексты ещё не утверждены, только мешает.
- * Когда дойдём до сдачи (блок 4), переключатель переедет на отдельные адреса
- * /ru и /en — это нужно поисковикам и рекламе, одним состоянием там не обойтись.
+ * С 07.08 у языков ОТДЕЛЬНЫЕ АДРЕСА: `/` - русская версия, `/en` - английская.
+ * Обе лежат в статике готовым HTML - поисковики и модерация Meta видят каждую
+ * по своему адресу. Кто главный по языку - маршрут: app.vue выставляет locale
+ * по пути страницы (и на сервере, и при переходах).
  *
- * Переключение НЕ мгновенное: сначала опускается заставка, за ней подменяются все
- * тексты сразу, потом заставка уходит. Иначе буквы скачут на глазах, а длина строк
- * на английском другая — выглядит как сбой.
+ * На страницах ВНЕ языковых маршрутов (например /privacy) язык живёт
+ * состоянием, как раньше, - там переключение не меняет адрес.
+ *
+ * Переключение НЕ мгновенное: сначала опускается заставка, за ней происходит
+ * переход на другой адрес (или подмена текстов), потом заставка уходит.
+ * Иначе буквы скачут на глазах - выглядит как сбой.
  */
 export function useLocale() {
   const locale = useState<Locale>('locale', () => 'ru')
@@ -25,11 +28,17 @@ export function useLocale() {
     if (next === locale.value || swapping.value) return
 
     const { hold, hide } = usePreloader()
+    const route = useRouter().currentRoute.value
+    /* Языковые маршруты: переключение = переход на другой адрес */
+    const onLangRoute = route.path === '/' || route.path === '/en'
 
     swapping.value = true
     // Полотно должно успеть закрыть страницу целиком, прежде чем меняются буквы
     await hold(520)
 
+    if (onLangRoute) {
+      await navigateTo(next === 'en' ? '/en' : '/')
+    }
     locale.value = next
     if (import.meta.client) {
       document.documentElement.lang = next
@@ -49,7 +58,10 @@ export function useLocale() {
     swapping.value = false
   }
 
-  /** Вызывается один раз при загрузке: вспоминаем выбор человека */
+  /**
+   * Вызывается один раз при загрузке: если человек в прошлый раз выбрал
+   * английский и пришёл на русский адрес - тихо переводим его на /en.
+   */
   function restoreLocale() {
     if (!import.meta.client) return
     let saved: string | null = null
@@ -58,9 +70,10 @@ export function useLocale() {
     } catch {
       saved = null
     }
-    const next = saved === 'en' || saved === 'ru' ? saved : null
-    if (next && next !== locale.value) {
-      locale.value = next
+    const path = useRouter().currentRoute.value.path
+    if (saved === 'en' && path === '/') {
+      navigateTo('/en', { replace: true })
+      return
     }
     document.documentElement.lang = locale.value
   }
