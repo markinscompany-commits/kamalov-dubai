@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!--
+      Переадресация со старого адреса английской версии.
+
+      До 07.08 английская версия жила на /en, а корень был русским. Потом
+      английский стал основным и переехал на `/`. Этот файл оставлен, чтобы
+      ссылки, которые уже разошлись (показ клиенту, переписка, закладки),
+      не упирались в 404.
+
+      Статический хостинг своих перенаправлений не умеет, поэтому здесь
+      обычная страница: canonical говорит поисковику, что настоящий адрес -
+      корень, meta refresh уводит человека, а строка ниже - на случай
+      отключённых скриптов и неподдержанного refresh.
+    -->
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href="https://markinscompany-commits.github.io/kamalov-dubai/" />
+    <meta http-equiv="refresh" content="0; url=../" />
+    <title>Eldar Kamalov - rhinoplasty and septoplasty in Dubai</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #f4efe6;
+        color: #0a3454;
+        font-family: system-ui, sans-serif;
+        font-size: 1rem;
+      }
+      a {
+        color: #005592;
+      }
+    </style>
+  </head>
+  <body>
+    <p>The English version has moved. <a href="../">Continue to the site</a></p>
+  </body>
+</html>
