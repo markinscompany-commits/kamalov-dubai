@@ -20,6 +20,8 @@
   Ниже фразы - строка действий: кнопки слева, ЧЕКБОКС СОГЛАСИЯ ПРАВЕЕ КНОПОК
   (правка Марка), в подписи согласия - ссылка на страницу политики (/privacy).
 
+  Подблока «// Что будет дальше» в блоке НЕТ - снят по правке Марка 07.08.
+
   ДОСТУПНОСТЬ. Видимые слова фразы связаны с полями как label (клик ставит
   курсор), но полное имя поля даёт aria-label - «телефону» сам по себе ничего
   не говорит; ошибки объявляются текстом под фразой (aria-describedby),
@@ -37,8 +39,6 @@ const { name, phone, email, consent, status, errors, submit } = useBookingForm()
 
 /* Тот же адрес, что в шапке. 🔴 Номер - заглушка до передачи номера ОАЭ */
 const whatsapp = 'https://wa.me/79285030807'
-
-const pad = (i: number) => String(i + 1).padStart(2, '0')
 
 /** Ошибки одной строкой под фразой - у полей внутри текста места под них нет */
 const errorLine = computed(() =>
@@ -147,19 +147,6 @@ const errorLine = computed(() =>
         <p class="bkb__done-title">{{ m.booking.form.doneTitle }}</p>
         <p class="bkb__done-text">{{ m.booking.form.doneText }}</p>
       </div>
-    </div>
-
-    <!-- Что будет дальше: три колонки под фразой -->
-    <div class="bkb__next">
-      <p class="mono bkb__next-label">{{ m.booking.nextLabel }}</p>
-      <ol class="bkb__steps">
-        <li v-for="(step, i) in m.booking.next" :key="i" class="bkb__step">
-          <DashedRule class="bkb__step-rule" :delay="i * 90" />
-          <p class="mono bkb__step-num">{{ pad(i) }}</p>
-          <p class="bkb__step-title">{{ step.title }}</p>
-          <p class="bkb__step-text">{{ step.text }}</p>
-        </li>
-      </ol>
     </div>
   </PageSection>
 </template>
@@ -320,63 +307,10 @@ const errorLine = computed(() =>
   max-inline-size: min(44ch, 100%);
 }
 
-/* --- Что будет дальше --- */
-
-.bkb__next {
-  margin-block-start: var(--s-16);
-}
-
-.bkb__next-label {
-  margin: 0 0 var(--s-4);
-}
-
-.bkb__steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--s-8);
-}
-
-.bkb__step {
-  position: relative;
-  padding-block-start: var(--s-4);
-  min-inline-size: 0;
-}
-
-.bkb__step-rule {
-  inset-block-start: 0;
-}
-
-.bkb__step-num {
-  margin: 0 0 var(--s-2);
-}
-
-.bkb__step-title {
-  font-size: var(--fs-body);
-  font-weight: 500;
-  line-height: 1.4;
-  margin: 0 0 var(--s-1);
-  color: var(--ink);
-}
-
-.bkb__step-text {
-  font-size: var(--fs-body);
-  line-height: 1.55;
-  margin: 0;
-  color: var(--ink-soft);
-}
-
 @media (max-width: 900px) {
   .bkb__row {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .bkb__steps {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--s-6);
   }
 }
 </style>

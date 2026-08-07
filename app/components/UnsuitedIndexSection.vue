@@ -1,7 +1,8 @@
 <!--
-  Блок [09] «Кому не подходит» - подача «Крупные номера». ВАРИАНТ Б на выборе
-  Марка, первый вариант - UnsuitedStopSection.vue («Стоп-штрихи»). Непринятый
-  снимается, он останется в истории git.
+  Блок [09] «Кому не подходит» - подача «Крупные номера».
+  Вариант Б, выбран Марком 07.08 из двух собранных вживую; вариант А
+  «Стоп-штрихи» (пунктирная вертикаль со сплошными поперечными штрихами)
+  снят, он в истории git (коммит b5adabf, файл UnsuitedStopSection.vue).
 
   ПОДАЧА. Каждый случай - запись с крупным номером антиквой в бледном тоне
   (как незалитое караоке): пронумерованный перечень ограничений, читается
@@ -44,7 +45,7 @@ onBeforeUnmount(() => observer?.disconnect())
 </script>
 
 <template>
-  <PageSection id="unsuited-b" :label="m.unsuited.label" tone="paper" cross-y="5.5rem">
+  <PageSection id="unsuited" :label="m.unsuited.label" tone="paper" cross-y="5.5rem">
     <SectionTitle :text="m.unsuited.title" />
 
     <p class="unsb__lead">{{ m.unsuited.lead }}</p>

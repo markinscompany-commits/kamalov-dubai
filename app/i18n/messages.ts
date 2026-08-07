@@ -609,14 +609,7 @@ const ru = {
       phoneHint: 'номер',
       emailHint: 'адрес',
     },
-    nextLabel: '// Что будет дальше',
-    next: [
-      { title: 'Связь из клиники', text: 'С вами согласуют дату и время консультации и подскажут, что взять с собой.' },
-      { title: 'Консультация у хирурга', text: 'Осмотр, разбор вашей задачи и план. Стоимость обсуждается на консультации.' },
-      { title: 'Решение без спешки', text: 'После консультации есть время подумать. Дата операции назначается, когда вы готовы.' },
-    ],
-    altLabel: '// Напрямую',
-    altText: 'Короткий вопрос удобнее задать в мессенджере',
+    /* «// Что будет дальше» снято по правке Марка 07.08 (история git) */
   },
   /* Подвал. 🔴 Дополнится к запуску: номер рекламной лицензии MOH
      (client-request, строка 3.1). Без него подвал намеренно короткий */
@@ -1032,14 +1025,6 @@ const en: typeof ru = {
       phoneHint: 'number',
       emailHint: 'address',
     },
-    nextLabel: '// What happens next',
-    next: [
-      { title: 'The clinic gets in touch', text: 'You agree on the date and time of the consultation and learn what to bring along.' },
-      { title: 'Consultation with the surgeon', text: 'Examination, a review of your case and a plan. Pricing is discussed at the consultation.' },
-      { title: 'No rush to decide', text: 'There is time to think after the consultation. Surgery is scheduled when you are ready.' },
-    ],
-    altLabel: '// Directly',
-    altText: 'A quick question is easier to ask in the messenger',
   },
   footer: {
     name: 'Dr Eldar Kamalov',
