@@ -25,7 +25,7 @@ const ru = {
   meta: {
     title: 'Эльдар Камалов - ринопластика и септопластика в Дубае',
     description:
-      'Эльдар Камалов - врач-специалист, оториноларингология. Хирургия носа: ринопластика и септопластика. Кандидат медицинских наук, 30 лет практики. Приём в Dubai London Hospital, регистрация DHA. Запись на консультацию.',
+      'Эльдар Камалов - врач-специалист, оториноларингология. Хирургия носа: ринопластика и септопластика. Кандидат медицинских наук, 30 лет практики. Приём в Dubai London Hospital, лицензия DHA № 26320604-004. Запись на консультацию.',
   },
   nav: {
     /*
@@ -60,18 +60,30 @@ const ru = {
     whatsapp: 'WhatsApp',
   },
   /*
-    ⚠️ ТИТУЛ НА ПЕРВОМ ЭКРАНЕ = ЗАПИСЬ В РЕГИСТРАЦИИ DHA, СЛОВО В СЛОВО.
-    Требование ST-21 п. 8.1.3. В сертификате DHA (Healthcare Professional Registration
-    Certificate, DHA Unique ID 26320604) в строке Registration Title стоит
-    «Physician - Specialist - Otolaryngology» - и ничего про пластическую хирургию.
-    Поэтому титулом идёт именно он, а ринопластика и септопластика стоят ниже как
-    НАЗВАНИЕ УСЛУГИ, а не как звание врача. Разница принципиальная: рекламировать
-    услугу за пределами лицензированной специализации нельзя, называть операцию,
-    которую делает ЛОР-хирург, - можно.
+    ⚠️ ТИТУЛ НА ПЕРВОМ ЭКРАНЕ = ЗАПИСЬ В ЛИЦЕНЗИИ DHA, СЛОВО В СЛОВО.
+    Требование ST-21 п. 8.1.3.
 
-    Английская строка воспроизводит запись сертификата буквально; русская - её перевод.
-    Если клиника пришлёт лицензию, активированную через Dubai London Hospital, с другой
-    специализацией - меняются ровно эти две строки.
+    Источник - ДЕЙСТВУЮЩАЯ лицензия (Professional License Certificate, выдана
+    21.07.2026, действует до 21.07.2027), файл проекта
+    «DHA LICENSE 2027 - FT - DR ELDAR KAMALOV.pdf»:
+
+      Professional Name  Eldar Kamalov
+      DHA Unique ID      26320604
+      License Number     26320604-004
+      License Type       Full-time License
+      Category           Physician
+      License Title      Specialist Otolaryngology
+      Facility Name      Dubai London Clinic And Speciality Hospital
+
+    Титулом идёт строка License Title буква в букву. Ринопластика и септопластика
+    стоят ниже как НАЗВАНИЕ УСЛУГИ, а не как звание врача: рекламировать услугу
+    за пределами лицензированной специализации нельзя, называть операцию, которую
+    делает ЛОР-хирург, - можно.
+
+    Английская строка воспроизводит запись лицензии буквально; русская - её перевод.
+    Лицензия полная (Full-time) и привязана к тому самому госпиталю - значит
+    утверждения «принимает и оперирует в Dubai London Hospital» подтверждены
+    документом, а не взяты с русского сайта.
   */
   hero: {
     eyebrow: '[01] Принимает в Dubai London Hospital',
@@ -110,14 +122,14 @@ const ru = {
   */
   doctor: {
     label: '[03] О докторе',
-    title: 'Отоларинголог по образованию, ринопласт по практике.',
+    title: 'Отоларинголог по образованию. Хирургия носа - основная практика.',
     lead: 'Эльдар Камалов родился в Махачкале, в семье отоларинголога и пластического хирурга Шамсутина Камалова. Ассистировал отцу ещё студентом - оттуда и специальность, и школа. В 2016 году открыл клинику и назвал её именем отца. Сегодня оперирует в Дубае.',
     // Цифры в лавровых ветвях. Только то, что подтверждено документом
     stats: [
       { value: '30+', caption: 'лет в медицине' },
       { logo: 'media/logos/lotos.svg', wide: true, caption: 'лауреат премии «Хрустальный Лотос», 2017' },
-      { logo: 'media/logos/soc-rhinoplasty.png', caption: 'член Европейского общества ринопластов' },
-      { logo: 'media/logos/soc-rspras.png', caption: 'член Общества РОПРЭХ' },
+      { logo: 'media/logos/soc-rhinoplasty.webp', caption: 'член Европейского общества ринопластов' },
+      { logo: 'media/logos/soc-rspras.webp', caption: 'член Общества РОПРЭХ' },
     ],
     // Хронология. Все годы сверены со сканами документов в assets-temp/docs
     fullName: 'Камалов Эльдар Шамсутинович',
@@ -135,7 +147,7 @@ const ru = {
       // квалификация врача указывается так, как в лицензии DHA, а там - оториноларингология.
       // Само обучение - факт, подтверждённый документом, поэтому строка осталась.
       { year: '2021', text: 'Окончил ординатуру по пластической хирургии' },
-      { year: '2025', text: 'Регистрация в департаменте здравоохранения Дубая. Приём и операции - в Dubai London Hospital' },
+      { year: '2026', text: 'Лицензия врача-специалиста Управления здравоохранения Дубая, полная занятость. Приём и операции - в Dubai London Hospital' },
     ],
     docsLabel: '// Документы',
     docs: [
@@ -146,12 +158,12 @@ const ru = {
       // лежал в public/ и публиковался по прямой ссылке, хотя нигде не подключён.
       // Придёт письменное разрешение - вернуть файл в public/media/logos/ и
       // поменять mark обратно на logo.
-      { file: 'doc-dha-2025.jpg', mark: 'DHA', title: 'Регистрация DHA, Дубай' },
-      { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.png', title: 'Диплом врача, 1994' },
-      { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.png', title: 'Кандидат наук, 2003' },
-      { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Сертификат специалиста, 2020' },
-      { file: 'doc-course-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Повышение квалификации, 2020' },
-      { file: 'doc-residency-2021.jpg', logo: 'media/logos/org-mgupp.png', title: 'Ординатура, 2021' },
+      { file: 'doc-dha-2026.webp', mark: 'DHA', title: 'Лицензия DHA № 26320604-004, действует до 21.07.2027' },
+      { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.webp', title: 'Диплом врача, 1994' },
+      { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.webp', title: 'Кандидат наук, 2003' },
+      { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.webp', title: 'Сертификат специалиста, 2020' },
+      { file: 'doc-course-2020.jpg', logo: 'media/logos/org-nuc.webp', title: 'Повышение квалификации, 2020' },
+      { file: 'doc-residency-2021.jpg', logo: 'media/logos/org-mgupp.webp', title: 'Ординатура, 2021' },
       /*
         Благодарственное письмо Президента РФ, 2024 - УБРАНО (решение Марка, 02.08).
         Причина не вкусовая: ST-21 п. 7.2 запрещает использовать в медицинской рекламе
@@ -230,7 +242,7 @@ const ru = {
         step: 'Задача 02',
         name: 'Дыхание',
         surgery: 'Септопластика',
-        lead: 'Перегородка возвращается в срединное положение, воздух получает свободный ход. Наружные очертания не меняются.',
+        lead: 'Перегородку возвращают в срединное положение, чтобы восстановить ход для воздуха. Наружные очертания не меняются.',
         facts: [
           { mark: 'Показание', text: 'Стойкое затруднение носового дыхания' },
           { mark: 'Изнутри', text: 'Наружные разрезы не нужны' },
@@ -390,21 +402,21 @@ const ru = {
     */
     gallery: [
       {
-        file: 'clinic/facade.jpg',
+        file: 'clinic/facade.webp',
         w: 864,
         h: 452,
         caption: 'Вход в госпиталь с Jumeirah Beach Road',
         alt: 'Фасад Dubai London Hospital со стороны Jumeirah Beach Road',
       },
       {
-        file: 'clinic/consulting.jpg',
+        file: 'clinic/consulting.webp',
         w: 1200,
         h: 800,
         caption: 'Кабинет приёма',
         alt: 'Кабинет приёма в Dubai London Hospital',
       },
       {
-        file: 'clinic/ward-view.jpg',
+        file: 'clinic/ward-view.webp',
         w: 1200,
         h: 800,
         caption: 'Одноместная палата стационара',
@@ -413,12 +425,26 @@ const ru = {
     ],
   },
   /* Просмотрщик фотографий - подписи кнопок. Общие: пригодятся и галерее «до/после» */
+  /*
+    Согласие на статистику. Показывается, ТОЛЬКО если счётчик настроен
+    (см. useCookieConsent): пока кук нет, спрашивать не о чем.
+  */
+  cookies: {
+    label: 'Согласие на статистику посещений',
+    text: 'Сайт может собирать обезличенную статистику посещений, чтобы понимать, какие разделы читают. Без вашего согласия куки не ставятся.',
+    more: 'Подробнее в политике',
+    href: '/privacy',
+    accept: 'Принять',
+    decline: 'Отклонить',
+  },
   viewer: {
     close: 'Закрыть',
     prev: 'Предыдущий кадр',
     next: 'Следующий кадр',
     zoomIn: 'Приблизить',
     zoomOut: 'Отдалить',
+    // Подпись для читалки на карточке документа: она кнопка, а не ссылка
+    openDoc: 'открыть документ',
   },
   /*
     Блок «Как проходит лечение». Отвечает на вопрос «что со мной будет от заявки
@@ -446,13 +472,13 @@ const ru = {
       {
         title: 'Консультация',
         text: 'Очный приём в Dubai London Hospital. Хирург осматривает нос снаружи и изнутри, разбирает анатомию, объясняет, какие задачи операция решает, а какие - нет, и проговаривает риски.',
-        photo: 'consulting-room.jpg',
+        photo: 'consulting-room.webp',
         photoAlt: 'Кабинет приёма в Dubai London Hospital',
       },
       {
         title: 'Обследование и план',
         text: 'Анализы, снимки, осмотр анестезиолога. По результатам хирург составляет план операции и согласовывает дату.',
-        photo: 'imaging.jpg',
+        photo: 'imaging.webp',
         photoAlt: 'Кабинет компьютерной томографии в Dubai London Hospital',
       },
       {
@@ -464,12 +490,12 @@ const ru = {
       {
         title: 'Первые дни',
         text: 'Наблюдение в палате, затем снятие повязки и швов в сроки, которые хирург назначает по ходу заживления.',
-        photo: 'ward.jpg',
+        photo: 'ward.webp',
         photoAlt: 'Палата в Dubai London Hospital',
       },
       {
         title: 'Наблюдение',
-        text: 'Контрольные осмотры по графику. Между визитами вопросы можно задать в клинику - к тому же хирургу, который оперировал.',
+        text: 'Контрольные осмотры по графику - у того же хирурга, который оперировал. Между визитами клиника остаётся на связи по организационным вопросам.',
       },
     ],
   },
@@ -645,15 +671,23 @@ const ru = {
       },
       {
         h: 'Зачем они нужны',
-        p: 'Только чтобы связаться с вами и согласовать консультацию. Данные не используются для рассылок и рекламы.',
+        p: 'Чтобы связаться с вами и согласовать консультацию. В списки рассылок вас не добавляют.',
       },
       {
         h: 'Основание обработки',
-        p: 'Ваше согласие - отметка в форме перед отправкой. Без неё заявка не отправляется.',
+        p: 'Ваше согласие - отметка в форме перед отправкой. Без неё заявка не отправляется. Вместе с заявкой сохраняется дата согласия.',
       },
       {
         h: 'Кому передаются',
-        p: 'Сотрудникам клиники, которые отвечают за запись на консультацию. Данные не продаются и не передаются третьим лицам, кроме случаев, предусмотренных законом.',
+        p: 'Сотрудникам клиники, которые отвечают за запись на консультацию. Саму заявку доставляют технические сервисы - почта и мессенджер клиники; они участвуют только в доставке. Данные не продаются и никому больше не передаются, кроме случаев, предусмотренных законом.',
+      },
+      {
+        h: 'Передача за пределы ОАЭ',
+        p: 'Сервисы доставки заявки и статистика посещений могут работать на серверах за пределами ОАЭ. Отправляя заявку и соглашаясь на статистику, вы соглашаетесь и с такой передачей. Кроме перечисленного выше, данные за пределы страны не передаются.',
+      },
+      {
+        h: 'Статистика посещений и куки',
+        p: 'Статистика подключается только с вашего согласия. Пока вы не нажали «Принять», сайт не ставит куки и ничего не передаёт системам аналитики; если вы нажали «Отклонить», статистика не подключается вовсе. Выбор запоминается в браузере, изменить его можно, очистив данные сайта. Выбранный язык браузер помнит так же - это настройка, а не персональные данные.',
       },
       {
         h: 'Сколько хранятся',
@@ -664,7 +698,7 @@ const ru = {
         p: 'Вы можете запросить копию своих данных, их исправление или удаление. Для этого напишите в WhatsApp - кнопка есть на главной странице.',
       },
     ],
-    note: 'Документ дополняется по мере развития сайта: при подключении статистики посещений здесь появится раздел о ней.',
+    note: 'Оператор данных - клиника, в которой ведёт приём врач. Её реквизиты и адрес для обращений добавляются здесь.',
   },
 }
 
@@ -672,17 +706,17 @@ const en: typeof ru = {
   meta: {
     title: 'Eldar Kamalov - rhinoplasty and septoplasty in Dubai',
     description:
-      'Eldar Kamalov - Physician, Specialist in Otolaryngology. Nose surgery: rhinoplasty and septoplasty. PhD in Medicine, 30 years in practice. Sees patients at Dubai London Hospital, DHA registered. Book a consultation.',
+      'Eldar Kamalov - Specialist Otolaryngology. Nose surgery: rhinoplasty and septoplasty. PhD in Medicine, 30 years in practice. Sees patients at Dubai London Hospital, DHA licence No. 26320604-004. Book a consultation.',
   },
   nav: {
     links: [
       { label: 'About the doctor', short: 'About', href: '#doctor', service: false },
       { label: 'Rhinoplasty', short: 'Rhinoplasty', href: '#rhinoplasty', service: true },
       { label: 'Septoplasty', short: 'Septoplasty', href: '#septoplasty', service: true },
-      { label: 'Examples of work', short: 'Examples', href: '#results', service: false, menuOnly: true },
+      { label: 'Before and after', short: 'Results', href: '#results', service: false, menuOnly: true },
       // menuOnly - см. пояснение в русской версии
       { label: 'Where he sees patients', short: 'Hospital', href: '#clinic', service: false, menuOnly: true },
-      { label: 'Contacts', short: 'Contacts', href: '#booking', service: false },
+      { label: 'Contact', short: 'Contact', href: '#booking', service: false },
     ],
     sections: 'Page sections',
     open: 'Open menu',
@@ -701,27 +735,27 @@ const en: typeof ru = {
   hero: {
     eyebrow: '[01] Sees patients at Dubai London Hospital',
     name: 'Eldar Kamalov',
-    specMain: 'Physician - Specialist -',
+    specMain: 'Specialist',
     specEm: 'Otolaryngology',
     // Две строки, см. пояснение в русской версии.
     creds: ['Rhinoplasty and septoplasty', 'PhD in Medicine, 30 years in practice'],
-    photoAlt: 'Eldar Kamalov, Physician - Specialist - Otolaryngology',
+    photoAlt: 'Eldar Kamalov, Specialist Otolaryngology',
     scroll: 'Scroll ↓',
   },
   manifest: {
     label: '[02] Approach',
-    lead: 'Nose surgery is a calculation. Shape, breathing, anatomy and recovery time are linked to one another. The decisions are made before the operation, not during it.',
+    lead: 'Nose surgery is a matter of calculation. Shape, breathing, anatomy and recovery time are linked to one another. The decisions are made before the operation, not during it.',
     note: 'At the consultation the surgeon examines the anatomy, explains which tasks the operation addresses and which it does not, and goes through the risks. Results depend on individual characteristics and cannot be the same for different people.',
   },
   doctor: {
     label: '[03] About the doctor',
-    title: 'An ENT surgeon by training, a rhinoplasty surgeon in practice.',
-    lead: 'Eldar Kamalov was born in Makhachkala, into the family of Shamsutin Kamalov, an ENT and plastic surgeon. He assisted his father while still a student - that is where both the speciality and the school of thought come from. In 2016 he opened a clinic and named it after his father. Today he operates in Dubai.',
+    title: 'An ENT surgeon by training. Nose surgery is his main field of practice.',
+    lead: 'Eldar Kamalov was born in Makhachkala, into the family of Shamsutin Kamalov, an ENT and plastic surgeon. He assisted his father while still a student - that is where both the speciality and his training come from. In 2016 he opened a clinic and named it after his father. Today he operates in Dubai.',
     stats: [
       { value: '30+', caption: 'years in medicine' },
-      { logo: 'media/logos/lotos.svg', wide: true, caption: 'Crystal Lotus award laureate, 2017' },
-      { logo: 'media/logos/soc-rhinoplasty.png', caption: 'member of the European Rhinoplasty Society' },
-      { logo: 'media/logos/soc-rspras.png', caption: 'member of RSPRAS' },
+      { logo: 'media/logos/lotos.svg', wide: true, caption: 'Crystal Lotus award winner, 2017' },
+      { logo: 'media/logos/soc-rhinoplasty.webp', caption: 'member of the Rhinoplasty Society of Europe' },
+      { logo: 'media/logos/soc-rspras.webp', caption: 'member of the Russian Society of Plastic, Reconstructive and Aesthetic Surgeons' },
     ],
     fullName: 'Eldar Shamsutinovich Kamalov',
     timelineLabel: '// Path',
@@ -733,19 +767,19 @@ const en: typeof ru = {
       { year: '2003', text: 'Defended his thesis, PhD in Medicine' },
       { year: '2016', text: 'Opened a clinic and named it after his father' },
       { year: '2017', text: 'Crystal Lotus award in the field of rhinoplasty' },
-      { year: '2020', text: 'Specialist certificate in otorhinolaryngology' },
+      { year: '2020', text: 'Specialist certificate in otolaryngology' },
       { year: '2021', text: 'Completed a residency in plastic surgery' },
-      { year: '2025', text: 'Registered with the Dubai Health Authority. Consultations and surgery at Dubai London Hospital' },
+      { year: '2026', text: 'Full-time specialist licence from the Dubai Health Authority. Consultations and surgery at Dubai London Hospital' },
     ],
     docsLabel: '// Documents',
     docs: [
       // Надпись вместо герба, см. пояснение в русской версии
-      { file: 'doc-dha-2025.jpg', mark: 'DHA', title: 'DHA registration, Dubai' },
-      { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.png', title: 'Medical degree, 1994' },
-      { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.png', title: 'PhD in Medicine, 2003' },
-      { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Specialist certificate, 2020' },
-      { file: 'doc-course-2020.jpg', logo: 'media/logos/org-nuc.png', title: 'Professional development, 2020' },
-      { file: 'doc-residency-2021.jpg', logo: 'media/logos/org-mgupp.png', title: 'Residency, 2021' },
+      { file: 'doc-dha-2026.webp', mark: 'DHA', title: 'DHA licence No. 26320604-004, valid to 21.07.2027' },
+      { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.webp', title: 'Medical degree, 1994' },
+      { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.webp', title: 'PhD in Medicine, 2003' },
+      { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.webp', title: 'Specialist certificate, 2020' },
+      { file: 'doc-course-2020.jpg', logo: 'media/logos/org-nuc.webp', title: 'Professional development, 2020' },
+      { file: 'doc-residency-2021.jpg', logo: 'media/logos/org-mgupp.webp', title: 'Residency, 2021' },
       // Letter of appreciation, 2024 - убрано, см. пояснение в русской версии выше.
     ],
     portraitAlt: 'Eldar Kamalov',
@@ -766,7 +800,7 @@ const en: typeof ru = {
         surgery: 'Rhinoplasty',
         lead: 'The outer line of the nose changes. The scope of the work is set by the anatomy, not by a preference for a shape.',
         facts: [
-          { mark: 'Approach', text: 'Open or closed - by the task' },
+          { mark: 'Approach', text: 'Open or closed - depending on the case' },
           { mark: 'Revision', text: 'After previous surgery and after injury' },
         ],
         risks: {
@@ -786,14 +820,14 @@ const en: typeof ru = {
         step: 'Task 02',
         name: 'Breathing',
         surgery: 'Septoplasty',
-        lead: 'The septum returns to the midline and the air gets a clear path. The outer line of the nose stays as it is.',
+        lead: 'The septum is returned to the midline to restore the airway. The outward shape of the nose is not changed.',
         facts: [
           { mark: 'Indication', text: 'Persistent difficulty with nasal breathing' },
           { mark: 'From inside', text: 'No external incisions needed' },
         ],
         risks: {
           label: 'Risks',
-          note: 'Performed with anaesthesia, requires a recovery period.',
+          note: 'Performed under anaesthesia, requires a recovery period.',
           items: ['swelling', 'dryness in the nose', 'bleeding', 'recurrence of the deviation'],
         },
       },
@@ -802,12 +836,12 @@ const en: typeof ru = {
       state: 'both',
       step: 'Together',
       name: 'One operation',
-      lead: 'Often both are needed. Then both tasks are closed in a single procedure.',
-      marks: ['one anaesthesia', 'one recovery'],
-      note: 'The surgeon goes through the risks at the consultation, before any decision is made, and says there whether the operation suits a particular case: from an examination and imaging, not from a photograph of the nose. The outcome depends on the anatomy and on how the tissues heal, and differs from one person to another.',
+      lead: 'Often both are needed. When that is the case, both can be addressed in a single operation.',
+      marks: ['one anaesthetic', 'one recovery'],
+      note: 'The surgeon goes through the risks at the consultation, before any decision is made, and says then and there whether the operation is suitable in a particular case - based on an examination and imaging, not on a photograph of the nose. The outcome depends on the anatomy and on how the tissues heal, and differs from one person to another.',
     },
     scheme: {
-      alt: "A profile line with the surgeon's markings: the levels of the nasion and the tip, the axis of the nasal dorsum, the line of the septum and the path of the air",
+      alt: "A profile line with the surgeon's markings: the levels of the bridge and the tip, the axis of the nasal dorsum, the line of the septum and the path of the air",
       dorsum: 'dorsum',
       tip: 'tip',
       septum: 'septum',
@@ -819,7 +853,7 @@ const en: typeof ru = {
   },
   // Комментарии к блоку - в русской версии (results выше)
   results: {
-    label: '[05] Examples of work',
+    label: '[05] Before and after',
     title: 'Before and after',
     caseWord: 'Case',
     before: 'Before',
@@ -849,7 +883,7 @@ const en: typeof ru = {
   // Arabian Gulf, не Persian Gulf - местная норма, см. пояснение в русской версии
   clinic: {
     label: '[06] Where he sees patients',
-    title: 'An inpatient hospital with round-the-clock care',
+    title: 'A hospital with round-the-clock inpatient care',
     lead: 'Consultations, tests and surgery all take place at Dubai London Hospital - a private hospital on the Jumeirah beachfront, two kilometres from the Burj Al Arab. A dedicated ENT department, the operating theatres and wards are under one roof: after surgery the patient stays in the same building, with no transfers between clinics.',
     stamps: [
       { caption: 'consultations in Russian and English' },
@@ -870,24 +904,24 @@ const en: typeof ru = {
       palm: 'Palm Jumeirah',
       scale: '5 km',
     },
-    address: '760, Jumeirah Beach Road · Umm Suqeim 2 · Dubai',
+    address: '760 Jumeirah Beach Road · Umm Suqeim 2 · Dubai',
     gallery: [
       {
-        file: 'clinic/facade.jpg',
+        file: 'clinic/facade.webp',
         w: 864,
         h: 452,
         caption: 'The hospital entrance from Jumeirah Beach Road',
         alt: 'The facade of Dubai London Hospital seen from Jumeirah Beach Road',
       },
       {
-        file: 'clinic/consulting.jpg',
+        file: 'clinic/consulting.webp',
         w: 1200,
         h: 800,
         caption: 'A consulting room',
         alt: 'A consulting room at Dubai London Hospital',
       },
       {
-        file: 'clinic/ward-view.jpg',
+        file: 'clinic/ward-view.webp',
         w: 1200,
         h: 800,
         caption: 'A single inpatient room',
@@ -895,12 +929,23 @@ const en: typeof ru = {
       },
     ],
   },
+  // См. пояснение в русской версии
+  cookies: {
+    label: 'Consent to website analytics',
+    text: 'The site can collect anonymous usage statistics to understand which sections people read. No cookies are set without your consent.',
+    more: 'More in the privacy policy',
+    href: '/privacy',
+    accept: 'Accept',
+    decline: 'Decline',
+  },
   viewer: {
     close: 'Close',
     prev: 'Previous photo',
     next: 'Next photo',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
+    // См. пояснение в русской версии
+    openDoc: 'open the document',
   },
   treatment: {
     label: '[07] How treatment works',
@@ -911,18 +956,18 @@ const en: typeof ru = {
     steps: [
       {
         title: 'Enquiry',
-        text: 'You leave a request on the site or write on WhatsApp. The clinic gets in touch and arranges a time.',
+        text: 'You leave a request on the site or message us on WhatsApp. The clinic gets in touch and arranges a time.',
       },
       {
         title: 'Consultation',
         text: 'An in-person appointment at Dubai London Hospital. The surgeon examines the nose outside and inside, goes through the anatomy, explains which tasks the operation addresses and which it does not, and talks through the risks.',
-        photo: 'consulting-room.jpg',
+        photo: 'consulting-room.webp',
         photoAlt: 'Consulting room at Dubai London Hospital',
       },
       {
         title: 'Tests and the plan',
         text: 'Blood tests, imaging, a review by the anaesthetist. Based on the results the surgeon draws up the plan and agrees a date.',
-        photo: 'imaging.jpg',
+        photo: 'imaging.webp',
         photoAlt: 'CT imaging room at Dubai London Hospital',
       },
       {
@@ -933,25 +978,25 @@ const en: typeof ru = {
       {
         title: 'The first days',
         text: 'Observation on the ward, then removal of the splint and stitches at the times the surgeon sets as healing progresses.',
-        photo: 'ward.jpg',
+        photo: 'ward.webp',
         photoAlt: 'Patient room at Dubai London Hospital',
       },
       {
         title: 'Follow-up',
-        text: 'Scheduled check-ups. Between visits you can put questions to the clinic - to the same surgeon who operated.',
+        text: 'Scheduled check-ups with the same surgeon who performed the operation. Between visits the clinic stays in touch for practical questions.',
       },
     ],
   },
   recovery: {
     label: '[08] Recovery',
     title: 'How long it takes',
-    lead: 'Recovery is part of the operation, not an appendix to it. Below are the usual timings. They depend on the extent of the procedure and on how the tissues heal, so they differ from one person to another.',
+    lead: 'Recovery is part of the operation, not an afterthought. Below are the usual timings. They depend on the extent of the procedure and on how the tissues heal, so they differ from one person to another.',
     columns: { when: 'When', what: 'What happens' },
     rows: [
-      { when: 'Days 1-2', what: 'Observation at the clinic. Swelling and nasal congestion are at their most noticeable' },
+      { when: 'Days 1-2', what: 'Observation in hospital. Swelling and nasal congestion are at their most noticeable' },
       { when: '7-10 days', what: 'The splint comes off. Breathing through the nose gets easier, though swelling remains' },
       { when: '2 weeks', what: 'The main swelling subsides. Most people return to work and to air travel around this point' },
-      { when: '1 month', what: 'Changes are no longer noticeable to others. Sport, pool and sea - once the surgeon allows it' },
+      { when: '1 month', what: 'Changes are usually no longer noticeable to others. Sport, the pool and the sea - once the surgeon allows them' },
       { when: '6-12 months', what: 'The shape of the nose settles for good. Minor swelling resolves gradually' },
     ],
     noteLabel: 'What to keep in mind',
@@ -966,14 +1011,14 @@ const en: typeof ru = {
     items: [
       {
         title: 'The nose is still growing',
-        text: 'Elective surgery is not performed until the facial skeleton has finished growing - usually around the age of 18. Earlier - only for medical indications.',
+        text: 'Elective surgery is not performed until the facial skeleton has finished growing - usually around the age of 18. Earlier - only on medical grounds.',
       },
       {
         title: 'Expectations surgery cannot meet',
         text: 'Surgery changes your nose - it does not copy someone else’s. If the goal is a nose from another person’s photograph, the surgeon will discuss what is achievable and will not take on what cannot be promised.',
       },
       {
-        title: 'Conditions in flare-up',
+        title: 'Flare-ups of existing conditions',
         text: 'Acute illness, or chronic conditions out of remission, mean finishing treatment with the relevant specialist first. An elective operation can wait.',
       },
       {
@@ -993,7 +1038,7 @@ const en: typeof ru = {
     items: [
       {
         q: 'How much does the operation cost?',
-        a: 'The extent of surgery differs from person to person, so the price is determined after the examination. At the consultation the surgeon names the cost and explains what it includes.',
+        a: 'The extent of surgery differs from person to person, so the price is determined after the examination. At the consultation the surgeon tells you the price and explains what it includes.',
       },
       {
         q: 'I am flying in from another country. How much time should I allow?',
@@ -1004,19 +1049,19 @@ const en: typeof ru = {
         a: 'Medical records and scans from past years are useful, if you have them. If not, just come: the examination happens on site, and scans can be done at the hospital if needed.',
       },
       {
-        q: 'Will there be visible marks?',
-        a: 'It depends on the surgical plan: some techniques use incisions inside the nose only, others leave a barely noticeable mark. The surgeon explains what applies to your case at the examination.',
+        q: 'Will there be visible scars?',
+        a: 'It depends on the surgical plan: some techniques use incisions inside the nose only, others leave a barely noticeable scar. The surgeon explains what applies to your case at the examination.',
       },
     ],
   },
   booking: {
     label: '[11] Booking and contacts',
     title: 'Book a consultation',
-    lead: 'Consultations are held at Dubai London Hospital, by appointment. Leave your contacts whichever way is easier - the form or WhatsApp.',
+    lead: 'Consultations are held at Dubai London Hospital, by appointment. Leave your contact details whichever way is easier - through the form or on WhatsApp.',
     form: {
       name: 'Name',
       phone: 'Phone',
-      email: 'E-mail',
+      email: 'Email',
       optional: 'optional',
       consentPre: 'I consent to the',
       consentLink: 'processing of my personal data',
@@ -1024,10 +1069,10 @@ const en: typeof ru = {
       sending: 'Sending...',
       doneTitle: 'Request received',
       doneText: 'The clinic will contact you during working hours to arrange the visit.',
-      error: 'Something went wrong. Please try again or write on WhatsApp.',
-      errName: 'Tell us how to address you',
-      errPhone: 'Check the phone number',
-      errEmail: 'Check the e-mail address',
+      error: 'Something went wrong. Please try again or message us on WhatsApp.',
+      errName: 'Please enter your name',
+      errPhone: 'Please check the phone number',
+      errEmail: 'Please check the email address',
       errConsent: 'The request cannot be sent without consent',
     },
     phrase: {
@@ -1048,24 +1093,32 @@ const en: typeof ru = {
   },
   privacy: {
     title: 'Privacy policy',
-    back: 'Back to the main page',
+    back: 'Back to the home page',
     lead: 'This page explains what data the site collects, why it is needed and what happens to it.',
     sections: [
       {
         h: 'What data is collected',
-        p: 'The booking form passes on your name, phone number and, if you have provided it, your e-mail address. The form collects nothing else.',
+        p: 'The booking form sends your name, phone number and, if you provide it, your email address. The form collects nothing else.',
       },
       {
         h: 'Why it is needed',
-        p: 'Only to contact you and arrange the consultation. The data is not used for mailings or advertising.',
+        p: 'To contact you and arrange the consultation. You are not added to any mailing lists.',
       },
       {
         h: 'Legal basis',
-        p: 'Your consent - the checkbox in the form before sending. Without it the request is not sent.',
+        p: 'Your consent - the checkbox in the form before sending. Without it the request is not sent. The date of your consent is stored together with the request.',
       },
       {
         h: 'Who receives it',
-        p: 'Clinic staff responsible for booking consultations. The data is not sold or passed to third parties, except where required by law.',
+        p: 'Clinic staff responsible for booking consultations. The request itself is delivered by technical services - the email and messenger used by the clinic; they take part only in the delivery. The data is not sold and goes to no one else, except where required by law.',
+      },
+      {
+        h: 'Transfers outside the UAE',
+        p: 'The services that deliver your request, and website analytics, may run on servers outside the UAE. By sending a request, and by agreeing to analytics, you also agree to that transfer. Beyond what is listed above, the data is not transferred out of the country.',
+      },
+      {
+        h: 'Website analytics and cookies',
+        p: 'Analytics is enabled only with your consent. Until you press «Accept», the site sets no cookies and sends nothing to analytics services; if you press «Decline», analytics is not enabled at all. Your choice is remembered in your browser and can be changed by clearing the site data. Your language choice is remembered in the same way - that is a setting, not personal data.',
       },
       {
         h: 'How long it is kept',
@@ -1073,10 +1126,10 @@ const en: typeof ru = {
       },
       {
         h: 'Your rights',
-        p: 'You can request a copy of your data, its correction or deletion. To do so, write on WhatsApp - the button is on the main page.',
+        p: 'You can request a copy of your data, its correction or deletion. To do so, message us on WhatsApp - the button is on the home page.',
       },
     ],
-    note: 'This document evolves with the site: when visit statistics are connected, a section about them will appear here.',
+    note: 'The data controller is the clinic where the doctor practises. Its registered details and a contact address for enquiries are added here.',
   },
 }
 

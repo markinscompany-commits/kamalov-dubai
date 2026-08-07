@@ -30,7 +30,25 @@ interface Props {
   label: string
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+/*
+  Скан открывается в модальном окне тем же просмотрщиком, что фотографии
+  госпиталя и кадры «до/после» (правка Марка 07.08). Раньше документ уходил
+  в новую вкладку - человек терял страницу.
+
+  PhotoViewer ждёт путь ОТ media/, поэтому подставляем папку docs/.
+  Подпись под кадром - название документа; alt для читалки - оно же.
+*/
+const viewerItems = computed(() =>
+  props.items.map((doc) => ({
+    file: `docs/${doc.file}`,
+    alt: doc.title,
+    caption: doc.title,
+  })),
+)
+
+const openIndex = ref<number | null>(null)
 
 const strip = ref<HTMLElement | null>(null)
 const fadeStart = ref(false)
@@ -68,13 +86,14 @@ onBeforeUnmount(() => {
 
     <div class="docs__viewport">
       <ul ref="strip" class="docs__strip">
-        <li v-for="doc in items" :key="doc.file" class="docs__cell">
+        <li v-for="(doc, i) in items" :key="doc.file" class="docs__cell">
           <DocCard
             :file="doc.file"
             :logo="doc.logo"
             :logo-wide="doc.logoWide"
             :mark="doc.mark"
             :title="doc.title"
+            @click="openIndex = i"
           />
         </li>
       </ul>
@@ -82,6 +101,8 @@ onBeforeUnmount(() => {
       <span class="docs__fade docs__fade--start" :class="{ 'is-on': fadeStart }" aria-hidden="true" />
       <span class="docs__fade docs__fade--end" :class="{ 'is-on': fadeEnd }" aria-hidden="true" />
     </div>
+
+    <PhotoViewer v-model:index="openIndex" :items="viewerItems" />
   </div>
 </template>
 

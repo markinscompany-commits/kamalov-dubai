@@ -50,7 +50,7 @@ const base = useRuntimeConfig().app.baseURL
         <figure class="doctor__figure">
           <img
             class="doctor__portrait"
-            :src="`${base}media/doctor-close.jpg`"
+            :src="`${base}media/doctor-close.webp`"
             :alt="m.doctor.portraitAlt"
             width="800"
             height="920"
@@ -61,7 +61,7 @@ const base = useRuntimeConfig().app.baseURL
 
         <figure class="doctor__figure">
           <img
-            :src="`${base}media/archive-father.jpg`"
+            :src="`${base}media/archive-father.webp`"
             :alt="m.doctor.photoAlt"
             width="900"
             height="1234"

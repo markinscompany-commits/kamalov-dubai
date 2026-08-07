@@ -37,12 +37,12 @@ const pad = (n: number) => String(n).padStart(2, '0')
 const viewerItems = computed(() =>
   m.value.results.cases.flatMap((c, i) => [
     {
-      file: `gallery/${c.id}-before.jpg`,
+      file: `gallery/${c.id}-before.webp`,
       alt: m.value.results.photoAlt.before,
       caption: `${m.value.results.caseWord} ${pad(i + 1)} - ${m.value.results.before}`,
     },
     {
-      file: `gallery/${c.id}-after.jpg`,
+      file: `gallery/${c.id}-after.webp`,
       alt: m.value.results.photoAlt.after,
       caption: `${m.value.results.caseWord} ${pad(i + 1)} - ${m.value.results.after}`,
     },
@@ -123,7 +123,7 @@ onBeforeUnmount(() => {
               >
                 <span class="gal__frame">
                   <img
-                    :src="`${base}media/gallery/${c.id}-before.jpg`"
+                    :src="`${base}media/gallery/${c.id}-before.webp`"
                     :alt="m.results.photoAlt.before"
                     width="720"
                     height="960"
@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
               >
                 <span class="gal__frame">
                   <img
-                    :src="`${base}media/gallery/${c.id}-after.jpg`"
+                    :src="`${base}media/gallery/${c.id}-after.webp`"
                     :alt="m.results.photoAlt.after"
                     width="720"
                     height="960"

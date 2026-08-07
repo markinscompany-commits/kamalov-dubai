@@ -12,12 +12,14 @@
   Строк внутри листа нет - вместо них герб. Пока герба нет, лист остаётся пустым:
   это честнее, чем рисовать заглушку, и сразу видно, чего не хватает.
 
-  Сам скан открывается по клику в новой вкладке: человеку, который хочет проверить
-  документ, он доступен, но на странице не шумит.
+  Сам скан открывается по клику В МОДАЛЬНОМ ОКНЕ - тем же просмотрщиком, что
+  фотографии госпиталя и кадры «до/после» (правка Марка 07.08). Раньше уходил
+  в новую вкладку: человек терял страницу и возвращался кнопкой «назад».
+  Открытием управляет DocGrid - он держит ленту и просмотрщик.
 -->
 <script setup lang="ts">
 interface Props {
-  /** Скан документа в public/media/docs - открывается по клику */
+  /** Имя файла скана в public/media/docs - открывает его DocGrid */
   file: string
   /** Герб организации, путь от public/ */
   logo?: string
@@ -37,10 +39,12 @@ interface Props {
 defineProps<Props>()
 
 const base = useRuntimeConfig().app.baseURL
+
+const { m } = useLocale()
 </script>
 
 <template>
-  <a class="doc brackets" :href="`${base}media/docs/${file}`" target="_blank" rel="noopener">
+  <button class="doc brackets" type="button" :aria-label="`${title} - ${m.viewer.openDoc}`">
     <span class="doc__sheet">
       <!-- Лист с загнутым уголком. Обводка, а не заливка: значок должен быть
            нарисован тем же пером, что вся разметка сайта -->
@@ -63,7 +67,7 @@ const base = useRuntimeConfig().app.baseURL
     </span>
 
     <span class="doc__title">{{ title }}</span>
-  </a>
+  </button>
 </template>
 
 <style scoped>

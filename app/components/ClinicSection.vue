@@ -176,7 +176,7 @@ onBeforeUnmount(() => {
           </svg>
           <img
             class="clinic__badge-logo"
-            :src="`${base}media/logos/achsi.png`"
+            :src="`${base}media/logos/achsi.webp`"
             :alt="m.clinic.stamps[1].imgAlt"
             width="320"
             height="320"

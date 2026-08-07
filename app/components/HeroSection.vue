@@ -45,8 +45,8 @@ const base = useRuntimeConfig().app.baseURL
     -->
     <div class="hero__photo">
       <img
-        :src="`${base}media/doctor-portrait.jpg`"
-        :srcset="`${base}media/doctor-portrait-sm.jpg 900w, ${base}media/doctor-portrait.jpg 1600w`"
+        :src="`${base}media/doctor-portrait.webp`"
+        :srcset="`${base}media/doctor-portrait-sm.webp 900w, ${base}media/doctor-portrait.webp 1600w`"
         sizes="(max-width: 900px) 100vw, 50vw"
         :alt="m.hero.photoAlt"
         width="1600"

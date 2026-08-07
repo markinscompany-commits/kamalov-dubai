@@ -1,7 +1,7 @@
 <!--
-  Главная страница целиком - общая для двух адресов: `/` (русский)
-  и `/en` (английский). Язык выставляет app.vue по маршруту, здесь только
-  содержимое и метаданные.
+  Главная страница целиком - общая для двух адресов: `/` (английский,
+  основной) и `/ru` (русский). Язык выставляет app.vue по маршруту,
+  здесь только содержимое и метаданные.
 -->
 <script setup lang="ts">
 const { m, locale } = useLocale()
@@ -15,8 +15,11 @@ const SITE = 'https://markinscompany-commits.github.io/kamalov-dubai'
 // hreflang связывает две языковые версии, canonical - у каждой свой адрес.
 /* Карточка ссылки в соцсетях. Без неё Meta собирает превью сама, из чего
    попало и без картинки - а это первое, что видит и модератор, и человек.
-   Кадр нейтральный (портрет врача): «до/после» в ленте показывать нельзя */
-const pageUrl = computed(() => (locale.value === 'en' ? `${SITE}/en/` : `${SITE}/`))
+   Кадр нейтральный (портрет врача): «до/после» в ленте показывать нельзя.
+   ⚠️ Здесь единственный на сайте JPEG: остальные снимки переведены в WebP,
+   но карточку ссылки собирают чужие сканеры, и WebP они читают не все.
+   Файл doctor-portrait.jpg оставлен в public/media специально для этого */
+const pageUrl = computed(() => (locale.value === 'ru' ? `${SITE}/ru/` : `${SITE}/`))
 
 useHead(() => ({
   htmlAttrs: { lang: locale.value },
@@ -33,11 +36,12 @@ useHead(() => ({
     { name: 'twitter:card', content: 'summary_large_image' },
   ],
   link: [
-    /* /en/ со слэшем: без него хостинг отвечает редиректом, а canonical
-       и hreflang обязаны указывать на адрес, который отвечает сразу */
-    { rel: 'canonical', href: locale.value === 'en' ? `${SITE}/en/` : `${SITE}/` },
-    { rel: 'alternate', hreflang: 'ru', href: `${SITE}/` },
-    { rel: 'alternate', hreflang: 'en', href: `${SITE}/en/` },
+    /* /ru/ со слэшем: без него хостинг отвечает редиректом, а canonical
+       и hreflang обязаны указывать на адрес, который отвечает сразу.
+       x-default - английский корень: он основной и на него идёт реклама */
+    { rel: 'canonical', href: locale.value === 'ru' ? `${SITE}/ru/` : `${SITE}/` },
+    { rel: 'alternate', hreflang: 'en', href: `${SITE}/` },
+    { rel: 'alternate', hreflang: 'ru', href: `${SITE}/ru/` },
     { rel: 'alternate', hreflang: 'x-default', href: `${SITE}/` },
   ],
 }))
