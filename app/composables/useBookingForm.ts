@@ -1,9 +1,11 @@
 /**
  * Логика формы заявки - одна на оба варианта подачи блока [11].
  *
- * Поля по договору: имя, телефон, e-mail. Почта сделана необязательной
- * намеренно: лишнее обязательное поле - лишний повод бросить форму,
- * а связаться с человеком можно и по одному телефону.
+ * Поля: имя и телефон.
+ *
+ * ⚠️ ПОЧТА УБРАНА (правка Марка 07.08). Раньше она стояла рядом с телефоном
+ * необязательным полем, и это сбивало: человек не понимал, что заполнять и
+ * нужно ли оба. Клиника перезванивает, так что почта ничего не решала.
  *
  * 🔴 ТРАНСПОРТ НЕ ПОДКЛЮЧЁН. Адрес почты и Telegram для заявок клиника
  * не передала (срок по договору п. 5.2 вышел 06.08, задержка зафиксирована
@@ -36,11 +38,10 @@ export function useBookingForm(source: string) {
 
   const name = ref('')
   const phone = ref('')
-  const email = ref('')
   const consent = ref(false)
 
   const status = ref<BookingStatus>('idle')
-  const errors = ref<{ name?: string; phone?: string; email?: string; consent?: string }>({})
+  const errors = ref<{ name?: string; phone?: string; consent?: string }>({})
 
   function validate(): boolean {
     const f = m.value.booking.form
@@ -49,8 +50,6 @@ export function useBookingForm(source: string) {
     if (!name.value.trim()) next.name = f.errName
     // Телефон международный: цифры, пробелы, скобки, дефисы, плюс; минимум 7 знаков
     if (!/^[\d\s()+-]{7,20}$/.test(phone.value.trim())) next.phone = f.errPhone
-    // Почта необязательна, но если написана - проверяем форму записи
-    if (email.value.trim() && !/^\S+@\S+\.\S+$/.test(email.value.trim())) next.email = f.errEmail
     if (!consent.value) next.consent = f.errConsent
 
     errors.value = next
@@ -70,7 +69,6 @@ export function useBookingForm(source: string) {
           body: JSON.stringify({
             name: name.value.trim(),
             phone: phone.value.trim(),
-            email: email.value.trim(),
             // Из какого блока пришла заявка - видно и клинике, и аналитике
             source,
             /*
@@ -110,5 +108,5 @@ export function useBookingForm(source: string) {
     }
   }
 
-  return { name, phone, email, consent, status, errors, submit }
+  return { name, phone, consent, status, errors, submit }
 }

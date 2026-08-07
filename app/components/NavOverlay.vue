@@ -30,6 +30,10 @@ const { m, locale, setLocale } = useLocale()
 // TODO: подставить реальный номер клиники, когда клиника его передаст
 const whatsapp = 'https://wa.me/79285030807'
 
+/* Логотип перезагружает страницу, как в шапке (правка Марка 07.08) */
+const base = useRuntimeConfig().app.baseURL
+const homeHref = computed(() => (locale.value === 'ru' ? `${base}ru` : base))
+
 const closeBtn = ref<HTMLElement | null>(null)
 
 function onKey(e: KeyboardEvent) {
@@ -96,7 +100,7 @@ onBeforeUnmount(() => {
       >
         <!-- Повтор шапки: логотип, языки, крестик на месте бургера -->
         <div class="nav__top page">
-          <a class="nav__logo brackets" href="#top" :aria-label="m.nav.toTop" @click="emit('close')">
+          <a class="nav__logo brackets" :href="homeHref" :aria-label="m.nav.toTop" @click="emit('close')">
             <span>dr.</span>
             <span>Kamalov</span>
           </a>

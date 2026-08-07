@@ -3,10 +3,13 @@
   (BookingModal). Подача «Анкета» принята Марком 06.08, разбивка по строкам -
   его правка (каждое поле заканчивает СВОЮ строку и забирает её остаток,
   запас под длинные данные):
+
+  ⚠️ ПОЧТЫ В ФОРМЕ БОЛЬШЕ НЕТ (правка Марка 07.08): два способа связи рядом
+  сбивали с толку - человек не понимал, что заполнять и обязательно ли оба.
+  Осталось имя и телефон, фраза стала:
       Меня зовут [имя........................]
-      Свяжитесь со мной по
-      телефону [номер.......................]
-      почте [адрес..........................]
+      Свяжитесь со мной
+      по телефону [номер....................]
 
   props.source - из какого блока пришла заявка (правка Марка 07.08),
   уходит в данные заявки и в слой аналитики (useBookingForm).
@@ -39,7 +42,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), { compact: false })
 
 const { m } = useLocale()
-const { name, phone, email, consent, status, errors, submit } = useBookingForm(props.source)
+const { name, phone, consent, status, errors, submit } = useBookingForm(props.source)
 
 /* Тот же адрес, что в шапке. 🔴 Номер - заглушка до передачи номера ОАЭ */
 const whatsapp = 'https://wa.me/79285030807'
@@ -48,9 +51,7 @@ const uid = useId()
 
 /** Ошибки одной строкой под фразой - у полей внутри текста места под них нет */
 const errorLine = computed(() =>
-  [errors.value.name, errors.value.phone, errors.value.email, errors.value.consent]
-    .filter(Boolean)
-    .join('. '),
+  [errors.value.name, errors.value.phone, errors.value.consent].filter(Boolean).join('. '),
 )
 </script>
 
@@ -74,7 +75,7 @@ const errorLine = computed(() =>
           />
         </p>
 
-        <p class="bkf__line">{{ m.booking.phrase.l2 }}</p>
+        <p class="bkf__line bkf__line--plain">{{ m.booking.phrase.l2 }}</p>
 
         <p class="bkf__line">
           <label class="bkf__text" :for="`${uid}-phone`">{{ m.booking.phrase.l3 }}</label>
@@ -93,22 +94,6 @@ const errorLine = computed(() =>
           />
         </p>
 
-        <p class="bkf__line">
-          <label class="bkf__text" :for="`${uid}-email`">{{ m.booking.phrase.l4 }}</label>
-          <input
-            :id="`${uid}-email`"
-            v-model="email"
-            class="bkf__input"
-            type="email"
-            name="email"
-            autocomplete="email"
-            inputmode="email"
-            :aria-label="`${m.booking.form.email} (${m.booking.form.optional})`"
-            :placeholder="m.booking.phrase.emailHint"
-            :aria-invalid="!!errors.email"
-            :aria-describedby="errorLine ? `${uid}-errors` : undefined"
-          />
-        </p>
       </div>
 
       <p v-if="errorLine" :id="`${uid}-errors`" class="bkf__error">{{ errorLine }}</p>

@@ -158,7 +158,7 @@ const ru = {
       // лежал в public/ и публиковался по прямой ссылке, хотя нигде не подключён.
       // Придёт письменное разрешение - вернуть файл в public/media/logos/ и
       // поменять mark обратно на logo.
-      { file: 'doc-dha-2026.webp', mark: 'DHA', title: 'Лицензия DHA № 26320604-004, действует до 21.07.2027' },
+      { file: 'doc-dha-2026.webp', mark: 'DHA', title: 'Лицензия DHA' },
       { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.webp', title: 'Диплом врача, 1994' },
       { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.webp', title: 'Кандидат наук, 2003' },
       { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.webp', title: 'Сертификат специалиста, 2020' },
@@ -613,8 +613,6 @@ const ru = {
     form: {
       name: 'Имя',
       phone: 'Телефон',
-      email: 'E-mail',
-      optional: 'необязательно',
       /* Согласие разбито надвое: вторая часть - ссылка на страницу политики */
       consentPre: 'Даю согласие на',
       consentLink: 'обработку персональных данных',
@@ -625,7 +623,6 @@ const ru = {
       error: 'Отправить не получилось. Попробуйте ещё раз или напишите в WhatsApp.',
       errName: 'Напишите, как к вам обращаться',
       errPhone: 'Проверьте номер телефона',
-      errEmail: 'Проверьте адрес почты',
       errConsent: 'Без согласия отправить заявку нельзя',
     },
     /*
@@ -636,20 +633,40 @@ const ru = {
     */
     phrase: {
       l1: 'Меня зовут',
-      l2: 'Свяжитесь со мной по',
-      l3: 'телефону',
-      l4: 'почте',
+      l2: 'Свяжитесь со мной',
+      l3: 'по телефону',
       nameHint: 'имя',
       phoneHint: 'номер',
-      emailHint: 'адрес',
     },
     /* «// Что будет дальше» снято по правке Марка 07.08 (история git) */
   },
-  /* Подвал. 🔴 Дополнится к запуску: номер рекламной лицензии MOH
-     (client-request, строка 3.1). Без него подвал намеренно короткий */
+  /*
+    Подвал. Пересобран 07.08 по правке Марка: раньше все четыре строки
+    висели одной колонкой справа и читались свалкой, а данные лицензии
+    стояли на карточке документа в блоке «О докторе».
+
+    Теперь три колонки: кто - чем подтверждён - где принимает, и отдельной
+    строкой внизу политика с годом. Данные лицензии переехали сюда: подвал -
+    обычное место для регуляторных сведений, и там их ищут.
+
+    🔴 Дополнится к запуску: номер рекламной лицензии MOH (client-request,
+    строка 3.1) - строка mohLabel/moh уже заведена, ждёт значения.
+  */
   footer: {
     name: 'Доктор Эльдар Камалов',
-    place: 'Dubai London Hospital, Дубай',
+    // Титул - строка License Title из лицензии DHA, буква в букву
+    role: 'Врач-специалист - оториноларингология',
+    licenceLabel: '// Лицензия',
+    licence: 'DHA № 26320604-004',
+    licenceValid: 'действует до 21.07.2027',
+    licenceView: 'Посмотреть лицензию',
+    licenceAlt: 'Лицензия врача-специалиста DHA № 26320604-004, действует до 21.07.2027',
+    // 🔴 Появится к запуску: рекламная лицензия MOH клиники
+    mohLabel: '// Реклама',
+    moh: '',
+    placeLabel: '// Приём',
+    place: 'Dubai London Clinic and Speciality Hospital',
+    address: '760 Jumeirah Beach Road · Umm Suqeim 2 · Дубай, ОАЭ',
     rights: '© 2026',
     policy: 'Политика конфиденциальности',
   },
@@ -667,7 +684,7 @@ const ru = {
     sections: [
       {
         h: 'Какие данные собираются',
-        p: 'Форма заявки передаёт имя, номер телефона и, если вы его указали, адрес электронной почты. Ничего другого форма не собирает.',
+        p: 'Форма заявки передаёт имя и номер телефона. Ничего другого форма не собирает.',
       },
       {
         h: 'Зачем они нужны',
@@ -774,7 +791,7 @@ const en: typeof ru = {
     docsLabel: '// Documents',
     docs: [
       // Надпись вместо герба, см. пояснение в русской версии
-      { file: 'doc-dha-2026.webp', mark: 'DHA', title: 'DHA licence No. 26320604-004, valid to 21.07.2027' },
+      { file: 'doc-dha-2026.webp', mark: 'DHA', title: 'DHA licence' },
       { file: 'doc-diploma-1994.jpg', logo: 'media/logos/org-dgmu.webp', title: 'Medical degree, 1994' },
       { file: 'doc-phd-2003.jpg', logo: 'media/logos/org-rgmu.webp', title: 'PhD in Medicine, 2003' },
       { file: 'doc-ent-2020.jpg', logo: 'media/logos/org-nuc.webp', title: 'Specialist certificate, 2020' },
@@ -1061,8 +1078,6 @@ const en: typeof ru = {
     form: {
       name: 'Name',
       phone: 'Phone',
-      email: 'Email',
-      optional: 'optional',
       consentPre: 'I consent to the',
       consentLink: 'processing of my personal data',
       submit: 'Send request',
@@ -1072,22 +1087,30 @@ const en: typeof ru = {
       error: 'Something went wrong. Please try again or message us on WhatsApp.',
       errName: 'Please enter your name',
       errPhone: 'Please check the phone number',
-      errEmail: 'Please check the email address',
       errConsent: 'The request cannot be sent without consent',
     },
     phrase: {
       l1: 'My name is',
-      l2: 'You can reach me by',
-      l3: 'phone',
-      l4: 'e-mail',
+      l2: 'You can reach me',
+      l3: 'by phone',
       nameHint: 'name',
       phoneHint: 'number',
-      emailHint: 'address',
     },
   },
+  // Комментарии к подвалу - в русской версии
   footer: {
     name: 'Dr Eldar Kamalov',
-    place: 'Dubai London Hospital, Dubai',
+    role: 'Specialist Otolaryngology',
+    licenceLabel: '// Licence',
+    licence: 'DHA No. 26320604-004',
+    licenceValid: 'valid to 21.07.2027',
+    licenceView: 'View the licence',
+    licenceAlt: 'DHA specialist licence No. 26320604-004, valid to 21.07.2027',
+    mohLabel: '// Advertising',
+    moh: '',
+    placeLabel: '// Practice',
+    place: 'Dubai London Clinic and Speciality Hospital',
+    address: '760 Jumeirah Beach Road · Umm Suqeim 2 · Dubai, UAE',
     rights: '© 2026',
     policy: 'Privacy policy',
   },
@@ -1098,7 +1121,7 @@ const en: typeof ru = {
     sections: [
       {
         h: 'What data is collected',
-        p: 'The booking form sends your name, phone number and, if you provide it, your email address. The form collects nothing else.',
+        p: 'The booking form sends your name and phone number. The form collects nothing else.',
       },
       {
         h: 'Why it is needed',

@@ -19,6 +19,11 @@ const { m, locale, setLocale } = useLocale()
 // TODO: подставить реальный номер клиники, когда клиника его передаст
 const whatsapp = 'https://wa.me/79285030807'
 
+/* Адрес своей языковой версии - по нему логотип перезагружает страницу.
+   Через baseURL: на GitHub Pages сайт лежит в подпапке */
+const base = useRuntimeConfig().app.baseURL
+const homeHref = computed(() => (locale.value === 'ru' ? `${base}ru` : base))
+
 const scrolled = ref(false)
 const menuOpen = ref(false)
 
@@ -66,7 +71,15 @@ onBeforeUnmount(() => {
     <div class="page header__inner">
       <!-- Левая группа: лежит на чернильной половине, поэтому светлая -->
       <div class="header__left">
-        <a class="header__logo brackets" href="#top" :aria-label="m.nav.toTop">
+        <!--
+          Логотип ПЕРЕЗАГРУЖАЕТ страницу, а не просто уводит якорем наверх
+          (правка Марка 07.08). Раньше это был `#top`: страница оставалась
+          в том же состоянии - раскрытые блоки, начатая форма, отработавшие
+          анимации, - и «вернуться в начало» ощущалось не как начало.
+          Обычная ссылка на адрес языковой версии: браузер грузит её заново
+          и сам ставит прокрутку в ноль.
+        -->
+        <a class="header__logo brackets" :href="homeHref" :aria-label="m.nav.toTop">
           <span class="header__logo-mark">dr.</span>
           <span class="header__logo-name">Kamalov</span>
         </a>
