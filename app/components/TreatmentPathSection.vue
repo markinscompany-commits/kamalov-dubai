@@ -261,9 +261,10 @@ function segStyle(s: Segment) {
               <p class="path__body">{{ step.text }}</p>
 
               <!-- Кнопки прямо в первом шаге (правка Марка 06.08): «оставить
-                   заявку» - это и есть шаг 01, действие даётся на месте -->
+                   заявку» - это и есть шаг 01, действие даётся на месте.
+                   Попап с источником блока, не якорь (правка Марка 07.08) -->
               <div v-if="i === 0" class="path__actions">
-                <MarkAction href="#booking">{{ m.action.bookLong }}</MarkAction>
+                <MarkAction @click="useBookingModal().open('treatment')">{{ m.action.bookLong }}</MarkAction>
                 <MarkAction variant="ghost" :href="whatsapp">{{ m.action.whatsapp }}</MarkAction>
               </div>
             </div>

@@ -74,6 +74,9 @@ onBeforeUnmount(() => {
          разделов главной, на /privacy они вели бы в никуда -->
     <SiteHeader v-if="$route.path === '/' || $route.path === '/en'" />
     <NuxtPage />
+    <!-- Попап записи: открывается со всех кнопок «Записаться» с источником
+         блока (правка Марка 07.08) -->
+    <BookingModal />
     <GrainOverlay />
     <AppPreloader />
   </div>

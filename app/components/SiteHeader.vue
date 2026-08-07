@@ -118,7 +118,8 @@ onBeforeUnmount(() => {
           </div>
 
           <div class="header__actions">
-            <MarkAction class="header__cta" href="#booking">
+            <!-- Попап с источником блока, не якорь к [11] (правка Марка 07.08) -->
+            <MarkAction class="header__cta" @click="useBookingModal().open('header')">
               <span class="header__cta-long">{{ m.action.bookLong }}</span>
               <span class="header__cta-short">{{ m.action.bookShort }}</span>
             </MarkAction>

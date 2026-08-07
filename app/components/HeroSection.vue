@@ -75,7 +75,8 @@ const base = useRuntimeConfig().app.baseURL
         </p>
 
         <div class="hero__actions rise" style="--i: 4">
-          <MarkAction href="#booking">
+          <!-- Попап с источником блока, не якорь к [11] (правка Марка 07.08) -->
+          <MarkAction @click="useBookingModal().open('hero')">
             <span class="hero__cta-long">{{ m.action.bookLong }}</span>
             <span class="hero__cta-short">{{ m.action.bookShort }}</span>
           </MarkAction>

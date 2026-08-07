@@ -19,7 +19,12 @@ export type BookingStatus = 'idle' | 'sending' | 'done' | 'error'
 /** Конечная точка отправки. Пусто = транспорта ещё нет, отправка имитируется */
 const SUBMIT_ENDPOINT = ''
 
-export function useBookingForm() {
+/**
+ * @param source из какого блока пришла заявка (правка Марка 07.08):
+ * hero / header / menu / surgery / treatment / booking-section.
+ * Уходит в данные заявки и в слой аналитики.
+ */
+export function useBookingForm(source: string) {
   const { m } = useLocale()
 
   const name = ref('')
@@ -59,6 +64,8 @@ export function useBookingForm() {
             name: name.value.trim(),
             phone: phone.value.trim(),
             email: email.value.trim(),
+            // Из какого блока пришла заявка - видно и клинике, и аналитике
+            source,
           }),
         })
         if (!res.ok) throw new Error(String(res.status))
@@ -67,6 +74,19 @@ export function useBookingForm() {
         await new Promise((r) => setTimeout(r, 700))
       }
       status.value = 'done'
+
+      /*
+       * Слой аналитики. GTM/GA4 подключаются на этапе 5 - пуш в dataLayer
+       * безопасен и до того (обычный массив). Имя события НЕЙТРАЛЬНОЕ,
+       * не «Заявка» (решение проекта: медицинские домены - Health & Wellness,
+       * см. PROJECT.md, раздел 5). Источник - требование Марка 07.08:
+       * в событии видно, из какого блока записались.
+       */
+      if (import.meta.client) {
+        const w = window as typeof window & { dataLayer?: Record<string, unknown>[] }
+        w.dataLayer = w.dataLayer || []
+        w.dataLayer.push({ event: 'request_sent', request_source: source })
+      }
     } catch {
       status.value = 'error'
     }

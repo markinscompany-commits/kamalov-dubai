@@ -152,7 +152,8 @@ onBeforeUnmount(() => {
           </ul>
 
           <div class="nav__actions nav__step" :style="{ '--i': m.nav.links.length }">
-            <MarkAction href="#booking" @click="emit('close')">{{ m.action.bookLong }}</MarkAction>
+            <!-- Попап с источником блока (правка Марка 07.08); меню закрывается -->
+            <MarkAction @click="emit('close'); useBookingModal().open('menu')">{{ m.action.bookLong }}</MarkAction>
             <MarkAction variant="ghost" :href="whatsapp">{{ m.action.whatsapp }}</MarkAction>
           </div>
         </div>

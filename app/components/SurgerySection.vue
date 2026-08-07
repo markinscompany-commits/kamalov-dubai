@@ -140,7 +140,8 @@ onBeforeUnmount(() => watcher?.disconnect())
     </div>
 
     <div class="sg__action">
-      <MarkAction href="#booking">{{ m.action.bookLong }}</MarkAction>
+      <!-- Попап с источником блока, не якорь к [11] (правка Марка 07.08) -->
+      <MarkAction @click="useBookingModal().open('surgery')">{{ m.action.bookLong }}</MarkAction>
     </div>
   </PageSection>
 </template>
